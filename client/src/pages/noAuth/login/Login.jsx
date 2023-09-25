@@ -10,11 +10,19 @@ function Login() {
         var password = document.getElementById('password').value;
         signInWithEmailAndPassword(config.auth, email, password)
             .then((userCredentials) => {
-                console.log(userCredentials)
+                 // Split email on the @
+                 var emailParts = email.split('@');
+                 // Split again for every "."
+                 var domainParts = emailParts[1].split('.');
+                 // Grab account type since it's the second part ALWAYS
+                 var accountType = domainParts[domainParts.length - 2];
+                 console.log('Account Type: ', accountType);
+                 console.log(userCredentials);
+                 console.log(userCredentials)
             })
             .catch((error) => {
                 console.log(error);
-            });
+            })
     }
 
     return (
