@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import pic from "./sub.jpg"
 
-function Navbar(){
+function landNavbar(){
     return(
         <header class="bg-lime-600 max-w-full py-3 ">
             <div className="container" class="flex items-center ">
@@ -17,4 +17,4 @@ function Navbar(){
     );
 }
 
-export default Navbar;
+export default landNavbar;
