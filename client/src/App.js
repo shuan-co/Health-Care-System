@@ -18,6 +18,7 @@ import Login from "./pages/noAuth/login/Login";
 
 // Hooks
 import { useEffect } from "react";
+import Navbar from "./pages/noAuth/components/Navbar";
 
 const App = () => {
     // Authentication
@@ -40,7 +41,8 @@ const App = () => {
     }, []); // Empty dependency array because it should run once
 
     return (
-        <div>
+        <div className="h-full w-full bg-green-50">
+            <Navbar />
             <Routes>
                 <Route exact path="/" element={<Landing />} />
                 <Route exact path="/aboutus" element={<Information />} />
