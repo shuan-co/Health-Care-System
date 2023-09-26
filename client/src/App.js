@@ -17,6 +17,7 @@ import { AuthProvider } from './AuthContext';
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
+    const [userAccess, setUserAccess] = useState(null)
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(config.auth, (user) => {
@@ -27,7 +28,7 @@ const ProtectedRoute = ({ children, accessLevel }) => {
                 var domainParts = emailParts[1].split('.');
                 // Grab account type since it's the second part ALWAYS
                 var accountType = domainParts[domainParts.length - 2];
-
+                setUserAccess(accountType);
                 if (accountType === accessLevel) {
                     setAuthorized(true);
                 } else {
@@ -36,9 +37,11 @@ const ProtectedRoute = ({ children, accessLevel }) => {
                             setAuthorized(false);
                             break;
                         case "patient":
+                            setAuthorized(false);
                             // Handle patient case
                             break;
                         case "locator":
+                            setAuthorized(false);
                             // Handle locator case
                             break;
                         default:
@@ -61,7 +64,16 @@ const ProtectedRoute = ({ children, accessLevel }) => {
 
     if (!authorized) {
         // User is not authorized, redirect to the login page
-        return <Navigate to="/login" replace />;
+        if (userAccess === null) {
+            return <Navigate to="/login" replace />;
+        }
+        else if (userAccess === "clinic") {
+            return <> <Navigate to="/clinic" replace /> <Cdashboard /></>
+        } else if (userAccess === "patient") {
+            return <> <Navigate to="/patient" replace /> <Pdashboard /></>
+        } else if (userAccess === "locator") {
+            return <> <Navigate to="/locator" replace /> <Ldashboard /></>
+        }
     }
 
     return children;
@@ -70,40 +82,40 @@ const ProtectedRoute = ({ children, accessLevel }) => {
 const App = () => {
     return (
         <AuthProvider>
-        <div className="h-full w-full bg-green-50">
-            <Navbar />
-            <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/aboutus" element={<Information />} />
-                <Route path="/questions" element={<QA />} />
-                <Route path="/login" element={<Login />} />
+            <div className="h-full w-full bg-green-50">
+                <Navbar />
+                <Routes>
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/aboutus" element={<Information />} />
+                    <Route path="/questions" element={<QA />} />
+                    <Route path="/login" element={<Login />} />
 
-                <Route
-                    exact path="/clinic"
-                    element={
-                        <ProtectedRoute accessLevel="clinic">
-                            <Cdashboard />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    exact path="/patient"
-                    element={
-                        <ProtectedRoute accessLevel="patient">
-                            <Pdashboard />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    exact path="/locator"
-                    element={
-                        <ProtectedRoute accessLevel="locator">
-                            <Ldashboard />
-                        </ProtectedRoute>
-                    }
-                />
-            </Routes>
-        </div>
+                    <Route
+                        exact path="/clinic"
+                        element={
+                            <ProtectedRoute accessLevel="clinic">
+                                <Cdashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/patient"
+                        element={
+                            <ProtectedRoute accessLevel="patient">
+                                <Pdashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/locator"
+                        element={
+                            <ProtectedRoute accessLevel="locator">
+                                <Ldashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
+            </div>
         </AuthProvider>
     );
 };
