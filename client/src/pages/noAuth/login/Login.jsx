@@ -5,8 +5,13 @@ import { config, user } from "../../../firebase/Firebase";
 //  Routing
 import { useNavigate } from 'react-router-dom';
 
+// Context
+import { useContext } from 'react';
+import { AuthContext } from '../../../AuthContext';
+
 function Login() {
     const navigate = useNavigate();
+    const { setIsLoggedIn } = useContext(AuthContext);
     const authenticate = (event) => {
 
         event.preventDefault();
@@ -24,7 +29,8 @@ function Login() {
                 user.uid = userCredentials.user.uid
                 user.credentials = userCredentials
 
-
+                // Set isLoggedIn to true after successful login
+                setIsLoggedIn(true);
 
                 if (user.accountType === "clinic") {
                     navigate('/clinic');

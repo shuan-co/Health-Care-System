@@ -12,6 +12,7 @@ import Login from "./pages/noAuth/login/Login";
 import Cdashboard from "./pages/auth/clinic/Cdashboard";
 import Pdashboard from "./pages/auth/patient/Pdashboard";
 import Ldashboard from "./pages/auth/locators/Ldashboard";
+import { AuthProvider } from './AuthContext';
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -68,6 +69,7 @@ const ProtectedRoute = ({ children, accessLevel }) => {
 
 const App = () => {
     return (
+        <AuthProvider>
         <div className="h-full w-full bg-green-50">
             <Navbar />
             <Routes>
@@ -102,6 +104,7 @@ const App = () => {
                 />
             </Routes>
         </div>
+        </AuthProvider>
     );
 };
 
