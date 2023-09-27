@@ -21,8 +21,8 @@ export default function Navbar() {
   
   return (
     <header>
-        <div className='navbar top-0 left-0 right-0 bg-green-950 text-neutral-100 flex justify-between p-7'>
-            <Link to={'/'} className='ms-20'>
+        <div className='navbar relative top-0 left-0 right-0 bg-green-950 text-neutral-100 flex justify-between p-7'>
+            <Link to={'/'} className='ms-8'>
                 <h1 className='text-4xl arvo hover:text-green-300'>Health Center System</h1>
             </Link>
             <nav className='mt-2 flex justify-between text-2xl'>
