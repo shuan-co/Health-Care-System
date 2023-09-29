@@ -48,14 +48,18 @@ function Login() {
     return (
         <div id="loginPage" className="flex justify-center 
                                        items-center 
-                                       h-screen 
+                                       h-screen
+                                       w-screen 
                                        bg-green-50">
             <form action="" className="bg-green-950 
                                        h-max 
                                        lg:w-3/12
                                        sm:w-5/12
+                                       w-full
+                                       ms-4
+                                       me-4
                                        rounded-2xl 
-                                       place-items-center ">
+                                       place-items-center">
                 <input type="text"
                     id="email"
                     placeholder="Email"
