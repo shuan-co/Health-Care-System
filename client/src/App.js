@@ -14,11 +14,12 @@ import Pdashboard from "./pages/auth/patient/Pdashboard";
 import Ldashboard from "./pages/auth/locators/Ldashboard";
 import { AuthProvider } from './AuthContext';
 import Footer from "./pages/noAuth/components/Footer";
+import Test from "./pages/auth/patient/Test";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
-    const [userAccess, setUserAccess] = useState(null)
+    const [userAccess, setUserAccess] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(config.auth, (user) => {
@@ -112,6 +113,14 @@ const App = () => {
                         element={
                             <ProtectedRoute accessLevel="locator">
                                 <Ldashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/test"
+                        element={
+                            <ProtectedRoute accessLevel="patient">
+                                <Test />
                             </ProtectedRoute>
                         }
                     />
