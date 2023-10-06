@@ -14,6 +14,7 @@ import Pdashboard from "./pages/auth/patient/Pdashboard";
 import Ldashboard from "./pages/auth/locators/Ldashboard";
 import { AuthProvider } from './AuthContext';
 import Footer from "./pages/noAuth/components/Footer";
+import Pforms from "./pages/auth/patient/Pforms";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -90,6 +91,7 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/patientform" element={<Pforms />}/>
 
                     <Route
                         exact path="/clinic"
