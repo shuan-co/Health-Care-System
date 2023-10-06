@@ -92,7 +92,6 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/patientform" element={<Pforms />}/>
 
                     <Route
                         exact path="/clinic"
@@ -123,6 +122,14 @@ const App = () => {
                         element={
                             <ProtectedRoute accessLevel="patient">
                                 <Test />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route 
+                        exact path="/patientform" 
+                        element={
+                            <ProtectedRoute accessLevel="patient">
+                                <Pforms />
                             </ProtectedRoute>
                         }
                     />

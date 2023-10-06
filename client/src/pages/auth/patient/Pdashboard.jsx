@@ -7,6 +7,10 @@ function Pdashboard() {
         navigate("/test");
     };
 
+    const handleViewPatientForm = () => {
+        navigate("/patientform");
+    };
+
     return (
         <>
             <p style={{ fontSize: "30px" }}>Patient Logged In</p>
@@ -15,6 +19,13 @@ function Pdashboard() {
                 onClick={handleViewMedicalRecordsClick}
             >
                 View Medical Records
+            </button> <br />
+
+            <button
+                style={{ fontSize: "30px", color: "blue" }}
+                onClick={handleViewPatientForm}
+            >
+                View Patient Form
             </button>
         </>
     );
