@@ -39,4 +39,6 @@ export const user = {
     securityType: null
 }
 
+export const db = getFirestore(firebase)
+
 
