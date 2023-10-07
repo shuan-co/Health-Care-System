@@ -38,7 +38,7 @@ export default function Pforms(){
        const [chronicIllnesses, setChronicIllnesses] = useState([])
 
        // get information document of the patient
-       const patientInfoDocRef = doc(db, "patients", user.uid, user.uid, "information")
+       const patientInfoDocRef = doc(db, "Testing", 'patients', user.uid, "information")
 
        const onSubmitForm = async (e) => {
               e.preventDefault()
