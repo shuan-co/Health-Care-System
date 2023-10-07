@@ -38,7 +38,7 @@ export default function Pforms(){
        const [chronicIllnesses, setChronicIllnesses] = useState([])
 
        // get information document of the patient
-       const patientInfoDocRef = doc(db, "Testing", 'patients', user.uid, "information")
+       const patientInfoDocRef = doc(db, "Testing", 'Patients', user.uid, "information")
 
        const onSubmitForm = async (e) => {
               e.preventDefault()
@@ -61,8 +61,8 @@ export default function Pforms(){
                             relationshipToPatient: relationshipToPatient,
 
                             insuranceProvider: healthInsuranceProvider,
-                            policyNumber: policyNumber,
-                            groupNumber: groupNumber,
+                            insurancePolicyNumber: policyNumber,
+                            insuranceGroupNumber: groupNumber,
 
                             previousMedicalConditions: prevMedicalConditions,
                             surgeriesAndHospitalizations: surgeriesAndHospitalizations,
