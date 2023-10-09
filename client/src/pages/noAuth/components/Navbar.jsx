@@ -28,7 +28,7 @@ export default function Navbar() {
             <nav className='lg:mt-2 sm:mt-0 md:flex justify-between'>
               <div className='mx-10'>
                 <Link to={'/aboutus'} className='lato'>
-                  <p className='text-neutral-100 hover:text-green-300 xl:text-3xl lg:text-2xl md:text-xl sm:text-lg'>Information</p>
+                  <p className='text-neutral-100 hover:text-green-300 xl:text-2xl lg:text-xl md:text-lg sm:text-base'>Information</p>
                 </Link>
               </div>
 
