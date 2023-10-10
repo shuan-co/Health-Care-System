@@ -37,6 +37,19 @@ export default function Pforms(){
     const [surgeriesAndHospitalizations, setSurgeriesAndHospitalizations] = useState([])
     const [chronicIllnesses, setChronicIllnesses] = useState([])
 
+    // Current Medications
+    const [currentMedicationName, setCurrentMedicationName] = useState([])
+    const [dosages, setDosages] = useState([])
+    const [frequency, setFrequency] = useState([])
+
+    // Allergies
+    const [knownAllergies, setKnownAllergies] = useState([])
+    const [allergyType, setAllergyType] = useState([])
+
+    // Family Medical History
+    const [famMedicalHistory, setFamMedicalHistory] = useState([])
+
+
     // get information document of the patient
     const patientInfoDocRef = doc(db, "Testing", 'Patients', user.uid, "information")
 
@@ -66,7 +79,16 @@ export default function Pforms(){
 
                     previousMedicalConditions: prevMedicalConditions,
                     surgeriesAndHospitalizations: surgeriesAndHospitalizations,
-                    chronicIllnesses: chronicIllnesses
+                    chronicIllnesses: chronicIllnesses,
+
+                    currentMedicationName: currentMedicationName,
+                    dosages: dosages,
+                    frequency: frequency,
+
+                    knownAllergies: knownAllergies,
+                    allergyType: allergyType,
+
+                    famMedicalHistory: famMedicalHistory
 
                 })
         } catch (error) {
@@ -91,6 +113,30 @@ export default function Pforms(){
             setChronicIllnesses(event.target.value.split(" "))
     }
 
+    const handleCurrentMedicationName = (event) => {
+        setCurrentMedicationName(event.target.value.split(" "))
+    }
+
+    const handleDosages = (event) => {
+        setDosages(event.target.value.split(" "))
+    }
+
+    const handleFrequency = (event) => {
+        setFrequency(event.target.value.split(" "))
+    }
+
+    const handleAllergies = (event) => {
+        setKnownAllergies(event.target.value.split(" "))
+    }
+
+    const handleAllergyType = (event) => {
+        setAllergyType(event.target.value.split(" "))
+    }
+
+    const handleFamMedicalHistory = (event) => {
+        setFamMedicalHistory(event.target.value.split(" "))
+    }
+
     return (
         <form id='patientForm' className='bg-green-50 arvo'>
             <div className='mx-auto w-max h-max mt-10'>
@@ -113,7 +159,7 @@ export default function Pforms(){
                                 onChange={(e) => setMiddleName(e.target.value)}
                         />   
                     </div>
-                     
+                    
                     <div className='grid grid-cols-3'>
                         <label htmlFor='lastName' className='w-max'>Last name:</label>
                         <input id='lastName' 
@@ -233,7 +279,7 @@ export default function Pforms(){
                                 onChange={(e) => setPolicyNumber(e.target.value)}
                         />
                     </div>
-                   
+
                     <div className='mt-10'>
                         <label htmlFor='groupnumber' className='me-14'>Group Number:</label>
                         <input id='groupnumber' 
@@ -274,6 +320,75 @@ export default function Pforms(){
                                 rows={1}
                                 cols={53}
                                 onChange={handleChronicIllnessesChange}
+                        />
+                    </div>
+                </div>
+
+                <h1 className='text-3xl mt-10'>Current Medication</h1>
+                <div className='text-2xl mt-10 ms-32'>
+                    <div className='mt-10'>
+                        <label htmlFor='currentMedicationName' className='me-10'>Current Medication Names:</label>
+                        <textarea id='currentMedicationName' 
+                                className='bg-gray-300'
+                                rows={1}
+                                cols={53}
+                                onChange={handleCurrentMedicationName}
+                        />
+                    </div>
+                    
+                    <div className='mt-10'>
+                        <label htmlFor='dosages' className='me-10'>Dosages:</label>
+                        <textarea id='dosages' 
+                                className='bg-gray-300'
+                                rows={1}
+                                cols={70}
+                                onChange={handleDosages}
+                        />
+                    </div>
+                    
+                    <div className='mt-10'>
+                        <label htmlFor='frequnecy' className='me-10'>Frequency of Dosages:</label>
+                        <textarea id='frequency' 
+                                className='bg-gray-300 ms-3'
+                                rows={1}
+                                cols={57}
+                                onChange={handleFrequency}
+                        />
+                    </div>
+                </div>
+
+                <h1 className='text-3xl mt-10'>Allergies</h1>
+                <div className='text-2xl mt-10 ms-32'>
+                    <div className='mt-10'>
+                        <label htmlFor='knownAllergies' className='me-10'>Known Allergies:</label>
+                        <textarea id='knownAllergies' 
+                                className='bg-gray-300'
+                                rows={1}
+                                cols={53}
+                                onChange={handleAllergies}
+                        />
+                    </div>
+                    
+                    <div className='mt-10'>
+                        <label htmlFor='allergyType' className='me-14'>Type of Allergy:</label>
+                        <textarea id='allergyType' 
+                                className='bg-gray-300'
+                                rows={1}
+                                cols={53}
+                                onChange={handleAllergyType}
+                        />
+                    </div>
+                </div>
+
+                <h1 className='text-3xl mt-10'>Family Medical History</h1>
+                <div className='text-2xl mt-10 ms-32'>
+                    <div className='mt-10'>
+                        <label htmlFor='famMedicalHistory' className='me-5'>Family History of Medical Conditions/Diseases:</label>
+                        <textarea id='famMedicalHistory' 
+                                className='bg-gray-300'
+                                rows={1}
+                                cols={37}
+                                onChange={handleFamMedicalHistory}
                         />
                     </div>
                 </div>
