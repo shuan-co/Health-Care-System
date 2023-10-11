@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 // Components
 import Navbar from "./pages/noAuth/components/Navbar";
+import NavPatient from "./pages/auth/patient/components/NavPatient";
 import Landing from "./pages/noAuth/landing/Landing";
 import Information from "./pages/noAuth/information/Information";
 import QA from "./pages/noAuth/qa/QA";
@@ -86,7 +87,7 @@ const ProtectedRoute = ({ children, accessLevel }) => {
 const App = () => {
     return (
         <AuthProvider>
-            <div className="h-max w-screen bg-green-50">
+            <div className="h-max w-screen bg-green-50" style={{ overflow: 'hidden', height: '100vh' }}>
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<Landing />} />
@@ -134,8 +135,8 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
-                    <Route 
-                        exact path="/patientform" 
+                    <Route
+                        exact path="/patientform"
                         element={
                             <ProtectedRoute accessLevel="patient">
                                 <Pforms />
