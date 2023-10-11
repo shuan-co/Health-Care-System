@@ -3,14 +3,25 @@ import { config } from "../../../firebase/Firebase";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
-function ClinicTest({ clinicName }) {
+function ClinicTest() {
+    const [clinicName, setClinicName] = useState('');
     const [clinicData, setClinicData] = useState(null);
     const [personList, setPersonList] = useState([]);
-    const [displayType, setDisplayType] = useState('patient'); // 'patient' or 'staff'
+    const [displayType, setDisplayType] = useState('patient');
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(config.auth, (user) => {
+            if (user) {
+                setClinicName(user.uid);
+            } else {
+                setClinicName('');
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
-            // Get Clinic Information
             const clinicRef = collection(config.firestore, "Testing", "Clinics", clinicName);
             const clinicSnap = await getDocs(clinicRef);
 
@@ -19,8 +30,6 @@ function ClinicTest({ clinicName }) {
             } else {
                 console.log("No such document!");
             }
-
-            // Get list of persons in the clinic
             const personsCollectionRef = collection(config.firestore, "Testing", "Clinics", clinicName);
             const personsSnapshot = await getDocs(personsCollectionRef);
             
@@ -34,18 +43,20 @@ function ClinicTest({ clinicName }) {
             setPersonList(persons);
         };
 
-        fetchData();
+        if (clinicName) {
+            fetchData();
+        }
     }, [clinicName, displayType]);
 
     return (
-        <>
+        <div className="p-4">
             {clinicData ? (
                 <>
                     <p className="text-2xl font-bold mb-4">Clinic Name: {clinicData.name}</p>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2" onClick={() => setDisplayType('patient')}>Show Patients</button>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setDisplayType('staff')}>Show Staff</button>
                     <p className="text-xl font-bold mt-4 mb-2">List of {displayType.charAt(0).toUpperCase() + displayType.slice(1)}:</p>
-                    <ul>
+                    <ul className="list-disc pl-5">
                         {personList.map((person) => (
                             <li key={person.id} className="mb-1">{person.name}</li>
                         ))}
@@ -54,7 +65,7 @@ function ClinicTest({ clinicName }) {
             ) : (
                 <p>Loading clinic data...</p>
             )}
-        </>
+        </div>
     );
 }
 
