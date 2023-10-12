@@ -1,53 +1,154 @@
 import './information.css'
+import { Fragment, useRef, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+
+const links = [
+    { name: 'Open roles', href: '#' },
+    { name: 'Internship program', href: '#' },
+    { name: 'Our values', href: '#' },
+    { name: 'Meet our leadership', href: '#' },
+]
+const stats = [
+    { name: 'Offices worldwide', value: '12' },
+    { name: 'Full-time colleagues', value: '300+' },
+    { name: 'Hours per week', value: '40' },
+    { name: 'Paid time off', value: 'Unlimited' },
+]
+
 
 function Information() {
+    const [open, setOpen] = useState(false)
+    const [pressed, setPressed] = useState(null)
+
+    const cancelButtonRef = useRef(null)
+
     return (
-        <div className='w-screen h-max bg-green-50'>
+        <>
+            <Transition.Root show={open && pressed === "inv"} as={Fragment}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
 
-            <h1 className='text-slate-800 text-4xl mt-10 ms-16 font-bold'>Healthcare Logistics and Inventory Management App</h1>
-            <p className='ms-16 mt-10 text-xl me-16 text-slate-800'>Welcome to the Healthcare Logistics and Inventory Management App, a revolutionary solution designed to empower
-                medical professionals, staff, and patients while enhancing the efficiency and effectiveness of healthcare departments
-                in economic zones.</p>
+                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                            >
+                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                        <div className="sm:flex sm:items-start">
+                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                                            </div>
+                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                                <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                                                    Deactivate account
+                                                </Dialog.Title>
+                                                <div className="mt-2">
+                                                    <p className="text-sm text-gray-500">
+                                                        Are you sure you want to deactivate your account? All of your data will be permanently
+                                                        removed. This action cannot be undone.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                        <button
+                                            type="button"
+                                            className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                            onClick={() => setOpen(false)}
+                                        >
+                                            Deactivate
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                            onClick={() => setOpen(false)}
+                                            ref={cancelButtonRef}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition.Root>
 
-            <h3 className='text-slate-800 text-3xl mt-10 ms-16 font-medium'>Introduction</h3>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>The Healthcare Logistics and Inventory Management App is a cutting-edge platform tailored for healthcare professionals, staff, and patients in economic zones.
-                Our mission is to streamline operations, optimize resource management, and enhance the quality of care by leveraging automation and predictive models.
-                This app is a one-stop solution for healthcare professionals and patients alike, bridging the gap between administrative tasks and delivering top-notch medical services.</p>
+            <div className="relative isolate overflow-hidden py-24 sm:py-32" style={{ height: "100vh", backgroundColor: "#F7FFF6" }}>
 
-            <h3 className='text-slate-800 text-3xl mt-10 ms-16 font-medium'>Key Features</h3>
-            <h4 className='text-slate-800 text-2xl mt-10 ms-16 italic'>Inventory Management</h4>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>Real-time Inventory Tracking: Gain full visibility into your medical inventory. Monitor stock levels, expiration dates, and reorder points in real-time,
-                ensuring you never run out of critical supplies.Automated Reordering: The app uses predictive models to automate the reordering process, reducing the risk of stockouts and overstocking.</p>
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div
+                        className="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
+                        aria-hidden="true"
+                    >
+                        <div
+                            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#008000] to-[#00FF00] opacity-20"
+                            style={{
+                                clipPath:
+                                    'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                            }}
+                        />
+                    </div>
+                    <div
+                        className="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
+                        aria-hidden="true"
+                    >
+                        <div
+                            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#008000] to-[#00FF00] opacity-20"
+                            style={{
+                                clipPath:
+                                    'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                            }}
+                        />
+                    </div>
 
-            <h4 className='text-slate-800 text-2xl mt-10 ms-16 italic'>Logistics and Distribution</h4>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>Efficient Distribution: Simplify the distribution of medical supplies across different departments within the economic zone, ensuring timely access to critical resources.
-                Route Optimization: Smart routing algorithms help you minimize transportation costs while ensuring on-time delivery.</p>
-
-
-            <h4 className='text-slate-800 text-2xl mt-10 ms-16 italic'>Directory and Referral System</h4>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>Comprehensive Directory: Access a vast directory of healthcare professionals, facilities, and services within the economic zone, making it easy to find and refer patients to the right specialists. Referral Tracking: Easily track patient referrals and improve care coordination between healthcare providers.</p>
-
-            <h3 className='text-slate-800 text-3xl mt-10 ms-16 font-medium'>How it Works</h3>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>The app employs user-friendly interfaces for both healthcare professionals and patients, enabling efficient navigation and seamless interaction. By integrating data from various healthcare departments, the app offers insights into inventory levels, logistics, and the directory/referral system.</p>
-
-            <h3 className='text-slate-800 text-3xl mt-10 ms-16 font-medium'>Getting Started</h3>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>Getting started with the Healthcare Logistics and Inventory Management App is easy. Simply
-                login into your account and navigate the app using the navigation bar above for your intended use of the app. For example, you intend to record
-                a medical data of a patient as a clinic staff, simply login to your account and navigate to view forms page.</p>
-
-            <h3 className='text-slate-800 text-3xl mt-10 ms-16 font-medium'>Contact and Support</h3>
-            <p className='ms-24 mt-5 text-xl me-16 text-slate-800'>For any inquiries, technical support, or feedback, please send us a message below.
-                We are here to ensure you have a smooth and successful experience with our app. Thank you for choosing the Healthcare Logistics and Inventory Management App. We look forward to enhancing
-                your healthcare operations and improving patient care in economic zones.</p>
-
-            <div className="mt-10 mb-10 xl:w-7/12 xl:h-1/4 sm:left-0 sm:w-auto sm:h-auto rounded-2xl bg-green-950 p-4 lg:p-7 md:p-5 sm:p-4 mx-4 relative top-2/4 md:left-16">
-                <p className='sans-serif text-neutral-100 lg:text-2xl text-xl mt-1 font-medium'>Send us a message!</p>
-                <form id='contactUs' method='' className='relative'>
-                    <textarea className='w-full lg:h-20 md:h-28 h-48 rounded-xl mt-3 bg-green-50 border-0 p-3'></textarea>
-                    <button type='submit' className='w-24 h-10 font-medium relative rounded-2xl bg-green-300 hover:bg-green-500 mt-2'>Submit</button>
-                </form>
+                    <div className="mx-auto max-w-2xl lg:mx-0">
+                        <h2 className="text-4xl font-bold tracking-tight text-black sm:text-5xl font-bold">Healthcare Logistics and Inventory Management App</h2>
+                        <p className="mt-6 text-lg leading-8 text-green-900 font-semibold">
+                            Welcome to the Healthcare Logistics and Inventory Management App, a revolutionary solution designed to empower
+                            medical professionals, staff, and patients while enhancing the efficiency and effectiveness of healthcare departments
+                            in economic zones.
+                        </p>
+                    </div>
+                    <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+                        <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-black sm:grid-cols-2 md:flex lg:gap-x-10">
+                            {links.map((link) => (
+                                <a key={link.name} href={link.href}>
+                                    {link.name} <span aria-hidden="true">&rarr;</span>
+                                </a>
+                            ))}
+                        </div>
+                        <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
+                            {stats.map((stat) => (
+                                <div key={stat.name} className="flex flex-col-reverse">
+                                    <dt className="text-base leading-7 text-green-900">{stat.name}</dt>
+                                    <dd className="text-2xl font-bold leading-9 tracking-tight text-black">{stat.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 export default Information;
