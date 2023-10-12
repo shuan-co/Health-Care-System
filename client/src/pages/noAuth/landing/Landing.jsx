@@ -6,12 +6,13 @@ function CarouselCustomArrows() {
   return (
     <Carousel
       className="rounded-xl"
-      prevArrow={({ handlePrev }) => (
+      prevArrow={({ handlePrev, firstIndex }) => (
         <IconButton
           variant="text"
           color="white"
           size="lg"
           onClick={handlePrev}
+          disabled={firstIndex}
           className="!absolute top-2/4 left-4 -translate-y-2/4"
         >
           <svg
@@ -30,12 +31,13 @@ function CarouselCustomArrows() {
           </svg>
         </IconButton>
       )}
-      nextArrow={({ handleNext }) => (
+      nextArrow={({ handleNext, lastIndex }) => (
         <IconButton
           variant="text"
           color="white"
           size="lg"
           onClick={handleNext}
+          disabled={lastIndex}
           className="!absolute top-2/4 !right-4 -translate-y-2/4"
         >
           <svg
@@ -56,19 +58,19 @@ function CarouselCustomArrows() {
       )}
     >
       <img
-        src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+        src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
         alt="image 1"
-        className="h-full w-full object-cover"
+        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '1' }} // Adjust the height here
       />
       <img
-        src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
+        src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
         alt="image 2"
-        className="h-full w-full object-cover"
+        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '0' }} // Adjust the height here
       />
       <img
-        src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
+        src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
         alt="image 3"
-        className="h-full w-full object-cover"
+        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '0' }} // Adjust the height here
       />
     </Carousel>
   );
