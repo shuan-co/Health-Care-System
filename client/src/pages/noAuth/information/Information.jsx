@@ -1,8 +1,10 @@
 import './information.css'
 import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Switch } from '@headlessui/react'
+
+import emailjs from 'emailjs-com';
+
 
 
 const links = [
@@ -31,10 +33,51 @@ function classNames(...classes) {
 
 
 function Information() {
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        message: '',
+    });
+
     const [open, setOpen] = useState(false)
     const [pressed, setPressed] = useState(null)
     const [agreed, setAgreed] = useState(false)
     const cancelButtonRef = useRef(null)
+
+    // Emailer
+    const sendEmail = (e) => {
+        e.preventDefault();
+        emailjs
+            .send(
+                'service_t8pkk4o',
+                'template_gnnev9q',
+                formData,
+                'guzJ5EN-eKEHV_0jW'
+            )
+            .then(
+                (result) => {
+                    console.log('Email sent:', result.text);
+                    alert('Email sent successfully!');
+                },
+                (error) => {
+                    console.error('Email error:', error.text);
+                    alert('Failed to send email.');
+                }
+            );
+    };
+
+    // Update the formData state as the user interacts with the form fields
+    const handleInputChange = (e) => {
+        const { name, value, type } = e.target;
+
+        if (type !== 'checkbox') {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
+    };
 
     return (
         <>
@@ -396,12 +439,12 @@ function Information() {
                                             />
                                         </div>
                                         <div className="mx-auto max-w-2xl text-center">
-                                            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Contact sales</h2>
+                                            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Contact Us!</h2>
                                             <p className="mt-2 text-lg leading-8 text-gray-600">
-                                                Aute magna irure deserunt veniam aliqua magna enim voluptate.
+                                                Do you have any questions or feedback for us?
                                             </p>
                                         </div>
-                                        <form action="#" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
+                                        <form onSubmit={sendEmail} className="mx-auto mt-16 max-w-xl sm:mt-20">
                                             <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                                                 <div>
                                                     <label htmlFor="first-name" className="block text-sm font-semibold leading-6 text-gray-900">
@@ -410,24 +453,28 @@ function Information() {
                                                     <div className="mt-2.5">
                                                         <input
                                                             type="text"
-                                                            name="first-name"
+                                                            name="firstName"
                                                             id="first-name"
                                                             autoComplete="given-name"
                                                             className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                            value={formData.firstName}
+                                                            onChange={handleInputChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label htmlFor="last-name" className="block text-sm font-semibold leading-6 text-gray-900">
+                                                    <label htmlFor="lastName" className="block text-sm font-semibold leading-6 text-gray-900">
                                                         Last name
                                                     </label>
                                                     <div className="mt-2.5">
                                                         <input
                                                             type="text"
-                                                            name="last-name"
-                                                            id="last-name"
+                                                            name="lastName"
+                                                            id="lastName"
                                                             autoComplete="family-name"
                                                             className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                            value={formData.lastName}
+                                                            onChange={handleInputChange}
                                                         />
                                                     </div>
                                                 </div>
@@ -442,6 +489,8 @@ function Information() {
                                                             id="email"
                                                             autoComplete="email"
                                                             className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                                            value={formData.email}
+                                                            onChange={handleInputChange}
                                                         />
                                                     </div>
                                                 </div>
@@ -457,6 +506,8 @@ function Information() {
                                                             rows={4}
                                                             className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                                             defaultValue={''}
+                                                            value={formData.message}
+                                                            onChange={handleInputChange}
                                                         />
                                                     </div>
                                                 </div>
