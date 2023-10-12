@@ -16,12 +16,12 @@ function QA() {
     return (
         <div className="w-screen h-max bg-green-50 p-10">
             <h1 className='text-slate-800 text-4xl mb-10 font-bold'>Frequently Asked Questions</h1>
-            
+
             <div className='space-y-8'>
                 {questions.map((question, i) => (
                     <div key={i} className={`accordion-item ${openIndex === i ? 'active' : ''}`}>
-                        <div 
-                            className='accordion-header text-white text-3xl cursor-pointer bg-green-950 p-7 flex justify-between items-center' 
+                        <div
+                            className='accordion-header text-white text-3xl cursor-pointer bg-green-950 p-7 flex justify-between items-center'
                             onClick={() => setOpenIndex(openIndex === i ? null : i)}
                         >
                             {question.title}
