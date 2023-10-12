@@ -21,10 +21,10 @@ const links2 = [
 
 
 const stats = [
-    { name: 'Companies', value: '12' },
-    { name: 'Full-time colleagues', value: '300+' },
-    { name: 'Hours per week', value: '40' },
-    { name: 'Paid time off', value: 'Unlimited' },
+    { name: 'Clinics', value: '+12' },
+    { name: 'Doctors', value: '300+' },
+    { name: 'Trusted By', value: '40' },
+    { name: 'Scalability', value: 'High' },
 ]
 
 function classNames(...classes) {

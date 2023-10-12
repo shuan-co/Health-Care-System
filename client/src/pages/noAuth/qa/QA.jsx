@@ -46,6 +46,7 @@ function QA() {
 
     return (
         <div className="w-screen h-max bg-green-50 p-10 pb-50">
+
             <h1 className='text-slate-800 text-4xl mb-10 font-bold'>Frequently Asked Questions</h1>
 
             <div className='space-y-8'>
@@ -64,6 +65,7 @@ function QA() {
                     </div>
                 ))}
             </div>
+
         </div>
     );
 }
