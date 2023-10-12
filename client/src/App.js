@@ -12,6 +12,7 @@ import QA from "./pages/noAuth/qa/QA";
 import Login from "./pages/noAuth/login/Login";
 import Cdashboard from "./pages/auth/clinic/Cdashboard";
 import ClinicTest from './pages/auth/clinic/ClinicTest';
+import ClinicInformation from './pages/auth/clinic/ClinicInformation';
 import Pdashboard from "./pages/auth/patient/Pdashboard";
 import Ldashboard from "./pages/auth/locators/Ldashboard";
 import { AuthProvider } from './AuthContext';
@@ -108,6 +109,14 @@ const App = () => {
                         element={
                             <ProtectedRoute accessLevel="clinic">
                                 <ClinicTest />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/clinicinformation"
+                        element={
+                            <ProtectedRoute accessLevel="clinic">
+                                <ClinicInformation />
                             </ProtectedRoute>
                         }
                     />

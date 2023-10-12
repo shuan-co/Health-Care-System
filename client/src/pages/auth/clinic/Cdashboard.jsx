@@ -16,11 +16,11 @@ function Cdashboard() {
     const navigate = useNavigate();
 
     const handleViewMedicalRecordsClick = () => {
-        navigate("/clinictest");
+        navigate("/clinicinformation");
     };
 
     const handleViewPatientForm = () => {
-        navigate("/patientform");
+        navigate("/clinictest");
     };
 
     useEffect(() => {
@@ -45,7 +45,7 @@ function Cdashboard() {
 
                         </div>
                         <br />
-                        <span class="ml-3 text-green-900 text-2xl text-center font-semibold">Personal & Medical <br /> Information</span>
+                        <span class="ml-3 text-green-900 text-2xl text-center font-semibold">Clinic<br /> Information</span>
                     </div>
 
                     <div onClick={handleViewPatientForm} className='Cdashboard-Card-BoxShadow' style={{ border: "2px solid #31493C", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginLeft: "8vh" }}>
@@ -53,7 +53,7 @@ function Cdashboard() {
 
                         </div>
                         <br />
-                        <span class="ml-3 text-green-900 text-2xl text-center font-semibold">Record Diagnosis & <br></br>Findings Data</span>
+                        <span class="ml-3 text-green-900 text-2xl text-center font-semibold">Clinic Patient Information & <br></br>Findings Data</span>
                     </div>
                 </div>
 
