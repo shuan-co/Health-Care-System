@@ -1,0 +1,7 @@
+body {
+    font-family: "Inter", sans-serif;
+  }
+  
+  .accordion-item.active .accordion-icon {
+    transform: rotate(90deg);
+  }
