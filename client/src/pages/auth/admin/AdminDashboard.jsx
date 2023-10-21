@@ -11,8 +11,9 @@ function AdminDashboard() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
-        email: '',
+        emailFormatted: '',
         password: '',
+        clinicName: '',
     });
 
     function formatEmail(email) {
@@ -28,34 +29,30 @@ function AdminDashboard() {
     async function initializeClinic(e) {
         e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const firstName = formData.get('first-name');
-        const lastName = formData.get('last-name');
-        const email = formData.get('email');
-        const password = formData.get('password');
-        const clinicName = formData.get('clinicName');
-
+        const firstName = e.target['first-name'].value;
+        const lastName = e.target['last-name'].value;
+        const email = e.target['email'].value;
+        const password = e.target['password'].value;
+        const clinicName = e.target['clinicName'].value;
+        var emailFormatted = formatEmail(email);
         // Add a new document in collection "cities"
-        try {
-            await setDoc(doc(config.firestore, "LA", "admin"), {
-                name: firstName + " " + lastName,
-                email: email
-            });
-        } catch (error) {
-            console.error("Error initializing clinic:", error);
-        }
-        
-
+        await setDoc(doc(config.firestore, "cities", "LA"), {
+            name: firstName + " " + lastName,
+            email: email
+        });
         // Update the formData state
         setFormData({
+            ...formData,
             firstName,
             lastName,
-            email,
+            emailFormatted,
             password,
+            clinicName,
         });
-
+        console.log(emailFormatted);
+        console.log(formData);
         // CREATE USER
-        createUserWithEmailAndPassword(config.auth, formatEmail(email), password)
+        createUserWithEmailAndPassword(config.auth, emailFormatted, password)
             .then((userCredential) => {
                 // Signed up 
                 const user = userCredential.user;
@@ -67,6 +64,7 @@ function AdminDashboard() {
                 // ..
             });
 
+        //  EMAIL CREDENTIALS
         emailjs
             .send(
                 'service_t8pkk4o',
