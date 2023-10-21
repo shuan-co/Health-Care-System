@@ -1,10 +1,19 @@
 import { config } from "../../../firebase/Firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import RequiredAsterisk from "./components/asterisk";
 import emailjs from 'emailjs-com';
+import { useState } from "react";
 
 function AdminDashboard() {
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+    });
 
     function formatEmail(email) {
         // Split the email address into the local part and the domain part
@@ -30,37 +39,44 @@ function AdminDashboard() {
             email: email
         });
 
-        // // CREATE USER
-        // createUserWithEmailAndPassword(auth, email, password)
-        //     .then((userCredential) => {
-        //         // Signed up 
-        //         const user = userCredential.user;
-        //         // ...
-        //     })
-        //     .catch((error) => {
-        //         const errorCode = error.code;
-        //         const errorMessage = error.message;
-        //         // ..
-        //     });
+        // Update the formData state
+        setFormData({
+            firstName,
+            lastName,
+            email,
+            password,
+        });
 
-        // // TODO: EMAIL
-        // emailjs
-        //     .send(
-        //         'service_t8pkk4o',
-        //         'template_gnnev9q',
-        //         formData,
-        //         'guzJ5EN-eKEHV_0jW'
-        //     )
-        //     .then(
-        //         (result) => {
-        //             console.log('Email sent:', result.text);
-        //             alert('Email sent successfully!');
-        //         },
-        //         (error) => {
-        //             console.error('Email error:', error.text);
-        //             alert('Failed to send email.');
-        //         }
-        //     );
+        // CREATE USER
+        createUserWithEmailAndPassword(config.auth, formatEmail(email), password)
+            .then((userCredential) => {
+                // Signed up 
+                const user = userCredential.user;
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ..
+            });
+
+        emailjs
+            .send(
+                'service_t8pkk4o',
+                'template_x65vfmj',
+                formData,
+                'guzJ5EN-eKEHV_0jW'
+            )
+            .then(
+                (result) => {
+                    console.log('Email sent:', result.text);
+                    alert('Email sent successfully!');
+                },
+                (error) => {
+                    console.error('Email error:', error.text);
+                    alert('Failed to send email.');
+                }
+            );
     }
 
     return (
@@ -121,7 +137,7 @@ function AdminDashboard() {
 
                     <div className="sm:col-span-3">
                         <label htmlFor="clinicName" className="block text-sm font-medium leading-6 text-gray-900">
-                            Email <RequiredAsterisk />
+                            Clinic Name <RequiredAsterisk />
                         </label>
                         <div className="mt-2">
                             <input
