@@ -3,409 +3,373 @@ import { useState } from 'react';
 import { db } from '../../../firebase/Firebase'
 import { setDoc, doc } from 'firebase/firestore'
 import { user } from '../../../firebase/Firebase';
+// import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 
-export default function Pforms(){
-    // clinic
-    const [clinic, setClinic] = useState("")
+// Form Components
+import RequiredAsterisk from './components/asterisk';
+import Vaccination from './components/Vaccination';
+import PersonalMedicalHistory from './components/PersonalMedicalHistory';
+import FamilyHistory from './components/FamilyHistory';
 
-    // patient name
-    const [firstName, setFirstName] = useState("");
-    const [middleName, setMiddleName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [suffix, setSuffix] = useState("")
-
-    // birthdate and sex
-    const [birthDate, setBirthDate] = useState("")
-    const [sex, setSex] = useState("")
-
-    // contact information
-    const [addressLine, setAddress] = useState("")
+export default function Pforms() {
+    // personal information
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [email, setEmail] = useState("")
     const [phoneNumber, setPhoneNumber] = useState(0)
+    const [addressLine, setAddress] = useState("")
+    const [sex, setSex] = useState("")
+    const [bloodType, setBloodType] = useState("")
+    const [emergencyContact, setEmergencyContact] = useState("")
+    const [emergencyContactNumber, setEmergencyContactNumber] = useState("")
+    const [allergies, setAllergies] = useState([])
 
-    // emergency contact information
-    const [emergencyContactName, setEmergencyContactName] = useState("")
-    const [emergencyContactNumber, setEmergencyContactNumber] = useState(0)
-    const [relationshipToPatient, setRelationshipToPatient] = useState("")
+    // family history
+    const [relativeName, setRelativeName] = useState("")
+    const [relationshipWithRelative, setRelationshipWithRelative] = useState("")
+    const [relativeCondition, setRelativeCondition] = useState("")
+    const [relativeMedications, setRelativeMedications] = useState("")
 
-    // insurance information
-    const [healthInsuranceProvider, setHealthInsuranceProvider] = useState("")
-    const [policyNumber, setPolicyNumber] = useState(0)
-    const [groupNumber, setGroupNumber] = useState(0)
+    // vaccination
+    const [vaccineType, setVaccineType] = useState("");
+    const [vaccineBrand, setVaccineBrand] = useState("");
+    const [vaccinationDate, setVaccinationDate] = useState("");
+    const [vaccineRemarks, setVaccineRemarks] = useState("");
 
-    // medical history
-    const [prevMedicalConditions, setPrevMedicalConditions] = useState([])
-    const [surgeriesAndHospitalizations, setSurgeriesAndHospitalizations] = useState([])
-    const [chronicIllnesses, setChronicIllnesses] = useState([])
-
-    // Current Medications
-    const [currentMedicationName, setCurrentMedicationName] = useState([])
-    const [dosages, setDosages] = useState([])
-    const [frequency, setFrequency] = useState([])
-
-    // Allergies
-    const [knownAllergies, setKnownAllergies] = useState([])
-    const [allergyType, setAllergyType] = useState([])
-
-    // Family Medical History
-    const [famMedicalHistory, setFamMedicalHistory] = useState([])
-
+    // personal medical history
+    const [historyType, setHistoryType] = useState("")
+    const [historyDate, setHistoryDate] = useState("")
+    const [historyRemarks, setHistoryRemarks] = useState("")
 
     // get information document of the patient
     const patientInfoDocRef = doc(db, "Testing", 'Patients', user.uid, "information")
 
     const onSubmitForm = async (e) => {
         e.preventDefault()
-
         try {
-                await setDoc(patientInfoDocRef, {
-                    firstName: firstName,
-                    middleName: middleName,
-                    lastName: lastName,
-                    suffix: suffix,
+            await setDoc(patientInfoDocRef, {
+                // personal information
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber,
+                addressLine: addressLine,
+                sex: sex,
+                bloodType: bloodType,
+                emergencyContact: emergencyContact,
+                emergencyContactNumber: emergencyContactNumber,
+                allergies: allergies,
 
-                    birthDate: birthDate,
-                    sex: sex,
+                // family history
+                relativeName: relativeName,
+                relationshipWithRelative: relationshipWithRelative,
+                relativeCondition: relativeCondition,
+                relativeMedications: relativeMedications,
 
-                    addressLine: addressLine,
-                    phoneNumber: phoneNumber,
+                // vaccination
+                vaccineType: vaccineType,
+                vaccineBrand: vaccineBrand,
+                vaccinationDate: vaccinationDate,
+                vaccineRemarks: vaccineRemarks,
 
-                    contactPerson: emergencyContactName,
-                    contactPhoneNumber: emergencyContactNumber,
-                    relationshipToPatient: relationshipToPatient,
-
-                    insuranceProvider: healthInsuranceProvider,
-                    insurancePolicyNumber: policyNumber,
-                    insuranceGroupNumber: groupNumber,
-
-                    previousMedicalConditions: prevMedicalConditions,
-                    surgeriesAndHospitalizations: surgeriesAndHospitalizations,
-                    chronicIllnesses: chronicIllnesses,
-
-                    currentMedicationName: currentMedicationName,
-                    dosages: dosages,
-                    frequency: frequency,
-
-                    knownAllergies: knownAllergies,
-                    allergyType: allergyType,
-
-                    famMedicalHistory: famMedicalHistory
-
-                })
+                // personal medical history
+                historyType: historyType,
+                historyDate: historyDate,
+                historyRemarks: historyRemarks
+            })
         } catch (error) {
-                console.log(error)
+            console.log(error)
         }
 
     }
 
+
     const handleSexChange = (event) => {
-            setSex(event.target.value)
+        setSex(event.target.value)
     }
 
-    const handleMedicalConditonChange = (event) => {
-            setPrevMedicalConditions(event.target.value.split(" "))
+    const clearForm = () => {
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setPhoneNumber(0);
+        setAddress("");
+        setSex("");
+        setBloodType("");
+        setEmergencyContact("");
+        setEmergencyContactNumber("");
+        setAllergies("");
+
+        setRelativeName("");
+        setRelationshipWithRelative("");
+        setRelativeCondition("");
+        setRelativeMedications("");
+
+        setVaccineType("");
+        setVaccineBrand("");
+        setVaccinationDate("");
+        setVaccineRemarks("");
+
+        setHistoryType("");
+        setHistoryDate("");
+        setHistoryRemarks("");
     }
 
-    const handleSurgeriesAndHospChange = (event) => {
-            setSurgeriesAndHospitalizations(event.target.value.split(" "))
-    }
-
-    const handleChronicIllnessesChange = (event) => {
-            setChronicIllnesses(event.target.value.split(" "))
-    }
-
-    const handleCurrentMedicationName = (event) => {
-        setCurrentMedicationName(event.target.value.split(" "))
-    }
-
-    const handleDosages = (event) => {
-        setDosages(event.target.value.split(" "))
-    }
-
-    const handleFrequency = (event) => {
-        setFrequency(event.target.value.split(" "))
-    }
-
-    const handleAllergies = (event) => {
-        setKnownAllergies(event.target.value.split(" "))
-    }
-
-    const handleAllergyType = (event) => {
-        setAllergyType(event.target.value.split(" "))
-    }
-
-    const handleFamMedicalHistory = (event) => {
-        setFamMedicalHistory(event.target.value.split(" "))
+    const handleAllergiesChange = (event) => {
+        setAllergies(event.target.value.split(" "))
     }
 
     return (
-        <form id='patientForm' className='bg-green-50 arvo'>
-            <div className='mx-auto w-max h-max mt-10'>
-                <h1 className='text-3xl mb-2'>General Information</h1>
-                <div className='text-2xl ms-32 grid grid-cols-2 mt-10 gap-x-20 gap-y-10'>
-                    <div className='grid grid-cols-3'>
-                        <label htmlFor='firstName' className='w-max'>First name:</label>
-                        <input id='firstName'
-                                type='text'
-                                className='bg-gray-300 w-64 col-span-2'
-                                onChange={(e) => setFirstName(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className='grid grid-cols-3'>
-                        <label htmlFor='middleName' className='w-max me-5'>Middle name:</label>
-                        <input id='middleName' 
-                                type='text'
-                                className='bg-gray-300 w-64 col-span-2'
-                                onChange={(e) => setMiddleName(e.target.value)}
-                        />   
-                    </div>
-                    
-                    <div className='grid grid-cols-3'>
-                        <label htmlFor='lastName' className='w-max'>Last name:</label>
-                        <input id='lastName' 
-                                type='text'
-                                className='bg-gray-300 w-64 col-span-2'
-                                onChange={(e) => setLastName(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className='grid grid-cols-3'>
-                        <label htmlFor='suffix' className='w-max'>Suffix:</label>
-                        <input id='suffix' 
-                                type='text'
-                                className='bg-gray-300 w-64 col-span-2'
-                                onChange={(e) => setSuffix(e.target.value)}
-                        />         
-                    </div>
-                </div>
-                
-                <div className='text-2xl ms-32 mt-10'>
-                    <div className=''>
-                        <label htmlFor='dateOfBirth' className='me-12'>Date of Birth:</label>
-                        <input id='dateOfBirth' 
-                                type='date'
-                                className='w-36 text-lg bg-gray-300'
-                                onChange={(e) => setBirthDate(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <p className='inline me-5'>Sex:</p>
-                        <input id='male' 
-                                name='sex' 
-                                type='radio' 
-                                value='Male'
-                                className='me-4'
-                                onChange={handleSexChange}
-                        />
-                        <label htmlFor='male' className='me-5 text-xl'>Male</label>
-                        <input id='female' 
-                                name='sex' 
-                                type='radio' 
-                                value='Female'
-                                className='me-4'    
-                                onChange={handleSexChange}
-                        />
-                        <label for='female' className='text-xl'>Female</label>
-                    </div>
+        <form className='mx-96 mt-20' name='patientForm'>
+            <asterisk />
+            <div className="space-y-12">
+                <div className="border-b border-gray-900/10 pb-12">
+                    <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
 
-                    <div className='mt-10'>
-                        <label htmlFor='addressLine' className='me-5'>Current Address:</label>
-                        <textarea id='addressLine' 
-                                rows={1}
-                                cols={63}
-                                className='bg-gray-300'
-                                onChange={(e) => setAddress(e.target.value)}
-                        />
-                    </div>
+                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div className="sm:col-span-3">
+                            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                First name <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    name="first-name"
+                                    id="first-name"
+                                    autoComplete="given-name"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                    <div className='mt-10'>
-                        <label htmlFor='phoneNumber' className='me-10 mt-10'>Phone number:</label>
-                        <input id='phoneNumber'  
-                                type='text'
-                                className='bg-gray-300'
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-                    </div>                    
-                </div>
+                        <div className="sm:col-span-3">
+                            <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                Last name <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    name="last-name"
+                                    id="last-name"
+                                    autoComplete="family-name"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <h1 className='text-3xl mt-20'>Emergency Contact Person</h1>
-                <div className='text-2xl ms-32 mt-10'>
-                    <div>
-                        <label htmlFor='contactPersonName' className='me-52'>Name:</label>
-                        <input id='contactPersonName' 
-                                type='text'
-                                className='w-64 bg-gray-300 ms-3'
-                                onChange={(e) => setEmergencyContactName(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='contactPhoneNumber' className='me-28'>Phone number:</label>
-                        <input id='contactPhoneNumber' 
-                                type='number'
-                                className='w-64 bg-gray-300'
-                                onChange={(e) => setEmergencyContactNumber(e.target.value)}
-                        />    
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='relationshipToPatient' className='me-6'>Relationship to Patient:</label>
-                        <input id='relationshipToPatient' 
-                                type='text'
-                                className='w-64 bg-gray-300'
-                                onChange={(e) => setRelationshipToPatient(e.target.value)}
-                        />
-                    </div>
-                </div>
-                
+                        <div className="sm:col-span-3">
+                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                Email address <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <h1 className='text-3xl mt-20'>Insurance Information</h1>
-                <div className='text-2xl ms-32 mt-10'>
-                    <div className='mt-10'>
-                        <label htmlFor='insuranceprovider' className='me-3'>Insurance Provider:</label>
-                        <input id='insuranceprovider' 
-                                type='text'
-                                className='w-64 bg-gray-300'
-                                onChange={(e) => setHealthInsuranceProvider(e.target.value)}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='policynumber' className='me-14'>Policy Number:</label>
-                        <input id='policynumber' 
-                                type='number'
-                                className='w-64 bg-gray-300 ms-1'
-                                onChange={(e) => setPolicyNumber(e.target.value)}
-                        />
-                    </div>
+                        <div className="sm:col-span-3">
+                            <label htmlFor="number" className="block text-sm font-medium leading-6 text-gray-900">
+                                Phone number <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    id="number"
+                                    name="number"
+                                    type="number"
+                                    autoComplete="phone number"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                    <div className='mt-10'>
-                        <label htmlFor='groupnumber' className='me-14'>Group Number:</label>
-                        <input id='groupnumber' 
-                                type='number'
-                                className='w-64 bg-gray-300'
-                                onChange={(e) => setGroupNumber(e.target.value)}
-                        />
-                    </div>
-                    
-                </div>
+                        <div className="col-span-full">
+                            <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
+                                Street address <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    name="street-address"
+                                    id="street-address"
+                                    autoComplete="street-address"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <h1 className='text-3xl mt-10'>Medical History (split by space)</h1>
-                <div className='text-2xl mt-10 ms-32'>
-                    <div className='mt-10'>
-                        <label htmlFor='prevMedicalConditions' className='me-10'>Previous Medical Conditions:</label>
-                        <textarea id='prevMedicalConditions' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={53}
-                                onChange={handleMedicalConditonChange}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='surgeriesAndHosp' className='me-5'>Surgeries and Hospitalizations:</label>
-                        <textarea id='surgeriesAndHosp' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={53}
-                                onChange={handleSurgeriesAndHospChange}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='chronicIllnesses' className='me-40'>Chronic Illnesses:</label>
-                        <textarea id='chronicIllnesses' 
-                                className='bg-gray-300 ms-3'
-                                rows={1}
-                                cols={53}
-                                onChange={handleChronicIllnessesChange}
-                        />
-                    </div>
-                </div>
+                        <div className="sm:col-span-4">
+                            <fieldset>
+                                <legend className="text-sm font-semibold leading-6 text-gray-900">Sex <RequiredAsterisk /></legend>
+                                <div className="flex items-center gap-x-3">
+                                    <input
+                                        id="male"
+                                        name="sex"
+                                        value="Male"
+                                        type="radio"
+                                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        onChange={handleSexChange}
+                                        required
+                                    />
+                                    <label htmlFor="male" className="block text-sm font-medium leading-6 text-gray-900 mb-1">
+                                        Male
+                                    </label>
 
-                <h1 className='text-3xl mt-10'>Current Medication</h1>
-                <div className='text-2xl mt-10 ms-32'>
-                    <div className='mt-10'>
-                        <label htmlFor='currentMedicationName' className='me-10'>Current Medication Names:</label>
-                        <textarea id='currentMedicationName' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={53}
-                                onChange={handleCurrentMedicationName}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='dosages' className='me-10'>Dosages:</label>
-                        <textarea id='dosages' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={70}
-                                onChange={handleDosages}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='frequnecy' className='me-10'>Frequency of Dosages:</label>
-                        <textarea id='frequency' 
-                                className='bg-gray-300 ms-3'
-                                rows={1}
-                                cols={57}
-                                onChange={handleFrequency}
-                        />
+
+                                    <input
+                                        id="female"
+                                        name="sex"
+                                        type="radio"
+                                        value="Female"
+                                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                        onChange={handleSexChange}
+                                        required
+                                    />
+                                    <label htmlFor="female" className="block text-sm font-medium leading-6 text-gray-900 mb-1">
+                                        Female
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div className="sm:col-span-6">
+                            <label htmlFor="bloodtype" className="block text-sm font-medium leading-6 text-gray-900">
+                                Blood Type <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <select
+                                    id="bloodtype"
+                                    name="bloodtype"
+                                    autoComplete="bloodtype"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setBloodType(e.target.value)}
+                                >
+                                    <option>A+</option>
+                                    <option>B+</option>
+                                    <option>AB+</option>
+                                    <option>O+</option>
+                                    <option>A-</option>
+                                    <option>B-</option>
+                                    <option>AB-</option>
+                                    <option>O-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                            <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-gray-900">
+                                Emergency Contact Name <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    name="emergencyContactName"
+                                    id="emergencyContactName"
+                                    autoComplete="emergencyContactName"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setEmergencyContact(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                            <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-gray-900">
+                                Emergency Contact Phone Number <RequiredAsterisk />
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="number"
+                                    name="emergencyContactNumber"
+                                    id="emergencyContactNumber"
+                                    autoComplete="emergencyContactNumber"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={(e) => setEmergencyContactNumber(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-span-full">
+                            <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-gray-900">
+                                Allergies
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    name="allergies"
+                                    id="allergies"
+                                    autoComplete="allergies"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                    onChange={handleAllergiesChange}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <h1 className='text-3xl mt-10'>Allergies</h1>
-                <div className='text-2xl mt-10 ms-32'>
-                    <div className='mt-10'>
-                        <label htmlFor='knownAllergies' className='me-10'>Known Allergies:</label>
-                        <textarea id='knownAllergies' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={53}
-                                onChange={handleAllergies}
-                        />
-                    </div>
-                    
-                    <div className='mt-10'>
-                        <label htmlFor='allergyType' className='me-14'>Type of Allergy:</label>
-                        <textarea id='allergyType' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={53}
-                                onChange={handleAllergyType}
-                        />
-                    </div>
-                </div>
+                {/* Family History */}
+                <FamilyHistory
+                    relativeName={relativeName}
+                    setRelativeName={setRelativeName}
+                    relationshipWithRelative={relationshipWithRelative}
+                    setRelationshipWithRelative={setRelationshipWithRelative}
+                    relativeCondition={relativeCondition}
+                    setRelativeCondition={setRelativeCondition}
+                    relativeMedications={relativeMedications}
+                    setRelativeMedications={setRelativeMedications}
+                />
 
-                <h1 className='text-3xl mt-10'>Family Medical History</h1>
-                <div className='text-2xl mt-10 ms-32'>
-                    <div className='mt-10'>
-                        <label htmlFor='famMedicalHistory' className='me-5'>Family History of Medical Conditions/Diseases:</label>
-                        <textarea id='famMedicalHistory' 
-                                className='bg-gray-300'
-                                rows={1}
-                                cols={37}
-                                onChange={handleFamMedicalHistory}
-                        />
-                    </div>
-                </div>
 
-                <div className='flex place-content-end'>
-                    <button onClick={onSubmitForm} 
-                            className='bg-green-400
-                                    rounded-lg 
-                                    p-2 
-                                    mt-10 
-                                    mb-10
-                                    '>Submit
-                    </button>
-                </div>
-                
+                {/* Vaccination */}
+                <Vaccination
+                    vaccineType={vaccineType}
+                    setVaccineType={setVaccineType}
+                    vaccineBrand={vaccineBrand}
+                    setVaccineBrand={setVaccineBrand}
+                    vaccinationDate={vaccinationDate}
+                    setVaccinationDate={setVaccinationDate}
+                    vaccineRemarks={vaccineRemarks}
+                    setVaccineRemarks={setVaccineRemarks}
+                />
+
+                {/* Personal Medical History */}
+                <PersonalMedicalHistory
+                    historyType={historyType}
+                    setHistoryType={setHistoryType}
+                    historyDate={historyDate}
+                    setHistoryDate={setHistoryDate}
+                    historyRemarks={historyRemarks}
+                    setHistoryRemarks={setHistoryRemarks}
+                />
+
             </div>
-        
+
+            <div className="mt-6 flex items-center justify-end gap-x-6">
+                <button type="reset" className="text-sm font-semibold leading-6 text-gray-900" onClick={clearForm}>
+                    Cancel
+                </button>
+                <button
+                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    onClick={onSubmitForm}
+                >
+                    Save
+                </button>
+            </div>
         </form>
     )
 }
