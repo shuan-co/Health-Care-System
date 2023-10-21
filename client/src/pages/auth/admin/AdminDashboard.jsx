@@ -1,5 +1,5 @@
 import { config } from "../../../firebase/Firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import RequiredAsterisk from "./components/asterisk";
@@ -26,6 +26,23 @@ function AdminDashboard() {
 
         return newEmail;
     }
+
+    function formatClinicName(clinicName) {
+        return clinicName.toLowerCase().replace(/ /g, '_');
+    }
+
+    function validateEmail(email){
+        // Split the email address into the local part and the domain part
+        const [localPart, domain] = email.split('@');
+        console.log("domain: " + domain)
+        if(domain != "gmail.com") {
+            return false
+        }
+
+        return true
+
+    }
+
     async function initializeClinic(e) {
         e.preventDefault();
 
@@ -34,7 +51,9 @@ function AdminDashboard() {
         const email = e.target['email'].value;
         const password = e.target['password'].value;
         const clinicName = e.target['clinicName'].value.toLowerCase();
-        const emailFormatted = formatEmail(email);
+
+        const clinicNameFormatted = formatClinicName(clinicName);
+        const emailFormatted = formatEmail(email, clinicNameFormatted);
         // Update the formData state
         setFormData({
             ...formData,
@@ -51,28 +70,31 @@ function AdminDashboard() {
         if (formData.email) {
             // Add a new document
             try {
-                setDoc(doc(config.firestore, formData.clinicName, "admin"), {
-                    firstname: formData.firstName,
-                    lastname: formData.lastName,
-                    email: formData.email
-                });
                 // CREATE USER
-                createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
+                console.log("email type: " + typeof formData.email)
+                console.log("email: " + formData.email)
+                if(!validateEmail(formData.email)){
+                    alert("Invalid email domain. Please use an email address with the domain 'gmail.com'.");
+
+                } else {
+                    createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
                     .then((userCredential) => {
                         // Signed up 
                         const user = userCredential.user;
-                        // Save admin user uid and information
-                        setDoc(doc(config.firestore, "clinicAdmins", userCredential.user.uid), {
-                            clinicName: formData.clinicName
-                        });
+                        // ...
                     })
                     .catch((error) => {
                         const errorCode = error.code;
                         const errorMessage = error.message;
+                        // ..
                     });
+                }
+                
+                
 
                 // EMAIL CREDENTIALS
-                emailjs
+                function sendEmail() {
+                    emailjs
                     .send(
                         'service_t8pkk4o',
                         'template_x65vfmj',
@@ -89,6 +111,7 @@ function AdminDashboard() {
                             alert('Failed to send email.');
                         }
                     );
+                }
             } catch (error) {
                 console.error("Error initializing clinic:", error);
             }
@@ -96,7 +119,7 @@ function AdminDashboard() {
     }, [formData]);
 
     return (
-        <form className="mx-96" onSubmit={initializeClinic}>
+        <form className="w-2/6 mx-auto" onSubmit={initializeClinic}>
             <div className="border-b border-gray-900/10 pb-12">
 
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
