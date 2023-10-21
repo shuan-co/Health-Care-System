@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import RequiredAsterisk from "./components/asterisk";
 import emailjs from 'emailjs-com';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function AdminDashboard() {
 
@@ -17,38 +17,32 @@ function AdminDashboard() {
         clinicName: '',
     });
 
-    function formatEmail(email) {
+    function formatEmail(email, clinicNameFormatted) {
         // Split the email address into the local part and the domain part
         const [localPart, domain] = email.split('@');
 
         // Create the new email address by concatenating the local part and the new domain
-        const newEmail = `${localPart}@healthcare.clinicAdmin.com`;
+        const newEmail = `${localPart}@${clinicNameFormatted}.clinicAdmin.com`;
 
         return newEmail;
     }
 
+    function formatClinicName(clinicName) {
+        return clinicName.toLowerCase().replace(/ /g, '_');
+    }
+
+
     async function initializeClinic(e) {
         e.preventDefault();
-    
+
         const firstName = e.target['first-name'].value;
         const lastName = e.target['last-name'].value;
         const email = e.target['email'].value;
         const password = e.target['password'].value;
-        const clinicName = e.target['clinicName'].value;
-    
-        const emailFormatted = formatEmail(email);
-    
-        // Add a new document in collection "cities"
-        try {
-            await setDoc(doc(config.firestore, clinicName, "admin"), {
-                firstname: firstName,
-                lastname: lastName,
-                email: email
-            });
-        } catch (error) {
-            console.error("Error initializing clinic:", error);
-        }
-        
+        const clinicName = e.target['clinicName'].value.toLowerCase();
+
+        const clinicNameFormatted = formatClinicName(clinicName);
+        const emailFormatted = formatEmail(email, clinicNameFormatted);
         // Update the formData state
         setFormData({
             ...formData,
@@ -59,38 +53,53 @@ function AdminDashboard() {
             password,
             clinicName,
         });
-        // CREATE USER
-        createUserWithEmailAndPassword(config.auth, emailFormatted, password)
-            .then((userCredential) => {
-                // Signed up 
-                const user = userCredential.user;
-                // ...
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // ..
-            });
-    
-        // EMAIL CREDENTIALS
-        emailjs
-            .send(
-                'service_t8pkk4o',
-                'template_x65vfmj',
-                formData,
-                'guzJ5EN-eKEHV_0jW'
-            )
-            .then(
-                (result) => {
-                    console.log('Email sent:', result.text);
-                    alert('Email sent successfully!');
-                },
-                (error) => {
-                    console.error('Email error:', error.text);
-                    alert('Failed to send email.');
-                }
-            );
-    }    
+    }
+
+    useEffect(() => {
+        if (formData.email) {
+            // Add a new document in collection "cities"
+            try {
+                setDoc(doc(config.firestore, formData.clinicName, "admin"), {
+                    firstname: formData.firstName,
+                    lastname: formData.lastName,
+                    email: formData.email
+                });
+                // CREATE USER
+                createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
+                    .then((userCredential) => {
+                        // Signed up 
+                        const user = userCredential.user;
+                        // ...
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        // ..
+                    });
+
+                // EMAIL CREDENTIALS
+                emailjs
+                    .send(
+                        'service_t8pkk4o',
+                        'template_x65vfmj',
+                        formData,
+                        'guzJ5EN-eKEHV_0jW'
+                    )
+                    .then(
+                        (result) => {
+                            console.log('Email sent:', result.text);
+                            alert('Email sent successfully!');
+                        },
+                        (error) => {
+                            console.error('Email error:', error.text);
+                            alert('Failed to send email.');
+                        }
+                    );
+            } catch (error) {
+                console.error("Error initializing clinic:", error);
+            }
+        }
+    }, [formData]);
 
     return (
         <form className="mx-96" onSubmit={initializeClinic}>
