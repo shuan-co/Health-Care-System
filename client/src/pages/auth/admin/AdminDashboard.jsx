@@ -3,7 +3,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import RequiredAsterisk from "./components/asterisk";
-import emailjs from 'emailjs-com';
+import emailjs, { send } from 'emailjs-com';
 import { useState, useEffect } from "react";
 
 function AdminDashboard() {
@@ -74,19 +74,26 @@ function AdminDashboard() {
                 console.log("email type: " + typeof formData.email)
                 console.log("email: " + formData.email)
                 if(!validateEmail(formData.email)){
-                    alert("Invalid email domain. Please use an email address with the domain 'gmail.com'.");
+                    alert("Invalid email domain. Please use an email address with the domain 'gmail.com'");
 
                 } else {
                     createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
                     .then((userCredential) => {
                         // Signed up 
                         const user = userCredential.user;
+                        sendEmail()
                         // ...
                     })
                     .catch((error) => {
                         const errorCode = error.code;
                         const errorMessage = error.message;
                         // ..
+                        console.log(errorCode + " | " + errorMessage)
+                        if(errorCode == "auth/email-already-exists"){
+                            alert("Email is already in use")
+                        } else if (errorCode == "auth/weak-password"){
+                            alert("Password is too weak")
+                        }
                     });
                 }
                 
