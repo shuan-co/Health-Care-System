@@ -28,7 +28,7 @@ function Login() {
                 user.accountType = accountType;
                 user.uid = userCredentials.user.uid
                 user.credentials = userCredentials
-
+                console.log(user.accountType);
                 // Set isLoggedIn to true after successful login
                 setIsLoggedIn(true);
 
