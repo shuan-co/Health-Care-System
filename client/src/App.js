@@ -20,8 +20,10 @@ import Footer from "./pages/noAuth/components/Footer";
 import Pforms from "./pages/auth/patient/Pforms";
 import Test from "./pages/auth/patient/Test";
 
-
+// NEW CHANGES
 import AdminDashboard from "./pages/auth/admin/AdminDashboard";
+import ClinicAdminDashboard from "./pages/auth/clinicAdmin/ClinicAdminDashboard";
+import StaffList from "./pages/auth/clinicAdmin/staffForm/StaffList";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -43,6 +45,9 @@ const ProtectedRoute = ({ children, accessLevel }) => {
                 } else {
                     switch (accountType) {
                         case "clinic":
+                            setAuthorized(false);
+                            break;
+                        case "admin":
                             setAuthorized(false);
                             break;
                         case "patient":
@@ -75,11 +80,11 @@ const ProtectedRoute = ({ children, accessLevel }) => {
         // User is not authorized, redirect to the login page
         if (userAccess === null) {
             return <Navigate to="/login" replace />;
-        }
-        else if (userAccess === "admin") {
+        } else if (userAccess === "admin") {
             return <> <Navigate to="/admin" replace /> <AdminDashboard /></>
-        }
-        else if (userAccess === "clinic") {
+        } else if (userAccess === "cad") {
+            return <> <Navigate to="/clinic-admin" replace /> <ClinicAdminDashboard /></>
+        } else if (userAccess === "clinic") {
             return <> <Navigate to="/clinic" replace /> <Cdashboard /></>
         } else if (userAccess === "patient") {
             return <> <Navigate to="/patient" replace /> <Pdashboard /></>
@@ -102,7 +107,7 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
-
+                    {/* SUPER ADMIN ROUTES */}
                     <Route
                         exact path="/admin"
                         element={
@@ -111,6 +116,24 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                    {/* CLINIC ADMIN ROUTES */}
+                    <Route
+                        exact path="/clinic-admin"
+                        element={
+                            <ProtectedRoute accessLevel="cad">
+                                <ClinicAdminDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/clinic-admin/stafflist"
+                        element={
+                            <ProtectedRoute accessLevel="cad">
+                                <StaffList />
+                            </ProtectedRoute>
+                        }
+                    />
+
 
                     <Route
                         exact path="/clinic"

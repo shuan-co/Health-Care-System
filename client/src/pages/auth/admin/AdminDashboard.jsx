@@ -17,21 +17,15 @@ function AdminDashboard() {
         clinicName: '',
     });
 
-    function formatEmail(email, clinicNameFormatted) {
+    function formatEmail(email) {
         // Split the email address into the local part and the domain part
         const [localPart, domain] = email.split('@');
 
         // Create the new email address by concatenating the local part and the new domain
-        const newEmail = `${localPart}@${clinicNameFormatted}.clinicAdmin.com`;
+        const newEmail = `${localPart}@healthcare.cad.com`;
 
         return newEmail;
     }
-
-    function formatClinicName(clinicName) {
-        return clinicName.toLowerCase().replace(/ /g, '_');
-    }
-
-
     async function initializeClinic(e) {
         e.preventDefault();
 
@@ -40,9 +34,7 @@ function AdminDashboard() {
         const email = e.target['email'].value;
         const password = e.target['password'].value;
         const clinicName = e.target['clinicName'].value.toLowerCase();
-
-        const clinicNameFormatted = formatClinicName(clinicName);
-        const emailFormatted = formatEmail(email, clinicNameFormatted);
+        const emailFormatted = formatEmail(email);
         // Update the formData state
         setFormData({
             ...formData,
@@ -57,7 +49,7 @@ function AdminDashboard() {
 
     useEffect(() => {
         if (formData.email) {
-            // Add a new document in collection "cities"
+            // Add a new document
             try {
                 setDoc(doc(config.firestore, formData.clinicName, "admin"), {
                     firstname: formData.firstName,
@@ -69,12 +61,14 @@ function AdminDashboard() {
                     .then((userCredential) => {
                         // Signed up 
                         const user = userCredential.user;
-                        // ...
+                        // Save admin user uid and information
+                        setDoc(doc(config.firestore, "clinicAdmins", userCredential.user.uid), {
+                            clinicName: formData.clinicName
+                        });
                     })
                     .catch((error) => {
                         const errorCode = error.code;
                         const errorMessage = error.message;
-                        // ..
                     });
 
                 // EMAIL CREDENTIALS

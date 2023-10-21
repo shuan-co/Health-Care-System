@@ -40,6 +40,8 @@ function Login() {
                     navigate('/locator');
                 } else if (user.accountType === "admin") {
                     navigate('/admin');
+                } else if (user.accountType === "cad") {
+                    navigate('/clinic-admin');
                 }
             })
             .catch((error) => {
