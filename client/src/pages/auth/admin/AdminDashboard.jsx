@@ -1,32 +1,30 @@
 import { config } from "../../../firebase/Firebase";
+import { doc, setDoc } from "firebase/firestore";
+
 import RequiredAsterisk from "./components/asterisk";
+import emailjs from 'emailjs-com';
 
 function AdminDashboard() {
-    const initializeClinic = () => {
-        config.firestore.collection('my-collection').doc().set({
-            name: 'My Document',
+    async function initializeClinic(e) {
+        e.preventDefault();
+
+        const firstName = e.target['first-name'].value;
+        const lastName = e.target['last-name'].value;
+        const email = e.target['email'].value;
+        const password = e.target['password'].value;
+
+        // Add a new document in collection "cities"
+        await setDoc(doc(config.firestore, "cities", "LA"), {
+            name: firstName + " " + lastName,
+            email: email
         });
 
-        config.firestore.collection('main-collection').doc().set({
-            name: 'Main Document',
-        });
 
-        config.firestore.collection('main-collection').doc().collection('subcollection-1').doc().set({
-            name: 'Subcollection 1 Document',
-        });
 
-        config.firestore.collection('main-collection').doc().collection('subcollection-2').doc().set({
-            name: 'Subcollection 2 Document',
-        });
-
-        config.firestore.collection('main-collection').doc().collection('subcollection-3').doc().set({
-            name: 'Subcollection 3 Document',
-        });
     }
 
     return (
-        <form className="mx-96">
-            {/* TODO: email, password, first name, last name*/}
+        <form className="mx-96" onSubmit={initializeClinic}>
             <div className="border-b border-gray-900/10 pb-12">
 
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
@@ -82,15 +80,15 @@ function AdminDashboard() {
                     </div>
 
                     <div className="sm:col-span-full">
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                             Password <RequiredAsterisk />
                         </label>
                         <div className="mt-2">
                             <input
-                                type="text"
-                                name="email"
-                                id="email"
-                                autoComplete="email"
+                                type="password"
+                                name="password"
+                                id="password"
+                                autoComplete="current-password"
                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                 required
                             />
@@ -101,8 +99,7 @@ function AdminDashboard() {
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div className="sm:col-span-full">
                         <button
-                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-
+                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
                         >
                             Submit
                         </button>
