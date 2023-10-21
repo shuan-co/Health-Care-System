@@ -20,6 +20,9 @@ import Footer from "./pages/noAuth/components/Footer";
 import Pforms from "./pages/auth/patient/Pforms";
 import Test from "./pages/auth/patient/Test";
 
+
+import AdminDashboard from "./pages/auth/admin/AdminDashboard";
+
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
@@ -73,6 +76,9 @@ const ProtectedRoute = ({ children, accessLevel }) => {
         if (userAccess === null) {
             return <Navigate to="/login" replace />;
         }
+        else if (userAccess === "admin") {
+            return <> <Navigate to="/admin" replace /> <AdminDashboard /></>
+        }
         else if (userAccess === "clinic") {
             return <> <Navigate to="/clinic" replace /> <Cdashboard /></>
         } else if (userAccess === "patient") {
@@ -80,6 +86,7 @@ const ProtectedRoute = ({ children, accessLevel }) => {
         } else if (userAccess === "locator") {
             return <> <Navigate to="/locator" replace /> <Ldashboard /></>
         }
+
     }
 
     return children;
@@ -95,6 +102,15 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
+
+                    <Route
+                        exact path="/admin"
+                        element={
+                            <ProtectedRoute accessLevel="admin">
+                                <AdminDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     <Route
                         exact path="/clinic"
