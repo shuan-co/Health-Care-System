@@ -5,6 +5,17 @@ import RequiredAsterisk from "./components/asterisk";
 import emailjs from 'emailjs-com';
 
 function AdminDashboard() {
+
+    function formatEmail(email) {
+        // Split the email address into the local part and the domain part
+        const [localPart, domain] = email.split('@');
+
+        // Create the new email address by concatenating the local part and the new domain
+        const newEmail = `${localPart}@healthcare.clinicAdmin.com`;
+
+        return newEmail;
+    }
+
     async function initializeClinic(e) {
         e.preventDefault();
 
@@ -19,8 +30,37 @@ function AdminDashboard() {
             email: email
         });
 
+        // // CREATE USER
+        // createUserWithEmailAndPassword(auth, email, password)
+        //     .then((userCredential) => {
+        //         // Signed up 
+        //         const user = userCredential.user;
+        //         // ...
+        //     })
+        //     .catch((error) => {
+        //         const errorCode = error.code;
+        //         const errorMessage = error.message;
+        //         // ..
+        //     });
 
-
+        // // TODO: EMAIL
+        // emailjs
+        //     .send(
+        //         'service_t8pkk4o',
+        //         'template_gnnev9q',
+        //         formData,
+        //         'guzJ5EN-eKEHV_0jW'
+        //     )
+        //     .then(
+        //         (result) => {
+        //             console.log('Email sent:', result.text);
+        //             alert('Email sent successfully!');
+        //         },
+        //         (error) => {
+        //             console.error('Email error:', error.text);
+        //             alert('Failed to send email.');
+        //         }
+        //     );
     }
 
     return (
@@ -63,16 +103,32 @@ function AdminDashboard() {
                 </div>
 
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div className="sm:col-span-full">
+                    <div className="sm:col-span-3">
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                             Email <RequiredAsterisk />
                         </label>
                         <div className="mt-2">
                             <input
-                                type="text"
+                                type="email"
                                 name="email"
                                 id="email"
                                 autoComplete="email"
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="sm:col-span-3">
+                        <label htmlFor="clinicName" className="block text-sm font-medium leading-6 text-gray-900">
+                            Email <RequiredAsterisk />
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                type="text"
+                                name="clinicName"
+                                id="clinicName"
+                                autoComplete="clinicName"
                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                 required
                             />
