@@ -28,24 +28,32 @@ function AdminDashboard() {
 
     async function initializeClinic(e) {
         e.preventDefault();
-
+    
         const firstName = e.target['first-name'].value;
         const lastName = e.target['last-name'].value;
         const email = e.target['email'].value;
         const password = e.target['password'].value;
         const clinicName = e.target['clinicName'].value;
-        var emailFormatted = formatEmail(email);
+    
+        const emailFormatted = formatEmail(email);
+    
         // Add a new document in collection "cities"
-        await setDoc(doc(config.firestore, "cities", "LA"), {
-            name: firstName + " " + lastName,
-            email: email
-        });
+        try {
+            await setDoc(doc(config.firestore, clinicName, "admin"), {
+                firstname: firstName,
+                lastname: lastName,
+                email: email
+            });
+        } catch (error) {
+            console.error("Error initializing clinic:", error);
+        }
+        
         // Update the formData state
         setFormData({
             ...formData,
             firstName,
             lastName,
-            emailFormatted,
+            email: emailFormatted,
             password,
             clinicName,
         });
@@ -63,8 +71,8 @@ function AdminDashboard() {
                 const errorMessage = error.message;
                 // ..
             });
-
-        //  EMAIL CREDENTIALS
+    
+        // EMAIL CREDENTIALS
         emailjs
             .send(
                 'service_t8pkk4o',
@@ -82,7 +90,7 @@ function AdminDashboard() {
                     alert('Failed to send email.');
                 }
             );
-    }
+    }    
 
     return (
         <form className="mx-96" onSubmit={initializeClinic}>
