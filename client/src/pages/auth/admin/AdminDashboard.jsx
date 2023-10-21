@@ -11,6 +11,7 @@ function AdminDashboard() {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
+        email: '',
         emailFormatted: '',
         password: '',
         clinicName: '',
@@ -53,12 +54,11 @@ function AdminDashboard() {
             ...formData,
             firstName,
             lastName,
-            email: emailFormatted,
+            email,
+            emailFormatted,
             password,
             clinicName,
         });
-        console.log(emailFormatted);
-        console.log(formData);
         // CREATE USER
         createUserWithEmailAndPassword(config.auth, emailFormatted, password)
             .then((userCredential) => {
