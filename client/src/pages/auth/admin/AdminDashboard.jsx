@@ -28,16 +28,23 @@ function AdminDashboard() {
     async function initializeClinic(e) {
         e.preventDefault();
 
-        const firstName = e.target['first-name'].value;
-        const lastName = e.target['last-name'].value;
-        const email = e.target['email'].value;
-        const password = e.target['password'].value;
+        const formData = new FormData(e.target);
+        const firstName = formData.get('first-name');
+        const lastName = formData.get('last-name');
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const clinicName = formData.get('clinicName');
 
         // Add a new document in collection "cities"
-        await setDoc(doc(config.firestore, "cities", "LA"), {
-            name: firstName + " " + lastName,
-            email: email
-        });
+        try {
+            await setDoc(doc(config.firestore, "LA", "admin"), {
+                name: firstName + " " + lastName,
+                email: email
+            });
+        } catch (error) {
+            console.error("Error initializing clinic:", error);
+        }
+        
 
         // Update the formData state
         setFormData({
