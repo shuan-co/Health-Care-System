@@ -22,8 +22,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
-// const auth = getAuth(firebase);
-// const analytics = getAnalytics(firebase);
+
+// Initialize Administrative SignIn
+const signInTemp = initializeApp(firebaseConfig, "Secondary");
 
 
 export const config = {
@@ -31,6 +32,10 @@ export const config = {
     firestore: getFirestore(firebase),
     storage: getStorage(firebase),
     storageRef: ref(getStorage(firebase))
+}
+
+export const signInAuth = {
+    auth: getAuth(signInTemp)
 }
 
 export const user = {

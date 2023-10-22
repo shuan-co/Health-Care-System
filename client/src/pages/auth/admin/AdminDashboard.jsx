@@ -1,6 +1,6 @@
-import { config } from "../../../firebase/Firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { config, signInAuth } from "../../../firebase/Firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 
 import RequiredAsterisk from "./components/asterisk";
 import emailjs, { send } from 'emailjs-com';
@@ -31,11 +31,10 @@ function AdminDashboard() {
         return clinicName.toLowerCase().replace(/ /g, '_');
     }
 
-    function validateEmail(email){
+    function validateEmail(email) {
         // Split the email address into the local part and the domain part
         const [localPart, domain] = email.split('@');
-        console.log("domain: " + domain)
-        if(domain != "gmail.com") {
+        if (domain != "gmail.com") {
             return false
         }
 
@@ -68,56 +67,70 @@ function AdminDashboard() {
 
     useEffect(() => {
         if (formData.email) {
-            // Add a new document
             try {
                 // CREATE USER
-                console.log("email type: " + typeof formData.email)
-                console.log("email: " + formData.email)
-                if(!validateEmail(formData.email)){
+                if (!validateEmail(formData.email)) {
                     alert("Invalid email domain. Please use an email address with the domain 'gmail.com'");
 
                 } else {
-                    createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
-                    .then((userCredential) => {
-                        // Signed up 
-                        const user = userCredential.user;
-                        sendEmail()
-                        // ...
-                    })
-                    .catch((error) => {
-                        const errorCode = error.code;
-                        const errorMessage = error.message;
-                        // ..
-                        console.log(errorCode + " | " + errorMessage)
-                        if(errorCode == "auth/email-already-exists"){
-                            alert("Email is already in use")
-                        } else if (errorCode == "auth/weak-password"){
-                            alert("Password is too weak")
-                        }
-                    });
+                    // Prevent auto sign in
+                    createUserWithEmailAndPassword(signInAuth.auth, formData.emailFormatted, formData.password)
+                        .then((userCredential) => {
+                            // Add a new document
+                            setDoc(doc(config.firestore, formData.clinicName, "admin"), {
+                                firstname: formData.firstName,
+                                lastname: formData.lastName,
+                                email: formData.email
+                            });
+                            // Save admin user uid and information
+                            setDoc(doc(config.firestore, "clinicAdmins", userCredential.user.uid), {
+                                clinicName: formData.clinicName
+                            });
+                            // Signed up 
+                            const user = userCredential.user;
+                            sendEmail()
+                            // SignOut 2nd authentication
+                            signOut(getAuth(signInAuth.auth)).then(() => {
+                                // Sign-out successful.
+                            }).catch((error) => {
+                                // An error happened.
+                            });
+                            // ...
+                        })
+                        .catch((error) => {
+                            const errorCode = error.code;
+                            const errorMessage = error.message;
+                            // ..
+                            console.log(errorCode + " | " + errorMessage)
+                            if (errorCode == "auth/email-already-exists") {
+                                alert("Email is already in use")
+                            } else if (errorCode == "auth/weak-password") {
+                                alert("Password is too weak")
+                            }
+                        });
                 }
-                
-                
+
+
 
                 // EMAIL CREDENTIALS
                 function sendEmail() {
                     emailjs
-                    .send(
-                        'service_t8pkk4o',
-                        'template_x65vfmj',
-                        formData,
-                        'guzJ5EN-eKEHV_0jW'
-                    )
-                    .then(
-                        (result) => {
-                            console.log('Email sent:', result.text);
-                            alert('Email sent successfully!');
-                        },
-                        (error) => {
-                            console.error('Email error:', error.text);
-                            alert('Failed to send email.');
-                        }
-                    );
+                        .send(
+                            'service_t8pkk4o',
+                            'template_x65vfmj',
+                            formData,
+                            'guzJ5EN-eKEHV_0jW'
+                        )
+                        .then(
+                            (result) => {
+                                console.log('Email sent:', result.text);
+                                alert('Email sent successfully!');
+                            },
+                            (error) => {
+                                console.error('Email error:', error.text);
+                                alert('Failed to send email.');
+                            }
+                        );
                 }
             } catch (error) {
                 console.error("Error initializing clinic:", error);

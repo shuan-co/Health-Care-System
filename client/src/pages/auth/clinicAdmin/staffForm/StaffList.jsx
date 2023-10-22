@@ -1,8 +1,10 @@
-import { config } from "../../../../firebase/Firebase";
-import { doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { config, signInAuth } from "../../../../firebase/Firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 import { useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
 import RequiredAsterisk from "./components/asterisk";
+import emailjs, { send } from 'emailjs-com';
 
 function StaffList() {
     const [formData, setFormData] = useState({
@@ -37,24 +39,74 @@ function StaffList() {
             emailFormatted,
             password,
         });
-
     }
 
     useEffect(() => {
+        console.log(config.auth.currentUser.email);
         if (formData.email) {
             try {
-                // Create user in Firebase Auth
-                createUserWithEmailAndPassword(config.auth, formData.emailFormatted, formData.password)
-                    .then((userCredential) => {
-                        setDoc(doc(config.firestore, "ClinicStaffs", userCredential.user.uid), {
-                            firstname: formData.firstName,
-                            lastname: formData.lastName,
-                            email: formData.email
-                        });
+                // EMAIL CREDENTIALS
+                function sendEmail() {
+                    emailjs
+                        .send(
+                            'service_t8pkk4o',
+                            'template_x65vfmj',
+                            formData,
+                            'guzJ5EN-eKEHV_0jW'
+                        )
+                        .then(
+                            (result) => {
+                                console.log('Email sent:', result.text);
+                                alert('Email sent successfully!');
+                            },
+                            (error) => {
+                                console.error('Email error:', error.text);
+                                alert('Failed to send email.');
+                            }
+                        );
+                }
+
+                getDoc(doc(config.firestore, "clinicAdmins", config.auth.currentUser.uid))
+                    .then((docSnapshot) => {
+                        if (docSnapshot.exists()) {
+                            // The document exists
+                            const data = docSnapshot.data();
+                            console.log("Document data:", data);
+
+                            // Now you can access individual fields within the document
+                            const clinicName = data.clinicName;
+                            createUserWithEmailAndPassword(signInAuth.auth, formData.emailFormatted, formData.password)
+                                .then((userCredential) => {
+                                    setDoc(doc(config.firestore, "clinicStaffs", userCredential.user.uid), {
+                                        clinicName: clinicName,
+                                    });
+
+                                    setDoc(doc(config.firestore, clinicName, "staff", "staffList", userCredential.user.uid), {
+                                        firstname: formData.firstName,
+                                        lastname: formData.lastName,
+                                        email: formData.email
+                                    });
+                                    sendEmail();
+                                    // SignOut 2nd authentication
+                                    signOut(getAuth(signInAuth.auth)).then(() => {
+                                        // Sign-out successful.
+                                    }).catch((error) => {
+                                        // An error happened.
+                                    });
+                                    // ...
+                                })
+                                .catch((error) => {
+                                    console.error("Error creating user:", error.message);
+                                });
+
+                        } else {
+                            console.log("Document does not exist");
+                        }
                     })
                     .catch((error) => {
-                        console.error("Error creating user:", error.message);
+                        console.error("Error getting document:", error);
                     });
+
             } catch (error) {
                 console.error("Error initializing clinic:", error);
             }
