@@ -24,6 +24,8 @@ import Test from "./pages/auth/patient/Test";
 import AdminDashboard from "./pages/auth/admin/AdminDashboard";
 import ClinicAdminDashboard from "./pages/auth/clinicAdmin/ClinicAdminDashboard";
 import StaffList from "./pages/auth/clinicAdmin/staffForm/StaffList";
+import StaffDashboard from "./pages/auth/staff/StaffDashboard";
+import PatientList from "./pages/auth/staff/patientForm/PatientList";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -84,9 +86,11 @@ const ProtectedRoute = ({ children, accessLevel }) => {
             return <> <Navigate to="/admin" replace /> <AdminDashboard /></>
         } else if (userAccess === "cad") {
             return <> <Navigate to="/clinic-admin" replace /> <ClinicAdminDashboard /></>
+        } else if (userAccess === "staff") {
+            return <> <Navigate to="/clinic-staff" replace /> <StaffDashboard /></>
         } else if (userAccess === "clinic") {
             return <> <Navigate to="/clinic" replace /> <Cdashboard /></>
-        } else if (userAccess === "patient") {
+        } else if (userAccess === "gmail") {
             return <> <Navigate to="/patient" replace /> <Pdashboard /></>
         } else if (userAccess === "locator") {
             return <> <Navigate to="/locator" replace /> <Ldashboard /></>
@@ -107,6 +111,7 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
+
                     {/* SUPER ADMIN ROUTES */}
                     <Route
                         exact path="/admin"
@@ -116,6 +121,7 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+
                     {/* CLINIC ADMIN ROUTES */}
                     <Route
                         exact path="/clinic-admin"
@@ -134,6 +140,23 @@ const App = () => {
                         }
                     />
 
+                    {/* STAFF ROUTES */}
+                    <Route
+                        exact path="/clinic-staff"
+                        element={
+                            <ProtectedRoute accessLevel="staff">
+                                <StaffDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        exact path="/clinic-staff/patientlist"
+                        element={
+                            <ProtectedRoute accessLevel="staff">
+                                <PatientList />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     <Route
                         exact path="/clinic"
@@ -159,10 +182,12 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+
+                    {/* PATIENT ROUTES */}
                     <Route
                         exact path="/patient"
                         element={
-                            <ProtectedRoute accessLevel="patient">
+                            <ProtectedRoute accessLevel="gmail">
                                 <Pdashboard />
                             </ProtectedRoute>
                         }

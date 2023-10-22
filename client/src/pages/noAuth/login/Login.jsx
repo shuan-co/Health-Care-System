@@ -42,6 +42,10 @@ function Login() {
                     navigate('/admin');
                 } else if (user.accountType === "cad") {
                     navigate('/clinic-admin');
+                } else if (user.accountType === "staff") {
+                    navigate('/clinic-staff');
+                } else if (user.accountType === "gmail") {
+                    navigate('/patient')
                 }
             })
             .catch((error) => {

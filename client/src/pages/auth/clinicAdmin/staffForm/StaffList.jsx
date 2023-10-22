@@ -2,7 +2,6 @@ import { config, signInAuth } from "../../../../firebase/Firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { initializeApp } from "firebase/app";
 import RequiredAsterisk from "./components/asterisk";
 import emailjs, { send } from 'emailjs-com';
 

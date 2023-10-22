@@ -5,7 +5,7 @@ function StaffDashboard() {
     return (
         <>
             <p>Staff Dashboard</p>
-            <button onClick={() => navigate('./patientlist')}>Create Staff</button>
+            <button onClick={() => navigate('./patientlist')}>Create Patient</button>
         </>
     )
 }
