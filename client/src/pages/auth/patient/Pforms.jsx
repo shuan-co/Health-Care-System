@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import { useState } from 'react';
 import { db } from '../../../firebase/Firebase'
 import { setDoc, doc } from 'firebase/firestore'
@@ -322,7 +322,7 @@ export default function Pforms() {
                     </div>
                 </div>
 
-                {/* Family History */}
+                {/* Family History *//*}
                 <FamilyHistory
                     relativeName={relativeName}
                     setRelativeName={setRelativeName}
@@ -335,7 +335,7 @@ export default function Pforms() {
                 />
 
 
-                {/* Vaccination */}
+                {/* Vaccination *//*}
                 <Vaccination
                     vaccineType={vaccineType}
                     setVaccineType={setVaccineType}
@@ -347,7 +347,7 @@ export default function Pforms() {
                     setVaccineRemarks={setVaccineRemarks}
                 />
 
-                {/* Personal Medical History */}
+                {/* Personal Medical History *//*}
                 <PersonalMedicalHistory
                     historyType={historyType}
                     setHistoryType={setHistoryType}
@@ -372,4 +372,4 @@ export default function Pforms() {
             </div>
         </form>
     )
-}
+}*/
