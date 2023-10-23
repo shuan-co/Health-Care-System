@@ -1,11 +1,16 @@
 import { config, signInAuth } from "../../../../firebase/Firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, setDoc, getDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 import { useState, useEffect } from "react";
 import RequiredAsterisk from "./components/asterisk";
 import emailjs, { send } from 'emailjs-com';
+import "./StaffList.css"
 
 function StaffList() {
+
+    const [clinicName, setClinicName] = useState('');
+    const [staffList, setStaffList] = useState([]);
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -112,6 +117,38 @@ function StaffList() {
         }
     }, [formData]);
 
+    const [showForm, setShowForm] = useState(false);
+
+    getDoc(doc(config.firestore, "clinicAdmins", config.auth.currentUser.uid))
+    .then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+            const clinicName = docSnapshot.data().clinicName;
+            setClinicName(clinicName);
+        } else {
+            console.error("No document found for the current user");
+        }
+    })
+    .catch((error) => {
+        console.error("Error getting document:", error);
+    });
+
+
+    useEffect(() => {
+        async function fetchStaff() {
+            console.log(clinicName)
+            if (clinicName) {  
+                const staffCollection = collection(config.firestore, clinicName, "staff", "staffList");  
+                const staffSnapshot = await getDocs(staffCollection);
+                const staffData = staffSnapshot.docs.map(doc => doc.data());
+                setStaffList(staffData);
+                console.log(staffList)
+            }
+        }
+
+     fetchStaff();
+    }, [clinicName]); 
+
+
     return (
         <>
             <div class="h-screen w-full flex overflow-hidden">
@@ -166,13 +203,16 @@ function StaffList() {
                     </div>
 
                     <button
-                        class="mt-8 flex items-center justify-between py-3 px-2 text-white
-			dark:text-gray-200 bg-green-400 dark:bg-green-500 rounded-lg shadow">
-                        <span>Add user</span>
-                        <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
-                        </svg>
-                    </button>
+                       class="mt-8 flex items-center justify-between py-3 px-2 text-white
+                       dark:text-gray-200 bg-green-400 dark:bg-green-500 rounded-lg shadow"
+                       onClick={() => setShowForm(prevShowForm => !prevShowForm)}
+                    >
+                       <span>Add user</span>
+                       <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+                       </svg>
+                       </button>
+
 
                     <ul class="mt-2 text-gray-600">
                         <li class="mt-8">
@@ -258,538 +298,41 @@ function StaffList() {
 
                     </div>
                 </nav>
-                <main
-                    class="flex-1 flex flex-col bg-gray-100 dark:bg-gray-700 transition
-		duration-500 ease-in-out overflow-y-auto">
-                    <div class="mx-10 my-2">
-                        <nav
-                            class="flex flex-row justify-between border-b
-				dark:border-gray-600 dark:text-gray-400 transition duration-500
-				ease-in-out">
-                            <div class="flex">
-
-                                <a
-                                    href="users-dashboard/"
-                                    class="py-2 block text-green-500 border-green-500
-						dark:text-green-200 dark:border-green-200
-						focus:outline-none border-b-2 font-medium capitalize
-						transition duration-500 ease-in-out">
-                                    users
-                                </a>
-                                <button
-                                    class="ml-6 py-2 block border-b-2 border-transparent
-						focus:outline-none font-medium capitalize text-center
-						focus:text-green-500 focus:border-green-500
-						dark-focus:text-green-200 dark-focus:border-green-200
-						transition duration-500 ease-in-out">
-                                    role
-                                </button>
-                                <button
-                                    class="ml-6 py-2 block border-b-2 border-transparent
-						focus:outline-none font-medium capitalize text-center
-						focus:text-green-500 focus:border-green-500
-						dark-focus:text-green-200 dark-focus:border-green-200
-						transition duration-500 ease-in-out">
-                                    access rights
-                                </button>
-                            </div>
-
-                            <div class="flex items-center select-none">
-                                <span
-                                    class="hover:text-green-500 dark-hover:text-green-300
-						cursor-pointer mr-3 transition duration-500 ease-in-out">
-
-                                    <svg viewBox="0 0 512 512" class="h-5 w-5 fill-current">
-                                        <path
-                                            d="M505 442.7L405.3
-								343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7
-								44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1
-								208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4
-								2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9
-								0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7
-								0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0
-								128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
-                                    </svg>
-                                </span>
-
-                                <input
-                                    class="w-12 bg-transparent focus:outline-none"
-                                    placeholder="Search" />
-
-                            </div>
-
-                        </nav>
-                        <h2 class="my-4 text-4xl font-semibold dark:text-gray-400">
-                            User list
-                        </h2>
-                        <div
-                            class="pb-2 flex items-center justify-between text-gray-600
-				dark:text-gray-400 border-b dark:border-gray-600">
-
-                            <div>
-                                <span>
-                                    <span class="text-green-500 dark:text-green-200">
-                                        431
-                                    </span>
-                                    users;
-                                </span>
-                                <span>
-                                    <span class="text-green-500 dark:text-green-200">
-                                        22
-                                    </span>
-                                    projects;
-                                </span>
-                                <span>
-                                    <span class="text-green-500 dark:text-green-200">
-                                        33
-                                    </span>
-                                    roles
-                                </span>
-                            </div>
-                            <div>
-                                <span class="capitalize">
-                                    project
-                                    <span
-                                        class="text-green-500 dark:text-green-200
-							cursor-pointer">
-                                        all
-                                    </span>
-                                </span>
-                                <span class="capitalize ml-12">
-                                    date added
-                                    <span
-                                        class="text-green-500 dark:text-green-200
-							cursor-pointer">
-                                        all time
-                                    </span>
-                                </span>
-                                <span class="capitalize ml-12">
-                                    role
-                                    <span
-                                        class="text-green-500 dark:text-green-200
-							cursor-pointer">
-                                        all
-                                    </span>
-                                </span>
-
-                            </div>
-
-                        </div>
-                        <div
-                            class="mt-6 flex justify-between text-gray-600 dark:text-gray-400">
-
-                            <div class="ml-10 pl-2 flex capitalize">
-                                <span class="ml-8 flex items-center">
-                                    name
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current text-green-500
-							dark:text-green-200"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-                                <span class="ml-24 flex items-center">
-                                    login
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-                            </div>
-
-                            <div class="mr-12 flex capitalize">
-
-                                <span class="mr-16 pr-1 flex items-center">
-                                    project
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-
-                                <span class="mr-16 pr-2 flex items-center">
-                                    role
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-
-                                <span class="mr-12 flex items-center">
-                                    status
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-                                <span class="mr-16 flex items-center">
-                                    date
-                                    <svg
-                                        class="ml-1 h-5 w-5 fill-current"
-                                        viewBox="0 0 24 24">
-                                        <path
-                                            d="M18 21l-4-4h3V7h-3l4-4 4 4h-3v10h3M2
-								19v-2h10v2M2 13v-2h7v2M2 7V5h4v2H2z"></path>
-                                    </svg>
-                                </span>
-                            </div>
-
-                        </div>
-                        <div
-                            class="mt-2 flex px-4 py-4 justify-between bg-white
-				dark:bg-gray-600 shadow-xl rounded-lg cursor-pointer ">
-
-                            <div class="flex justify-between">
-
-                                <img
-                                    class="h-12 w-12 rounded-full object-cover"
-                                    src="https://inews.gtimg.com/newsapp_match/0/8693739867/0"
-                                    alt="" />
-
-                                <div
-                                    class="ml-4 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>name</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        carmen beltran
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="ml-12 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>login</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        carmen.bel
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            <div class="flex">
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>project</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Aero treck
-                                    </span>
-                                    <span class="text-red-600 dark:text-red-400">
-                                        search
-                                    </span>
-                                    <span>2 more...</span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>role</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Designer
-                                    </span>
-                                    <span class="text-red-600 dark:text-red-400">
-                                        Designer
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>status</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        None
-                                    </span>
-                                    <span class="text-red-600 dark:text-red-400">
-                                        in work
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-8 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>final date</span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        20.02.2020
-                                    </span>
-                                    <span class="text-red-600 dark:text-red-400">
-                                        07.02.2020 11:00
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="mt-8 flex px-4 py-4 justify-between bg-white
-				dark:bg-gray-600 shadow-xl rounded-lg cursor-pointer">
-
-                            <div class="flex justify-between">
-
-                                <img
-                                    class="h-12 w-12 rounded-full object-cover"
-                                    src="https://appzzang.me/data/editor/1608/f9c387cb6bd7a0b004f975cd92cbe2d9_1471626325_6802.png"
-                                    alt="" />
-
-                                <div
-                                    class="ml-4 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>name</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        enoshima junko
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="ml-12 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>login</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        zetsbuo
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            <div class="flex">
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>project</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Aero treck
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>role</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Front-End
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>status</span>
-                                    <span class="mt-2 text-yellow-600 dark:text-yellow-400">
-                                        in work
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-8 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>final date</span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        20.02.2020 11:00
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="mt-8 flex px-4 py-4 justify-between bg-white
-				dark:bg-gray-600 shadow-xl rounded-lg cursor-pointer">
-
-                            <div class="flex justify-between">
-
-                                <img
-                                    class="h-12 w-12 rounded-full object-cover"
-                                    src="https://www.hdwallpapers.in/download/2012_darksiders_ii-1920x1080.jpg"
-                                    alt="" />
-
-                                <div
-                                    class="ml-4 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>name</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        dark siders
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="ml-12 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>login</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        dark siders
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            <div class="flex">
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>project</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Aero treck
-                                    </span>
-                                    <span class="text-black dark:text-gray-200">
-                                        Grass Max
-                                    </span>
-                                    <span class="text-black dark:text-gray-200">Mental</span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>role</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        designer
-                                    </span>
-                                    <span class="text-black dark:text-gray-200">
-                                        designer
-                                    </span>
-                                    <span class="text-black dark:text-gray-200">
-                                        illustrator
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>status</span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        on check
-                                    </span>
-                                    <span class="mt-2 text-yellow-600 dark:text-yellow-400">
-                                        in work
-                                    </span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        none
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-8 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>final date</span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        20.02.2020 11:00
-                                    </span>
-                                    <span class="mt-2 text-yellow-600 dark:text-yellow-400">
-                                        20.02.2020 13:00
-                                    </span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        20.02.2020 11:00
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div
-                            class="mt-8 mb-4 flex px-4 py-4 justify-between bg-white
-				dark:bg-gray-600 shadow-xl rounded-lg cursor-pointer">
-
-                            <div class="flex justify-between">
-
-                                <img
-                                    class="h-12 w-12 rounded-full object-cover"
-                                    src="https://media.contentapi.ea.com/content/dam/gin/images/2017/01/crysis-3-keyart.jpg.adapt.crop1x1.767p.jpg"
-                                    alt="" />
-
-                                <div
-                                    class="ml-4 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>name</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        crysis
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="ml-12 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>login</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        crysis
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            <div class="flex">
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>project</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        Killing
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>role</span>
-                                    <span class="mt-2 text-black dark:text-gray-200">
-                                        hunter
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-16 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>status</span>
-                                    <span class="mt-2 text-yellow-600 dark:text-yellow-400">
-                                        in work
-                                    </span>
-                                </div>
-
-                                <div
-                                    class="mr-8 flex flex-col capitalize text-gray-600
-						dark:text-gray-400">
-                                    <span>final date</span>
-                                    <span class="mt-2 text-green-400 dark:text-green-200">
-                                        20.02.2020 11:00
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </main>
+                <div className="staff-list flex-grow p-4">
+                   {staffList.map((staff, index) => (
+                  <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
+                    <h2 className="text-xl font-bold mb-2">{staff.firstname} {staff.lastname}</h2>
+                   <p className="text-gray-700">Email: {staff.email}</p>
+                  </div>
+                 ))}
+                </div>
 
             </div>
-            <form className="mx-96" onSubmit={initializeClinic}>
-                <div className="border-b border-gray-900/10 pb-12">
+            { showForm && (
+    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div className="relative w-full max-w-2xl max-h-full mx-auto">
+            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                    <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                        Add User
+                    </h3>
+                    <button 
+                        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                        onClick={() => setShowForm(false)}
+                    >
+                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span className="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <div className="p-6 space-y-6">
+                    <form onSubmit={initializeClinic}>
+                   <div className="border-b border-gray-900/10 pb-12">
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-3">
-                            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white-900">
                                 First name <RequiredAsterisk />
                             </label>
                             <div className="mt-2">
@@ -805,7 +348,7 @@ function StaffList() {
                         </div>
 
                         <div className="sm:col-span-3">
-                            <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white-900">
                                 Last name <RequiredAsterisk />
                             </label>
                             <div className="mt-2">
@@ -824,7 +367,7 @@ function StaffList() {
 
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-6">
-                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-white-900">
                                 Email <RequiredAsterisk />
                             </label>
                             <div className="mt-2">
@@ -840,7 +383,7 @@ function StaffList() {
                         </div>
 
                         <div className="sm:col-span-full">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-white-900">
                                 Password <RequiredAsterisk />
                             </label>
                             <div className="mt-2">
@@ -867,6 +410,11 @@ function StaffList() {
                     </div>
                 </div>
             </form>
+            </div>
+            </div>
+        </div>
+    </div>
+            )}
         </>)
 }
 
