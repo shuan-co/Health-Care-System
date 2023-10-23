@@ -79,11 +79,17 @@ function PatientList() {
                                         clinicName: clinicName
                                     });
 
+
+                                    // TODO: ADD INPATIENT INFORMATION
                                     setDoc(doc(config.firestore, clinicName, "patients", userCredential.user.uid, "baselineInformation"), {
                                         firstname: formData.firstName,
                                         lastname: formData.lastName,
                                         email: formData.email
                                     });
+                                    // 
+
+
+
                                     sendEmail();
                                     // SignOut 2nd authentication
                                     signOut(getAuth(signInAuth.auth)).then(() => {
