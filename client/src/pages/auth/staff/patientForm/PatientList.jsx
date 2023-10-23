@@ -38,6 +38,20 @@ function PatientList() {
         historyRemarks: ''
     });
 
+    const [relativeName, setRelativeName] = useState("")
+    const [relationshipWithRelative, setRelationshipWithRelative] = useState("")
+    const [relativeCondition, setRelativeCondition] = useState("")
+    const [relativeMedications, setRelativeMedications] = useState("")
+
+    const [vaccineType, setVaccineType] = useState("")
+    const [vaccineBrand, setVaccineBrand] = useState("")
+    const [vaccineDate, setVaccineDate] = useState("")
+    const [vaccineRemarks, setVaccineRemarks] = useState("")
+
+    const [historyType, setHistoryType] = useState("")
+    const [historyDate, setHistoryDate] = useState("")
+    const [historyRemarks, setHistoryRemarks] = useState("")
+
     async function initializeClinic(e) {
         e.preventDefault();
 
@@ -56,13 +70,10 @@ function PatientList() {
         
         // error in FamilyHistory.jsx
         // family history
-        const relativeName = e.target['relativeName'].value;
-        const relationshipWithRelative = e.target['relativeRelationship'];
-        const relativeCondition = e.target['relativeCondition'];
-        const relativeMedications = e.target['relativeMedications'];
 
         // error in Vaccination.jsx
         // vaccination
+        /*
         const vaccineType = e.target['vaccineType'].value;
         const vaccineBrand = e.target['vaccineBrand'].value;
         const vaccineDate = e.target['vaccineDate'].value;
@@ -72,7 +83,7 @@ function PatientList() {
         // personal medical history
         const historyType = e.target['historyType'].value;
         const historyDate = e.target['historyDate'].value;
-        const historyRemarks = e.target['historyRemarks'].value;
+        const historyRemarks = e.target['historyRemarks'].value;*/
 
         setFormData({
             ...formData,
@@ -102,8 +113,59 @@ function PatientList() {
             historyType,
             historyDate,
             historyRemarks
+
         });
+    };
+
+
+    // functions for getting family history
+    function getRelativeFullName(fullname){
+        setRelativeName(fullname)
     }
+
+    function getRelationshipWithRelative(relationship){
+        setRelationshipWithRelative(relationship)
+    }
+
+    function getRelativeCondition(condition){
+        setRelativeCondition(condition)
+    }
+
+    function getRelativeMedications(medications){
+        setRelativeMedications(medications)
+    }
+
+
+    // functions for getting vaccination
+    function getVaccineType(vaccineType){
+        setVaccineType(vaccineType)
+    }
+    
+    function getVaccineBrand(vaccineBrand){
+        setVaccineBrand(vaccineBrand)
+    }
+
+    function getVaccineDate(vaccineDate){
+        setVaccineDate(vaccineDate)
+    }
+
+    function getVaccineRemarks(vaccineRemarks){
+        setVaccineRemarks(vaccineRemarks)
+    }
+
+    // functions for getting Personal Medical History
+    function getHistoryType(historyType){
+        setHistoryType(historyType)
+    }
+
+    function getHistoryDate(historyDate){
+        setHistoryDate(historyDate)
+    }
+
+    function getHistoryRemarks(historyRemarks){
+        setHistoryRemarks(historyRemarks)
+    }
+
 
     useEffect(() => {
         console.log(config.auth.currentUser.email);
@@ -145,6 +207,18 @@ function PatientList() {
                                         firstName: formData.firstName,
                                         lastName: formData.lastName,
                                         email: formData.email,
+                                        
+                                    });
+                                    setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid, "clinics", clinicName), {
+                                        clinicName: clinicName
+                                    });
+                                    console.log(formData.relativeName)
+
+                                    // TODO: ADD INPATIENT INFORMATION
+                                    setDoc(doc(config.firestore, clinicName, "patients", userCredential.user.uid, "baselineInformation"), {
+                                        firstname: formData.firstName,
+                                        lastname: formData.lastName,
+                                        email: formData.email,
                                         phoneNumber: formData.phoneNumber,
                                         streetAddress: formData.streetAddress,
                                         sex: formData.sex,
@@ -166,17 +240,7 @@ function PatientList() {
                                         historyType: formData.historyType,
                                         historyDate: formData.historyDate,
                                         historyRemarks: formData.historyRemarks
-                                    });
-                                    setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid, "clinics", clinicName), {
-                                        clinicName: clinicName
-                                    });
-
-
-                                    // TODO: ADD INPATIENT INFORMATION
-                                    setDoc(doc(config.firestore, clinicName, "patients", userCredential.user.uid, "baselineInformation"), {
-                                        firstname: formData.firstName,
-                                        lastname: formData.lastName,
-                                        email: formData.email
+                                
                                     });
                                     // 
 
@@ -211,7 +275,6 @@ function PatientList() {
 
     return (
         <form className="mx-96 mt-10" onSubmit={initializeClinic}>
-            <asterisk />
             <div className="space-y-12">
                 <div className="border-b border-gray-900/10 pb-12">
                     <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
@@ -429,15 +492,26 @@ function PatientList() {
 
                 {/* Family History */}
                 <FamilyHistory
+                    getRelativeFullName={getRelativeFullName}
+                    getRelationshipWithRelative={getRelationshipWithRelative}
+                    getRelativeCondition={getRelativeCondition}
+                    getRelativeMedications={getRelativeMedications}
                 />
 
 
                 {/* Vaccination */}
                 <Vaccination
+                    getVaccineType={getVaccineType}
+                    getVaccineBrand={getVaccineBrand}
+                    getVaccineDate={getVaccineDate}
+                    getVaccineRemarks={getVaccineRemarks}
                 />
 
                 {/* Personal Medical History */}
                 <PersonalMedicalHistory
+                    getHistoryType={getHistoryType}
+                    getHistoryDate={getHistoryDate}
+                    getHistoryRemarks={getHistoryRemarks}
                 />
 
             </div>

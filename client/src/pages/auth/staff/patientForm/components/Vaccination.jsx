@@ -21,6 +21,7 @@ export default function Vaccination(props) {
                             autoComplete="vaccineType"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
+                            onChange={(e) => props.getVaccineType(e.target.value)}
                         />
                     </div>
                 </div>
@@ -37,6 +38,7 @@ export default function Vaccination(props) {
                             autoComplete="vaccineBrand"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
+                            onChange={(e) => props.getVaccineBrand(e.target.value)}
                         />
                     </div>
                 </div>
@@ -53,6 +55,7 @@ export default function Vaccination(props) {
                             autoComplete="vaccinationDate"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
+                            onChange={(e) => props.getVaccineDate(e.target.value)}
                         />
                     </div>
                 </div>
@@ -68,7 +71,7 @@ export default function Vaccination(props) {
                             id="vaccineRemarks"
                             autoComplete="vaccineRemarks"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            
+                            onChange={(e) => props.getVaccineRemarks(e.target.value)}
                         />
                     </div>
                 </div>

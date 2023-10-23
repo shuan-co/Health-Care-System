@@ -19,8 +19,7 @@ export default function PersonalMedicalHistory(props) {
                             id="historyType"
                             autoComplete="historyType"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            value={props.historyType}
-                            
+                            onChange={(e) => props.getHistoryType(e.target.value)}
                             required
                         />
                     </div>
@@ -37,8 +36,7 @@ export default function PersonalMedicalHistory(props) {
                             id="historyDate"
                             autoComplete="historyDate"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            value={props.historyDate}
-                            
+                            onChange={(e) => props.getHistoryDate(e.target.value)}
                         />
                     </div>
                 </div>
@@ -54,7 +52,7 @@ export default function PersonalMedicalHistory(props) {
                             id="historyRemarks"
                             autoComplete="historyRemarks"
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                            value={props.historyRemarks}
+                            onChange={(e) => props.getHistoryRemarks(e.target.value)}
                             
                         />
                     </div>

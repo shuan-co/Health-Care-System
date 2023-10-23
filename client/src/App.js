@@ -208,14 +208,7 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
-                    <Route
-                        exact path="/patientform"
-                        element={
-                            <ProtectedRoute accessLevel="patient">
-                                <Pforms />
-                            </ProtectedRoute>
-                        }
-                    />
+                    
                 </Routes>
                 <Footer />
             </div>
