@@ -332,7 +332,7 @@ function StaffList() {
 
                                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                             <div className="sm:col-span-3">
-                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white-900">
+                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white">
                                                     First name <RequiredAsterisk />
                                                 </label>
                                                 <div className="mt-2">
@@ -348,7 +348,7 @@ function StaffList() {
                                             </div>
 
                                             <div className="sm:col-span-3">
-                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white-900">
+                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white">
                                                     Last name <RequiredAsterisk />
                                                 </label>
                                                 <div className="mt-2">
@@ -367,7 +367,7 @@ function StaffList() {
 
                                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                                             <div className="sm:col-span-6">
-                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-white-900">
+                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">
                                                     Email <RequiredAsterisk />
                                                 </label>
                                                 <div className="mt-2">
@@ -383,7 +383,7 @@ function StaffList() {
                                             </div>
 
                                             <div className="sm:col-span-full">
-                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-white-900">
+                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-white">
                                                     Password <RequiredAsterisk />
                                                 </label>
                                                 <div className="mt-2">
