@@ -1,5 +1,5 @@
 import { config, signInAuth } from "../../../../firebase/Firebase";
-import { doc, setDoc, getDoc, getDocs, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc, getDocs, collection, addDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 import { useState, useEffect } from "react";
 import RequiredAsterisk from "./components/asterisk";
@@ -168,7 +168,6 @@ function PatientList() {
 
 
     useEffect(() => {
-        console.log(config.auth.currentUser.email);
         if (formData.email) {
             try {
                 // EMAIL CREDENTIALS
@@ -182,7 +181,6 @@ function PatientList() {
                         )
                         .then(
                             (result) => {
-                                console.log('Email sent:', result.text);
                                 alert('Email sent successfully!');
                             },
                             (error) => {
@@ -212,10 +210,9 @@ function PatientList() {
                                     setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid, "clinics", clinicName), {
                                         clinicName: clinicName
                                     });
-                                    console.log(formData.relativeName)
 
                                     // TODO: ADD INPATIENT INFORMATION
-                                    setDoc(doc(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), {
+                                    addDoc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), {
                                         firstname: formData.firstName,
                                         lastname: formData.lastName,
                                         email: formData.email,
@@ -242,13 +239,17 @@ function PatientList() {
                                         historyRemarks: formData.historyRemarks
 
                                     });
+
+                                    setDoc(doc(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid), {
+                                        identifier: "identifier"
+                                    });
                                     // 
 
 
 
                                     sendEmail();
                                     // SignOut 2nd authentication
-                                    signOut(getAuth(signInAuth.auth)).then(() => {
+                                    signOut(signInAuth.auth).then(() => {
                                         // Sign-out successful.
                                     }).catch((error) => {
                                         // An error happened.
@@ -273,6 +274,8 @@ function PatientList() {
         }
     }, [formData]);
     const [clinicName, setClinicName] = useState('');
+    const [loading, setLoading] = useState(true); // Initial loading state
+
     getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
         .then((docSnapshot) => {
             if (docSnapshot.exists()) {
@@ -287,15 +290,30 @@ function PatientList() {
         });
 
     const [patientList, setPatientList] = useState([]);
+    
     useEffect(() => {
         async function fetchPatients() {
-            console.log(clinicName)
             if (clinicName) {
-                const patientCollection = doc(config.firestore, clinicName, "patients");
-                // const patientSnapshot = await getDocs(patientCollection);
-                // const patientData = patientSnapshot.docs.map(doc => doc.data());
-                // setPatientList(patientData);
-                console.log(patientCollection)
+                var tempRecords = [];
+                const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
+                getDocs(patientsCollectionRef)
+                .then((querySnapshot) => {
+                    querySnapshot.forEach(async (doc) => {
+
+                    const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", doc.id, "baselineInformation");
+
+                    // Query the "baselineInformation" subcollection for each document
+                    const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
+
+                    baselineInformationSnapshot.forEach((baselineDoc) => {
+                        tempRecords.push(baselineDoc.data());
+                    });
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error getting documents from patientlist collection:", error);
+                });
+                setPatientList(tempRecords);
             }
         }
 
@@ -453,12 +471,18 @@ function PatientList() {
                 </nav>
 
                 <div className="staff-list flex-grow p-4">
-                    {patientList.map((oatient, index) => (
-                        <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
-                            <h2 className="text-xl font-bold mb-2">{oatient.firstname} {oatient.lastname}</h2>
-                            <p className="text-gray-700">Email: {oatient.email}</p>
-                        </div>
-                    ))}
+                {loading ? (
+                    // Display "Loading" while data is being fetched
+                    <p>Loading...</p>
+                ) : (
+                    // Display patient data once it's available
+                    patientList.map((patient, index) => (
+                    <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
+                        <h2 className="text-xl font-bold mb-2">{patient.firstname} {patient.lastname}</h2>
+                        <p className="text-gray-700">Email: {patient.email}</p>
+                    </div>
+                    ))
+                )}
                 </div>
 
             </div>
