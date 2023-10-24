@@ -1,93 +1,55 @@
 import React from 'react';
-import pic from "./sub.jpg";
-import { Carousel, IconButton } from "@material-tailwind/react";
+import landPage1 from "./landPage1.jpg";
+import landPage2 from "./landPage2.jpg";
+import { useNavigate } from 'react-router-dom';
 
-function CarouselCustomArrows() {
-  return (
-    <Carousel
-      className="rounded-xl"
-      prevArrow={({ handlePrev, firstIndex }) => (
-        <IconButton
-          variant="text"
-          color="white"
-          size="lg"
-          onClick={handlePrev}
-          disabled={firstIndex}
-          className="!absolute top-2/4 left-4 -translate-y-2/4"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-6 w-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-            />
-          </svg>
-        </IconButton>
-      )}
-      nextArrow={({ handleNext, lastIndex }) => (
-        <IconButton
-          variant="text"
-          color="white"
-          size="lg"
-          onClick={handleNext}
-          disabled={lastIndex}
-          className="!absolute top-2/4 !right-4 -translate-y-2/4"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-6 w-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-            />
-          </svg>
-        </IconButton>
-      )}
-    >
-      <img
-        src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-        alt="image 1"
-        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '1' }} // Adjust the height here
-      />
-      <img
-        src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
-        alt="image 2"
-        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '0' }} // Adjust the height here
-      />
-      <img
-        src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWgelcHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
-        alt="image 3"
-        style={{ height: '100%', width: '100%', objectFit: 'cover', opacity: '0' }} // Adjust the height here
-      />
-    </Carousel>
-  );
-}
 
 function Landing() {
-    return (
-        <div>
-            <div className="flex justify-center items-center m-20">
-                <img className="w-1/4 rounded-lg mr-5 mt-20 mb-28" src={pic}/>
-                <div>
-                    <h1 className="text-5xl arvo p-4">Health Center System</h1>
-                    <CarouselCustomArrows />
-                </div>
-            </div>
+  const navigate = useNavigate();
+  const navigateLogin = () => {
+    navigate('/login')
+  }
+  return (
+    <div>
+      <div className="border-b border-black">
+        <div className="flex items-center m-20">
+          <div className="w-1/2 justify-start">
+            <p className="text-5xl arvo mb-2">Healthcare Management and Logistics</p>
+            <p className="text-xl arvo">lorem ipsum</p>
+          </div>
+          <div className="justify-end w-1/3 h-3/4">
+            <form id="shadow" action="" className="bg-slate-50 h-max
+                                                    w-full rounded-lg p-10 mx-auto bg-purple-300 ">
+            <p className="exo font-bold text-2xl mb-4 text-center">Sign In Now!</p>
+            <button onClick={navigateLogin}
+                  className="rounded-full bg-white w-full text-xl
+                  h-10 font-bold lato hover:bg-gray-300/75 transition-opacity">Log In </button>
+            </form>
+          </div>
         </div>
-    );
+      </div>
+      <div className="border-b border-black">
+        <div className="flex items-center m-20 justify-end">
+          <div className="w-1/4">
+            <p className="text-5xl arvo mb-5 text-end">Made for clinics.</p>
+            <p className="text-xl arvo text-end">Elevate your clinic's efficiency and patient care with our
+                                          system. Streamline schedule, tracking, simplify appointment scheduling,
+                                          and enchance patient management</p>
+          </div>
+        </div>
+      </div>
+      <div className="border-b border-black">
+        <div className="flex items-center m-20 justify-start">
+          <div className="w-1/4">
+            <p className="text-5xl arvo mb-5 text-start">Made for patients.</p>
+            <p className="text-xl arvo text-start">Experience healthcare designed for you. We provide you with easy
+                                                    access to your mideical records, appointments, and communications. 
+                                                    Your wellness is our priority</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Landing;
