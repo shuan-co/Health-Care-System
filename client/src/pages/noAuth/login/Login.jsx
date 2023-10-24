@@ -55,65 +55,68 @@ function Login() {
     }
 
     return (
-        <>
-            <div id="loginPage" className="flex justify-center 
-                                       items-center 
-                                       h-screen
-                                       w-screen 
-                                       bg-green-50">
+        <div id="loginPage" className="flex justify-center items-center h-screen w-screen">
+            <div className="w-screen h-3/4">
+                <div className="mb-5">
+                    <h1 className="enriqueta text-center text-2xl">Health Center System</h1>
+                </div>
 
-                <form id="shadow" action="" className="bg-green-950 
-                                       h-max 
-                                       lg:w-3/12
-                                       sm:w-5/12
-                                       w-full
-                                       ms-4
-                                       me-4
-                                       rounded-2xl 
-                                       place-items-center">
+                <form id="shadow" action="" className="bg-slate-50 
+                                    h-max 
+                                    lg:w-2/6
+                                    sm:w-5/12
+                                    w-full
+                                    rounded-lg
+                                    place-items-center
+                                    p-10
+                                    mx-auto">
+                    <h1 className="exo font-bold text-xl mb-4">Sign in to your account</h1>
+                    <label htmlFor="email" className="lato text-sm mt-10">Your email</label>
                     <input type="text"
                         id="email"
                         placeholder="Email"
-                        className="rounded-full 
-                               block 
-                               w-4/5
-                               mt-9 
-                               mb-5 
-                               h-9 
-                               mx-auto 
-                               ps-4 
-                               bg-green-50" />
+                        className="rounded-lg
+                            border
+                            block 
+                            w-full
+                            mb-5 
+                            h-9 
+                            mx-auto 
+                            ps-4 
+                                    " />
+                    <label htmlFor="password" className="lato text-sm mt-10">Password</label>
                     <input type="password"
                         id="password"
                         placeholder="Password"
-                        className="rounded-full 
-                               block 
-                               w-4/5
-                               h-9 
-                               mx-auto 
-                               mb-5 
-                               ps-4 
-                               bg-green-50" />
+                        className="rounded-lg
+                            border 
+                            block 
+                            w-full
+                            h-9 
+                            mx-auto 
+                            mb-5 
+                            ps-4 
+                            " />
                     <a className="block
-                              w-max
-                              mx-auto
-                              text-neutral-100 
-                              text-center 
-                              mb-5
-                              hover:text-green-400" href="">Forgot Password?</a>
+                            w-full
+                            mx-auto
+                            text-blue-600
+                            text-center 
+                            mb-5
+                            hover:underline" href="">Forgot Password?</a>
                     <button onClick={authenticate}
                         className="rounded-full 
-                               bg-green-300 
-                               w-4/5
-                               mx-auto 
-                               mb-9 
-                               h-10 
-                               font-bold
-                               block
-                               hover:bg-green-400">Log in</button>
+                            bg-blue-700
+                            text-slate-50
+                            w-full 
+                            h-10 
+                            font-bold
+                            lato
+                            hover:bg-blue-600">Sign in</button>
                 </form>
             </div>
-        </>
+            
+        </div>
     );
 }
 export default Login;

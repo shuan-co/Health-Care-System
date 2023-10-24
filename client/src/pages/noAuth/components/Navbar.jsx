@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import { AuthContext } from '../../../AuthContext';
 import { signOut } from "firebase/auth";
 import { config } from '../../../firebase/Firebase';
-import './navbar.css'
 
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -45,10 +44,10 @@ export default function Navbar() {
 
   return (
     <header>
-      <Disclosure as="nav" style={{ backgroundColor: "#31493C", height: "100px" }}>
+      <Disclosure as="nav" style={{ height: "100px" }}>
         {({ open }) => (
           <>
-            <div className="mx-auto">
+            <div className="mx-auto shadow-2xl drop-shadow-2xl h-full">
               <div className="relative flex h-16 items-center justify-between">
                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                   <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -68,7 +67,7 @@ export default function Navbar() {
                       src={pic}
                       alt="Your Company"
                     />
-                    <span className="ml-3 text-white text-5xl font-bold">Health Care System.</span>
+                    <span className="ml-3 text-5xl enriqueta ">Health Care System</span>
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:block mt-10 absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto mr-20 sm:pr-0">
@@ -78,7 +77,7 @@ export default function Navbar() {
                         key={item.name}
                         onClick={() => handleNavigationClick(item)} // Handle navigation item click
                         className={classNames(
-                          selectedItem === item ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-white hover:text-black',
+                          selectedItem === item ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
                           'rounded-md px-3 py-2 text-2xl font-bold'
                         )}
                         aria-current={item === selectedItem ? 'page' : undefined}

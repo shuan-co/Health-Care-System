@@ -45,21 +45,21 @@ function QA() {
     ];
 
     return (
-        <div className="w-screen h-max bg-green-50 p-10 pb-50">
+        <div className="w-screen h-max p-10 pb-50">
 
-            <h1 className='text-slate-800 text-4xl mb-10 font-bold'>Frequently Asked Questions</h1>
+            <h1 className='text-slate-800 text-4xl mb-10 text-center lato'>Frequently Asked Questions</h1>
 
             <div className='space-y-8'>
                 {questions.map((question, i) => (
                     <div key={i} className={`accordion-item ${openIndex === i ? 'active' : ''}`}>
                         <div
-                            className='accordion-header text-white text-3xl cursor-pointer bg-green-950 p-7 flex justify-between items-center'
+                            className='mx-36 accordion-header text-3xl cursor-pointer bg-slate-50 p-7 flex justify-between items-center rounded-lg shadow-xl drop-shadow-2xl'
                             onClick={() => setOpenIndex(openIndex === i ? null : i)}
                         >
                             {question.title}
-                            <FontAwesomeIcon icon={faChevronDown} className={`text-white ${openIndex === i ? 'rotate-180' : ''}`} />
+                            <FontAwesomeIcon icon={faChevronDown} className={`${openIndex === i ? 'rotate-180' : ''}`} />
                         </div>
-                        <div className={`accordion-content overflow-hidden duration-200 ease-out ${openIndex === i ? 'h-auto bg-gray-100 p-4' : 'h-0'}`}>
+                        <div className={`mx-36 accordion-content overflow-hidden duration-200 ease-out ${openIndex === i ? 'h-auto bg-stone-100 p-4' : 'h-0'}`}>
                             <p className='mt-4 text-xl text-slate-800'>{question.content}</p>
                         </div>
                     </div>

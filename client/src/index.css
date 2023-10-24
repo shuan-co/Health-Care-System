@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Enriqueta&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arvo&family=Roboto:wght@100;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+:root {
+    background: rgb(255,220,249);
+    background: radial-gradient(circle, rgba(255,220,249,1) 0%, rgba(138,191,239,0.6028536414565826) 100%);
+}
+
+.enriqueta {
+    font-family: Enriqueta;
+}
+
+.exo {
+    font-family: Exo;
+}
+
+.arvo {
+    font-family: Arvo;
+}
+
+.lato {
+    font-family: Lato;
+}
