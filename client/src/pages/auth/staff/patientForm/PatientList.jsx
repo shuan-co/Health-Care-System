@@ -491,11 +491,11 @@ function PatientList() {
                     <div className="relative w-full max-w-2xl max-h-full mx-auto">
                         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                             <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                                <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                <h3 className="text-xl font-semibold text-white dark:text-white">
                                     Add User
                                 </h3>
                                 <button
-                                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-white rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                     onClick={() => setShowForm(false)}
                                 >
                                     <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -504,103 +504,15 @@ function PatientList() {
                                     <span className="sr-only">Close modal</span>
                                 </button>
                             </div>
-                            <div className="p-6 space-y-6">
-                                <form onSubmit={initializeClinic}>
-                                    <div className="border-b border-gray-900/10 pb-12">
-
-                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                            <div className="sm:col-span-3">
-                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white-900">
-                                                    First name <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="first-name"
-                                                        id="first-name"
-                                                        autoComplete="given-name"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="sm:col-span-3">
-                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white-900">
-                                                    Last name <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="last-name"
-                                                        id="last-name"
-                                                        autoComplete="last-name"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                            <div className="sm:col-span-6">
-                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-white-900">
-                                                    Email <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="email"
-                                                        name="email"
-                                                        id="email"
-                                                        autoComplete="email"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="sm:col-span-full">
-                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-white-900">
-                                                    Password <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="password"
-                                                        name="password"
-                                                        id="password"
-                                                        autoComplete="current-password"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                            <div className="sm:col-span-full">
-                                                <button
-                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
-                                                >
-                                                    Submit
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-            <form className="mx-96 mt-10" onSubmit={initializeClinic}>
-                <div className="space-y-12">
+                            <div className="p-6 space-y-6 text-white">
+                            <form className="mx-auto mt-10" onSubmit={initializeClinic}>
+                <div className="space-y-12 text-white">
                     <div className="border-b border-gray-900/10 pb-12">
-                        <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
+                        <h2 className="text-base font-semibold leading-7 text-white">Personal Information</h2>
 
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="sm:col-span-3">
-                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white">
                                     First name <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -609,14 +521,14 @@ function PatientList() {
                                         name="first-name"
                                         id="first-name"
                                         autoComplete="given-name"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="sm:col-span-3">
-                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white">
                                     Last name <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -625,7 +537,7 @@ function PatientList() {
                                         name="last-name"
                                         id="last-name"
                                         autoComplete="family-name"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -633,7 +545,7 @@ function PatientList() {
                             </div>
 
                             <div className="sm:col-span-full">
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">
                                     Email address <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -642,7 +554,7 @@ function PatientList() {
                                         name="email"
                                         type="email"
                                         autoComplete="email"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -650,7 +562,7 @@ function PatientList() {
                             </div>
 
                             <div className="sm:col-span-full">
-                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-white">
                                     Password <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -659,14 +571,14 @@ function PatientList() {
                                         name="password"
                                         id="password"
                                         autoComplete="current-password"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="sm:col-span-full">
-                                <label htmlFor="number" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="number" className="block text-sm font-medium leading-6 text-white">
                                     Phone number <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -675,7 +587,7 @@ function PatientList() {
                                         name="number"
                                         type="number"
                                         autoComplete="phone number"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -683,7 +595,7 @@ function PatientList() {
                             </div>
 
                             <div className="col-span-full">
-                                <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-white">
                                     Street address <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -692,7 +604,7 @@ function PatientList() {
                                         name="street-address"
                                         id="street-address"
                                         autoComplete="street-address"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -701,7 +613,7 @@ function PatientList() {
 
                             <div className="sm:col-span-4">
                                 <fieldset>
-                                    <legend className="text-sm font-semibold leading-6 text-gray-900">Sex <RequiredAsterisk /></legend>
+                                    <legend className="text-sm font-semibold leading-6 text-white">Sex <RequiredAsterisk /></legend>
                                     <div className="flex items-center gap-x-3">
                                         <input
                                             id="male"
@@ -712,7 +624,7 @@ function PatientList() {
 
                                             required
                                         />
-                                        <label htmlFor="male" className="block text-sm font-medium leading-6 text-gray-900 mb-1">
+                                        <label htmlFor="male" className="block text-sm font-medium leading-6 text-white mb-1">
                                             Male
                                         </label>
 
@@ -726,7 +638,7 @@ function PatientList() {
 
                                             required
                                         />
-                                        <label htmlFor="female" className="block text-sm font-medium leading-6 text-gray-900 mb-1">
+                                        <label htmlFor="female" className="block text-sm font-medium leading-6 text-white mb-1">
                                             Female
                                         </label>
                                     </div>
@@ -734,7 +646,7 @@ function PatientList() {
                             </div>
 
                             <div className="sm:col-span-6">
-                                <label htmlFor="bloodtype" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="bloodtype" className="block text-sm font-medium leading-6 text-white">
                                     Blood Type <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -742,7 +654,7 @@ function PatientList() {
                                         id="bloodtype"
                                         name="bloodtype"
                                         autoComplete="bloodtype"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
 
                                     >
                                         <option>A+</option>
@@ -758,7 +670,7 @@ function PatientList() {
                             </div>
 
                             <div className="sm:col-span-3">
-                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-white">
                                     Emergency Contact Name <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -767,7 +679,7 @@ function PatientList() {
                                         name="emergencyContactName"
                                         id="emergencyContactName"
                                         autoComplete="emergencyContactName"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -775,7 +687,7 @@ function PatientList() {
                             </div>
 
                             <div className="sm:col-span-3">
-                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-white">
                                     Emergency Contact Phone Number <RequiredAsterisk />
                                 </label>
                                 <div className="mt-2">
@@ -784,7 +696,7 @@ function PatientList() {
                                         name="emergencyContactNumber"
                                         id="emergencyContactNumber"
                                         autoComplete="emergencyContactNumber"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                         required
                                     />
@@ -792,7 +704,7 @@ function PatientList() {
                             </div>
 
                             <div className="col-span-full">
-                                <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-white">
                                     Allergies
                                 </label>
                                 <div className="mt-2">
@@ -801,7 +713,7 @@ function PatientList() {
                                         name="allergies"
                                         id="allergies"
                                         autoComplete="allergies"
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                        className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
 
                                     />
                                 </div>
@@ -841,26 +753,13 @@ function PatientList() {
                             </button>
                         </div>
                     </div>
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-full">
-                            <button
-                                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-full">
-                            <button
-                                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
-                            >
-                                Submit
-                            </button>
+                </div>
+            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            )}
         </>
     )
 }
