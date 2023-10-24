@@ -120,24 +120,24 @@ function StaffList() {
     const [showForm, setShowForm] = useState(false);
 
     getDoc(doc(config.firestore, "clinicAdmins", config.auth.currentUser.uid))
-    .then((docSnapshot) => {
-        if (docSnapshot.exists()) {
-            const clinicName = docSnapshot.data().clinicName;
-            setClinicName(clinicName);
-        } else {
-            console.error("No document found for the current user");
-        }
-    })
-    .catch((error) => {
-        console.error("Error getting document:", error);
-    });
+        .then((docSnapshot) => {
+            if (docSnapshot.exists()) {
+                const clinicName = docSnapshot.data().clinicName;
+                setClinicName(clinicName);
+            } else {
+                console.error("No document found for the current user");
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting document:", error);
+        });
 
 
     useEffect(() => {
         async function fetchStaff() {
             console.log(clinicName)
-            if (clinicName) {  
-                const staffCollection = collection(config.firestore, clinicName, "staff", "staffList");  
+            if (clinicName) {
+                const staffCollection = collection(config.firestore, clinicName, "staff", "staffList");
                 const staffSnapshot = await getDocs(staffCollection);
                 const staffData = staffSnapshot.docs.map(doc => doc.data());
                 setStaffList(staffData);
@@ -145,8 +145,8 @@ function StaffList() {
             }
         }
 
-     fetchStaff();
-    }, [clinicName]); 
+        fetchStaff();
+    }, [clinicName]);
 
 
     return (
@@ -203,15 +203,15 @@ function StaffList() {
                     </div>
 
                     <button
-                       class="mt-8 flex items-center justify-between py-3 px-2 text-white
+                        class="mt-8 flex items-center justify-between py-3 px-2 text-white
                        dark:text-gray-200 bg-green-400 dark:bg-green-500 rounded-lg shadow"
-                       onClick={() => setShowForm(prevShowForm => !prevShowForm)}
+                        onClick={() => setShowForm(prevShowForm => !prevShowForm)}
                     >
-                       <span>Add user</span>
-                       <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
-                       </svg>
-                       </button>
+                        <span>Add user</span>
+                        <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+                        </svg>
+                    </button>
 
 
                     <ul class="mt-2 text-gray-600">
@@ -299,123 +299,124 @@ function StaffList() {
                     </div>
                 </nav>
                 <div className="staff-list flex-grow p-4">
-                   {staffList.map((staff, index) => (
-                  <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
-                    <h2 className="text-xl font-bold mb-2">{staff.firstname} {staff.lastname}</h2>
-                   <p className="text-gray-700">Email: {staff.email}</p>
-                  </div>
-                 ))}
+                    {staffList.map((staff, index) => (
+                        <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
+                            <h2 className="text-xl font-bold mb-2">{staff.firstname} {staff.lastname}</h2>
+                            <p className="text-gray-700">Email: {staff.email}</p>
+                        </div>
+                    ))}
                 </div>
 
             </div>
-            { showForm && (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-        <div className="relative w-full max-w-2xl max-h-full mx-auto">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                    <h3 className="text-xl font-semibold text-white-900 dark:text-white">
-                        Add User
-                    </h3>
-                    <button 
-                        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => setShowForm(false)}
-                    >
-                        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                        </svg>
-                        <span className="sr-only">Close modal</span>
-                    </button>
+            {showForm && (
+                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div className="relative w-full max-w-2xl max-h-full mx-auto">
+                        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                            <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                                <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                    Add User
+                                </h3>
+                                <button
+                                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    onClick={() => setShowForm(false)}
+                                >
+                                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                    </svg>
+                                    <span className="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-6">
+                                <form onSubmit={initializeClinic}>
+                                    <div className="border-b border-gray-900/10 pb-12">
+
+                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                            <div className="sm:col-span-3">
+                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white-900">
+                                                    First name <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="text"
+                                                        name="first-name"
+                                                        id="first-name"
+                                                        autoComplete="given-name"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="sm:col-span-3">
+                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white-900">
+                                                    Last name <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="text"
+                                                        name="last-name"
+                                                        id="last-name"
+                                                        autoComplete="last-name"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                            <div className="sm:col-span-6">
+                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-white-900">
+                                                    Email <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="email"
+                                                        name="email"
+                                                        id="email"
+                                                        autoComplete="email"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="sm:col-span-full">
+                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-white-900">
+                                                    Password <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="password"
+                                                        name="password"
+                                                        id="password"
+                                                        autoComplete="current-password"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                            <div className="sm:col-span-full">
+                                                <button
+                                                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
+                                                >
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="p-6 space-y-6">
-                    <form onSubmit={initializeClinic}>
-                   <div className="border-b border-gray-900/10 pb-12">
-
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-3">
-                            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-white-900">
-                                First name <RequiredAsterisk />
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    type="text"
-                                    name="first-name"
-                                    id="first-name"
-                                    autoComplete="given-name"
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="sm:col-span-3">
-                            <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-white-900">
-                                Last name <RequiredAsterisk />
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    type="text"
-                                    name="last-name"
-                                    id="last-name"
-                                    autoComplete="last-name"
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-6">
-                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-white-900">
-                                Email <RequiredAsterisk />
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    autoComplete="email"
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="sm:col-span-full">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-white-900">
-                                Password <RequiredAsterisk />
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    autoComplete="current-password"
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                        <div className="sm:col-span-full">
-                            <button
-                                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mx-auto"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            </div>
-            </div>
-        </div>
-    </div>
             )}
-        </>)
+        </>
+    )
 }
 
 export default StaffList;

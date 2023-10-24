@@ -4,10 +4,12 @@
     box-sizing: border-box;
 }
 
-body, html {
+/* body,
+html {
     overflow: hidden;
-}
+} */
 
-body, html {
+body,
+html {
     height: 100%;
 }

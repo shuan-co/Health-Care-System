@@ -104,7 +104,7 @@ const ProtectedRoute = ({ children, accessLevel }) => {
 const App = () => {
     return (
         <AuthProvider>
-            <div className="h-max w-screen bg-green-50" style={{ overflow: 'auto', height: '300vh' }}>
+            <div className="h-max w-screen bg-green-50">
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<Landing />} />
@@ -208,7 +208,7 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
-                    
+
                 </Routes>
                 <Footer />
             </div>
