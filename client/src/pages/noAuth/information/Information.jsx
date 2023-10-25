@@ -558,7 +558,7 @@ function Information() {
                 </Dialog>
             </Transition.Root>
 
-            <div className="relative isolate overflow-hidden py-24 sm:py-32" style={{ height: "100vh", backgroundColor: "#F7FFF6" }}>
+            <div className="relative isolate overflow-hidden py-24 sm:py-32" style={{ height: "100vh" }}>
 
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div
