@@ -19,7 +19,7 @@ export default function Vaccination(props) {
                             name="vaccineType"
                             id="vaccineType"
                             autoComplete="vaccineType"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
                             onChange={(e) => props.getVaccineType(e.target.value)}
                         />
@@ -36,7 +36,7 @@ export default function Vaccination(props) {
                             name="vaccineBrand"
                             id="vaccineBrand"
                             autoComplete="vaccineBrand"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
                             onChange={(e) => props.getVaccineBrand(e.target.value)}
                         />
@@ -53,7 +53,7 @@ export default function Vaccination(props) {
                             name="vaccinationDate"
                             id="vaccinationDate"
                             autoComplete="vaccinationDate"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             required
                             onChange={(e) => props.getVaccineDate(e.target.value)}
                         />
@@ -70,7 +70,7 @@ export default function Vaccination(props) {
                             name="vaccineRemarks"
                             id="vaccineRemarks"
                             autoComplete="vaccineRemarks"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             onChange={(e) => props.getVaccineRemarks(e.target.value)}
                         />
                     </div>

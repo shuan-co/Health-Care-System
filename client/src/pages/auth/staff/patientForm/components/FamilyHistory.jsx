@@ -16,7 +16,7 @@ export default function FamilyHistory(props) {
                             name="relativeName"
                             id="relativeName"
                             autoComplete="relativeName"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                             onChange={(e) => props.getRelativeFullName(e.target.value)}
                             required
                         />
@@ -33,7 +33,7 @@ export default function FamilyHistory(props) {
                             name="relativeRelationship"
                             id="relativeRelationship"
                             autoComplete="relativeRelationship"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                             onChange={(e) => props.getRelationshipWithRelative(e.target.value)}
                             required
                         />
@@ -50,7 +50,7 @@ export default function FamilyHistory(props) {
                             name="relativeCondition"
                             id="relativeCondition"
                             autoComplete="relativeCondition"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                             onChange={(e) => props.getRelativeCondition(e.target.value)}
                         />
                     </div>
@@ -66,7 +66,7 @@ export default function FamilyHistory(props) {
                             name="relativeMedications"
                             id="relativeMedications"
                             autoComplete="relativeMedications"
-                            className="block w-full rounded-md border-0 py-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                             onChange={(e) => props.getRelativeMedications(e.target.value)}
                         />
                     </div>
