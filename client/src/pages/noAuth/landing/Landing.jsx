@@ -1,6 +1,9 @@
 import React from 'react';
-import landPage1 from "./landPage1.jpg";
-import landPage2 from "./landPage2.jpg";
+import landPage1 from "./landPage1.png";
+import landPage2 from "./landPage2.png";
+import landPage3 from "./landPage3.png";
+import landPage4 from "./landblend.jpg";
+import landPage5 from "./landPage5.png";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -11,15 +14,14 @@ function Landing() {
   }
   return (
     <div>
-      <div className="border-b border-black">
+      <div className="border-b border-black bg-center bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage1})` }}>
         <div className="flex items-center m-20">
           <div className="w-1/2 justify-start">
-            <p className="text-5xl arvo mb-2">Healthcare Management and Logistics</p>
+            <p className="text-5xl arvo mb-2 ">Healthcare Management and Logistics</p>
             <p className="text-xl arvo">lorem ipsum</p>
           </div>
           <div className="justify-end w-1/3 h-3/4">
-            <form id="shadow" action="" className="bg-slate-50 h-max
-                                                    w-full rounded-lg p-10 mx-auto bg-purple-300 ">
+            <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-300">
             <p className="exo font-bold text-2xl mb-4 text-center">Sign In Now!</p>
             <button onClick={navigateLogin}
                   className="rounded-full bg-white w-full text-xl
@@ -28,8 +30,8 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="border-b border-black">
-        <div className="flex items-center m-20 justify-end">
+      <div className="border-b border-black bg-center bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage2})` }}>
+        <div className="flex items-end m-20 justify-end">
           <div className="w-1/4">
             <p className="text-5xl arvo mb-5 text-end">Made for clinics.</p>
             <p className="text-xl arvo text-end">Elevate your clinic's efficiency and patient care with our
@@ -38,7 +40,7 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="border-b border-black">
+      <div className="border-b border-black bg-top bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage3})` }}>
         <div className="flex items-center m-20 justify-start">
           <div className="w-1/4">
             <p className="text-5xl arvo mb-5 text-start">Made for patients.</p>

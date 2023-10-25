@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import pic from "./sub.jpg"
+import pic from "./sub.png"
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../../AuthContext';
