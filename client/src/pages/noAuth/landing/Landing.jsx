@@ -2,8 +2,6 @@ import React from 'react';
 import landPage1 from "./landPage1.png";
 import landPage2 from "./landPage2.png";
 import landPage3 from "./landPage3.png";
-import landPage4 from "./landblend.jpg";
-import landPage5 from "./landPage5.png";
 import { useNavigate } from 'react-router-dom';
 
 
