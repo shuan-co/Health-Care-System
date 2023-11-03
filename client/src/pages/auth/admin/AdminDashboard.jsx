@@ -141,7 +141,7 @@ function AdminDashboard() {
     return (
         <form className="w-2/6 mx-auto h-screen flex justify-center items-center" onSubmit={initializeClinic}>
             <div className="border-b border-gray-900/10 pb-12 h-3/5">
-                <h1 className="text-2xl text-center">Register a Super Admin</h1>
+                <h1 className="text-2xl text-center">Register an Admin</h1>
 
                 <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div className="sm:col-span-3">

@@ -22,8 +22,8 @@ function Landing() {
             <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-300">
             <p className="exo font-bold text-2xl mb-4 text-center">Sign In Now!</p>
             <button onClick={navigateLogin}
-                  className="rounded-full bg-white w-full text-xl
-                  h-10 font-bold lato hover:bg-gray-300/75 transition-opacity">Log In </button>
+                  className="rounded-full bg-pink-300 w-full text-xl
+                  h-10 font-bold lato hover:bg-pink-400 transition-opacity">Log In </button>
             </form>
           </div>
         </div>
