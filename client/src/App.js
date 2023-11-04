@@ -20,6 +20,8 @@ import ClinicAdminDashboard from "./pages/auth/clinicAdmin/ClinicAdminDashboard"
 import StaffList from "./pages/auth/clinicAdmin/staffForm/StaffList";
 import StaffDashboard from "./pages/auth/staff/StaffDashboard";
 import PatientList from "./pages/auth/staff/patientForm/PatientList";
+import PersonalInformation from "./pages/auth/patient/PersonalInformation";
+import RecordDiagnoses from "./pages/auth/patient/RecordDiagnoses";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -148,6 +150,24 @@ const App = () => {
                     />
 
                     {/* PATIENT ROUTES */}
+                    <Route
+                        exact path="/patient/personal-information"
+                        element={
+                            <ProtectedRoute accessLevel="gmail">
+                                <PersonalInformation />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        exact path="/patient/record-diagnoses"
+                        element={
+                            <ProtectedRoute accessLevel="gmail">
+                                <RecordDiagnoses />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     <Route
                         exact path="/patient"
                         element={

@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import './ClinicAdminDashboard.css'
-import { user } from '../../../firebase/Firebase'
+import { user, db } from '../../../firebase/Firebase'
 import { doc, getDoc } from "firebase/firestore"; 
-import { db } from "../../../firebase/Firebase";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 
