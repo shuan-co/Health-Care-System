@@ -5,19 +5,13 @@ import { onAuthStateChanged } from "firebase/auth";
 
 // Components
 import Navbar from "./pages/noAuth/components/Navbar";
-import NavPatient from "./pages/auth/patient/components/NavPatient";
 import Landing from "./pages/noAuth/landing/Landing";
 import Information from "./pages/noAuth/information/Information";
 import QA from "./pages/noAuth/qa/QA";
 import Login from "./pages/noAuth/login/Login";
-import Cdashboard from "./pages/auth/clinic/Cdashboard";
-import ClinicTest from './pages/auth/clinic/ClinicTest';
-import ClinicInformation from './pages/auth/clinic/ClinicInformation';
 import Pdashboard from "./pages/auth/patient/Pdashboard";
-import Ldashboard from "./pages/auth/locators/Ldashboard";
 import { AuthProvider } from './AuthContext';
 import Footer from "./pages/noAuth/components/Footer";
-import Pforms from "./pages/auth/patient/Pforms";
 import Test from "./pages/auth/patient/Test";
 
 // NEW CHANGES
@@ -88,14 +82,9 @@ const ProtectedRoute = ({ children, accessLevel }) => {
             return <> <Navigate to="/clinic-admin" replace /> <ClinicAdminDashboard /></>
         } else if (userAccess === "staff") {
             return <> <Navigate to="/clinic-staff" replace /> <StaffDashboard /></>
-        } else if (userAccess === "clinic") {
-            return <> <Navigate to="/clinic" replace /> <Cdashboard /></>
         } else if (userAccess === "gmail") {
             return <> <Navigate to="/patient" replace /> <Pdashboard /></>
-        } else if (userAccess === "locator") {
-            return <> <Navigate to="/locator" replace /> <Ldashboard /></>
         }
-
     }
 
     return children;
@@ -158,31 +147,6 @@ const App = () => {
                         }
                     />
 
-                    <Route
-                        exact path="/clinic"
-                        element={
-                            <ProtectedRoute accessLevel="clinic">
-                                <Cdashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        exact path="/clinictest"
-                        element={
-                            <ProtectedRoute accessLevel="clinic">
-                                <ClinicTest />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        exact path="/clinicinformation"
-                        element={
-                            <ProtectedRoute accessLevel="clinic">
-                                <ClinicInformation />
-                            </ProtectedRoute>
-                        }
-                    />
-
                     {/* PATIENT ROUTES */}
                     <Route
                         exact path="/patient"
@@ -192,14 +156,7 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
-                    <Route
-                        exact path="/locator"
-                        element={
-                            <ProtectedRoute accessLevel="locator">
-                                <Ldashboard />
-                            </ProtectedRoute>
-                        }
-                    />
+
                     <Route
                         exact path="/test"
                         element={
