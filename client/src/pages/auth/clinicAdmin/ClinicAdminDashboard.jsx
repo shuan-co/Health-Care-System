@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import './ClinicAdminDashboard.css'
-import { user, db } from '../../../firebase/Firebase'
-import { doc, getDoc } from "firebase/firestore"; 
+import { user, db, config } from '../../../firebase/Firebase'
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth"; 
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 
@@ -18,17 +19,19 @@ function ClinicAdminDashboard() {
     useEffect(() => {
         try {
           async function getClinicName() {
-            if (user.uid) {
-              const docRef = doc(db, "clinicAdmins", user.uid);
-              const docSnap = await getDoc(docRef);
-      
-              if (docSnap.exists()) {
-                setClinicName(docSnap.data().clinicName);
-                console.log(clinicName);
-              } else {
-                console.log("No such document!");
-              }
-            }
+            const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
+                if (user.uid) {
+                const docRef = doc(db, "clinicAdmins", user.uid);
+                const docSnap = await getDoc(docRef);
+        
+                if (docSnap.exists()) {
+                    setClinicName(docSnap.data().clinicName);
+                    console.log(clinicName);
+                } else {
+                    console.log("No such document!");
+                }
+                }
+            })
           }
           getClinicName();
         } catch (error) {
@@ -36,18 +39,21 @@ function ClinicAdminDashboard() {
         }
       
         try {
+            
           async function getAdminName() {
-            if (clinicName) {
-              const docRef = doc(db, clinicName, "admin");
-              const docSnap = await getDoc(docRef);
-      
-              if (docSnap.exists()) {
-                setAdminName(docSnap.data().firstname + " " + docSnap.data().lastname);
-                console.log(adminName);
-              } else {
-                console.log("No such document!");
-              }
-            }
+            const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
+                if (clinicName) {
+                const docRef = doc(db, clinicName, "admin");
+                const docSnap = await getDoc(docRef);
+        
+                if (docSnap.exists()) {
+                    setAdminName(docSnap.data().firstname + " " + docSnap.data().lastname);
+                    console.log(adminName);
+                } else {
+                    console.log("No such document!");
+                }
+                }
+            })
           }
       
           getAdminName();
