@@ -22,6 +22,8 @@ import StaffDashboard from "./pages/auth/staff/StaffDashboard";
 import PatientList from "./pages/auth/staff/patientForm/PatientList";
 import PersonalInformation from "./pages/auth/patient/PersonalInformation";
 import RecordDiagnoses from "./pages/auth/patient/RecordDiagnoses";
+import Terms from "./pages/noAuth/policy/Terms";
+import Privacy from "./pages/noAuth/policy/Privacy";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -102,7 +104,8 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
-
+                    <Route path="/tac" element={<Terms />} />
+                    <Route path="/policies" element={<Privacy />} />
                     {/* SUPER ADMIN ROUTES */}
                     <Route
                         exact path="/admin"
