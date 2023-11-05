@@ -235,7 +235,7 @@ function StaffDashboard() {
                                     });
 
                                     // TODO: ADD INPATIENT INFORMATION
-                                    addDoc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), {
+                                    setDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), "baselineInformation"), {
                                         firstname: formData.firstName,
                                         lastname: formData.lastName,
                                         email: formData.email,
@@ -356,7 +356,7 @@ function StaffDashboard() {
                                 </div>
                             </div>
                             <div style={{ width: "152vw", height: "30vh", display: "flex", alignItems: "center", marginTop: "4vh", marginLeft: "8.5vw" }}>
-                                <div onClick={() => navigate('./patientform')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                                <div onClick={() => navigate('./patientlist')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                                     <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
                                     </div>
                                     <br />

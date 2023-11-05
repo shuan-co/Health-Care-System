@@ -1,7 +1,8 @@
 import { config, signInAuth } from "../../../../firebase/Firebase";
-import { doc, setDoc, getDoc, getDocs, collection, addDoc, startAfter, limit, query, startAt } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { doc, setDoc, getDoc, getDocs, collection, addDoc, startAfter, limit, query, startAt, where } from "firebase/firestore";
+import { useState, useEffect, Fragment, useRef } from "react";
 import Sidebar from "../../components/Sidebar";
+import { Dialog, Transition } from '@headlessui/react'
 import pfp from './pfp.jpg'
 
 function PatientList() {
@@ -43,7 +44,9 @@ function PatientList() {
                         const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                         baselineInformationSnapshot.forEach((baselineDoc) => {
-                            tempRecords.push(baselineDoc.data());
+                            const docData = baselineDoc.data();
+                            docData.uid = doc.id; // Add the uid field
+                            tempRecords.push(docData);
                         });
                     }
                     setFirstVisible(querySnapshot.docs[0]);
@@ -77,7 +80,9 @@ function PatientList() {
                     const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                     baselineInformationSnapshot.forEach((baselineDoc) => {
-                        tempRecords.push(baselineDoc.data());
+                        const docData = baselineDoc.data();
+                        docData.uid = doc.id; // Add the uid field
+                        tempRecords.push(docData);
                     });
                 }
                 setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
@@ -104,7 +109,9 @@ function PatientList() {
                     const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                     baselineInformationSnapshot.forEach((baselineDoc) => {
-                        tempRecords.push(baselineDoc.data());
+                        const docData = baselineDoc.data();
+                        docData.uid = doc.id; // Add the uid field
+                        tempRecords.push(docData);
                     });
                 }
                 setFirstVisible(querySnapshot.docs[0]);
@@ -116,9 +123,120 @@ function PatientList() {
             }
         }
     }
-
+    const [patientInfo, setCurrentInformation] = useState([])
+    const showInformation = async (key) => {
+        console.log(`Clicked on element with key: ${key}`);
+        const info = doc(config.firestore, clinicName, "patients", "patientlist", key, "baselineInformation", "baselineInformation");
+        const infoSnapshot = await getDoc(info)
+        setCurrentInformation(infoSnapshot.data());
+        setOpen(true);
+        console.log(patientInfo);
+    }
+    const [open, setOpen] = useState(false)
+    const cancelButtonRef = useRef(null)
     return (
         <>
+            <Transition.Root show={open} as={Fragment}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                            >
+                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                        <div className="sm:flex sm:items-start">
+                                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-400 sm:mx-0 sm:h-10 sm:w-10">
+                                                {/* Icon or Avatar */}
+                                            </div>
+                                            <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                                <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                                                    Patient Information
+                                                </Dialog.Title>
+                                                <div className="mt-2">
+                                                    <p className="text-sm text-gray-500">
+                                                        {/* Patient Information */}
+                                                        First Name: {patientInfo.firstname}
+                                                        <br />
+                                                        Last Name: {patientInfo.lastname}
+                                                        <br />
+                                                        Allergies: {patientInfo.allergies}
+                                                        <br />
+                                                        Blood Type: {patientInfo.bloodtype}
+                                                        <br />
+                                                        Email: {patientInfo.email}
+                                                        <br />
+                                                        Emergency Contact Name: {patientInfo.emergencyContactName}
+                                                        <br />
+                                                        Emergency Contact Number: {patientInfo.emergencyContactNumber}
+                                                        <br />
+                                                        Phone Number: {patientInfo.phoneNumber}
+                                                        <br />
+                                                        Relationship with Relative: {patientInfo.relationshipWithRelative}
+                                                        <br />
+                                                        Relative Condition: {patientInfo.relativeCondition}
+                                                        <br />
+                                                        Relative Medications: {patientInfo.relativeMedications}
+                                                        <br />
+                                                        Relative Name: {patientInfo.relativeName}
+                                                        <br />
+                                                        Sex: {patientInfo.sex}
+                                                        <br />
+                                                        Street Address: {patientInfo.streetAddress}
+                                                        <br />
+                                                        Vaccine Brand: {patientInfo.vaccineBrand}
+                                                        <br />
+                                                        Vaccine Date: {patientInfo.vaccineDate}
+                                                        <br />
+                                                        Vaccine Remarks: {patientInfo.vaccineRemarks}
+                                                        <br />
+                                                        Vaccine Type: {patientInfo.vaccineType}
+                                                        <br />
+                                                        History Date: {patientInfo.historyDate}
+                                                        <br />
+                                                        History Remarks: {patientInfo.historyRemarks}
+                                                        <br />
+                                                        History Type: {patientInfo.historyType}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                        <button
+                                            type="button"
+                                            className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
+                                            onClick={() => setOpen(false)}
+                                            ref={cancelButtonRef}
+                                        >
+                                            Return
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition.Root>
+
             <div className="h-screen w-full flex overflow-hidden">
                 <nav className="flex flex-col bg-gray-200 dark:bg-gray-900 w-64 px-12 pt-4 pb-6">
 
@@ -309,7 +427,7 @@ function PatientList() {
                                         </thead>
                                         <tbody class="text-gray-500">
                                             {patientList.map((patient, index) => (
-                                                <tr>
+                                                <tr key={patient.uid} onClick={() => showInformation(patient.uid)} style={{ cursor: "pointer" }}>
                                                     <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                                                         <span
                                                             className={`rounded-full px-3 py-1 text-s font-semibold ${patient.sex === 'Male' ? 'bg-blue-200 text-blue-900' : 'bg-red-200 text-red-900'
