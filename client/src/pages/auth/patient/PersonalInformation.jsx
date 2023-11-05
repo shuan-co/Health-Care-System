@@ -73,8 +73,8 @@ export default function PersonalInformation() {
     <div className='h-screen w-full flex overflow-hidden bg-white'>
       <Sidebar selected={selected} name={information.firstname + " " + information.lastname} changeSelected={changeSelected}/>
       
-        <div className='p-10 grid grid-cols-2'>
-            <div className=''>
+        <div className='p-10 grid grid-cols-2 gap-10'>
+            <div className='bg-blue-100 rounded-lg p-5 lato'>
                 <h1 className='text-2xl'>My Personal Information</h1>
                 <div className='ms-5 mt-2 space-y-2'>
                     <div>
@@ -100,7 +100,7 @@ export default function PersonalInformation() {
                 </div>
             </div>
             
-            <div className=''>
+            <div className='bg-blue-100 rounded-lg p-5 lato'>
                 <h1 className='text-2xl'>Emergency Contact</h1>
                 <div className='ms-5 mt-2 space-y-2'>
                     <div>
@@ -119,7 +119,7 @@ export default function PersonalInformation() {
             </div>
 
             
-            <div>
+            <div className='bg-blue-100 rounded-lg p-5 lato'>
                 <h1 className='text-2xl'>Family History</h1>
                 <div className='ms-5 mt-2 space-y-2'>
                     <div>
@@ -141,7 +141,7 @@ export default function PersonalInformation() {
                 </div>
             </div>
 
-            <div>
+            <div className='bg-blue-100 rounded-lg p-5 lato'>
                 <h1 className=' text-2xl'>Vaccination</h1>
                 <div className='ms-5 mt-2 space-y-2'>
                     <div>
@@ -163,7 +163,7 @@ export default function PersonalInformation() {
                 </div>
             </div>
 
-            <div>
+            <div className='bg-blue-100 rounded-lg p-5 lato'>
                 <h1 className=' text-2xl'>Personal Medical History</h1>
                 <div className='ms-5 mt-2 space-y-2'>
                     <div>
