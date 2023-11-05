@@ -19,7 +19,7 @@ function Sidebar(props) {
                 <img className="rounded-full w-40 h-40 mb-8" src={pfp}></img>
                 <h1 className="mx-auto text-center uppercase text-2xl text-blue-800 font-bold">{props.name}</h1>
             </div>
-            <div className="mt-12 space-y-12">
+            <div className="mt-8 space-y-12">
                 {selected == "dashboard" ? (
                     <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
                         <button className="text-xl " onClick={() => props.changeSelected("dashboard")}>{house}</button>
