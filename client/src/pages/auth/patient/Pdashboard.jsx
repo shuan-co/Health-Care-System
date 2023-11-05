@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import NavPatient from './components/NavPatient';
 import { useEffect, useState } from 'react';
-import { db, user } from '../../../firebase/Firebase';
+import { db, user, config } from '../../../firebase/Firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import "./pdashboard.css"
+import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '../components/Sidebar';
 
 function Pdashboard() {
@@ -28,39 +29,21 @@ function Pdashboard() {
     useEffect(() => {
         try {
             async function getPatientDoc() {
-                if (user.uid) {
-                  const docRef = doc(db, "clinicPatient", user.uid);
-                  const docSnap = await getDoc(docRef);
-          
-                  if (docSnap.exists()) {
-                    setFullName(docSnap.data().firstName + " " + docSnap.data().lastName);
-                  } else {
-                    console.log("No such document!");
-                  }
-                }
+                const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
+                    if (user.uid) {
+                    const docRef = doc(db, "clinicPatient", user.uid);
+                    const docSnap = await getDoc(docRef);
+            
+                    if (docSnap.exists()) {
+                        setFullName(docSnap.data().firstName + " " + docSnap.data().lastName);
+                    } else {
+                        console.log("No such document!");
+                    }
+                    }
+                });
               }
               getPatientDoc();
 
-        } catch (error) {
-            console.log(error)
-        }
-
-        try {
-            async function getClinics(){
-                const q = query(collection(db, "clinicPatient", user.uid, "clinics"), );
-
-                const querySnapshot = await getDocs(q);
-                const clinicsArray = []
-                querySnapshot.forEach((doc) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    
-                    clinicsArray.push(doc.id)
-                });      
-                setClinics(clinicsArray)  
-            }
-            getClinics()
-            
-        
         } catch (error) {
             console.log(error)
         }
