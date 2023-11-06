@@ -7,13 +7,13 @@ import { faHouse, faUser, faInbox, faArrowRightFromBracket } from '@fortawesome/
 const house = <FontAwesomeIcon icon={faHouse} />
 const profile = <FontAwesomeIcon icon={faUser} />
 const inbox = <FontAwesomeIcon icon={faInbox} />
-const logout = <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180}/>
+const logout = <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />
 
 function Sidebar(props) {
     const selected = props.selected;
     const name = props.adminName
     return (
-        <nav className="flex flex-col w-64 px-12 pt-4 pb-6 navbar">
+        <nav className="flex flex-col w-64 px-12 pt-4 pb-6 navbar" style={{ boxShadow: "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px" }}>
             <div className="mt-10">
                 <img className="w-10 h-10 block mx-auto mb-3" src={sub}></img>
                 <img className="rounded-full w-40 h-40 mb-8" src={pfp}></img>
@@ -30,34 +30,34 @@ function Sidebar(props) {
                         <button className="text-xl" onClick={() => props.changeSelected("dashboard")}>{house}</button>
                         <button className="text-xl ms-3 exo" onClick={() => props.changeSelected("dashboard")}> Dashboard</button>
                     </div>
-                ) }
-                
+                )}
+
 
                 {selected == "profile" ? (
-                        <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
+                    <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
                         <button className="text-xl" onClick={() => props.changeSelected("profile")}>{profile} </button>
                         <button className="text-xl ms-4 exo" onClick={() => props.changeSelected("profile")}>Profile</button>
-                        </div>
+                    </div>
                 ) : (
                     <div className="w-52 h-10 hover:bg-indigo-300 hover:bg-opacity-60 hover:rounded-tl-[19px] hover:rounded-bl-[19px] ps-2 pt-1">
                         <button className="text-xl" onClick={() => props.changeSelected("profile")}>{profile}</button>
                         <button className="text-xl ms-4 exo" onClick={() => props.changeSelected("profile")}>Profile</button>
                     </div>
-                ) }
+                )}
 
                 {selected == "inbox" ? (
-                        <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
+                    <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
                         <div>
                             <button className="text-xl" onClick={() => props.changeSelected("inbox")}>{inbox}</button>
                             <button className="text-xl ms-3 exo" onClick={() => props.changeSelected("inbox")}>Inbox</button>
                         </div>
-                        </div>
+                    </div>
                 ) : (
                     <div className="w-52 h-10 hover:bg-indigo-300 hover:bg-opacity-60 hover:rounded-tl-[19px] hover:rounded-bl-[19px] ps-2 pt-1">
                         <button className="text-xl" onClick={() => props.changeSelected("inbox")}>{inbox}</button>
                         <button className="text-xl ms-3 exo" onClick={() => props.changeSelected("inbox")}>Inbox</button>
                     </div>
-                ) }
+                )}
 
                 <div className="w-52 h-10 hover:bg-indigo-300 hover:bg-opacity-60 hover:rounded-tl-[19px] hover:rounded-bl-[19px] ps-2 pt-1">
                     <button className="text-xl">{logout}</button>

@@ -13,6 +13,10 @@ import FamilyHistory from './patientForm/components/FamilyHistory';
 import PersonalMedicalHistory from './patientForm/components/PersonalMedicalHistory';
 import Vaccination from './patientForm/components/Vaccination';
 
+import patientIco from "./patient.png";
+import outPatientIco from "./outpatient.png";
+import calendarIco from "./calendar.png";
+
 function StaffDashboard() {
     const [fullName, setFullName] = useState("")
     const [selected, setSelected] = useState("dashboard")
@@ -336,32 +340,141 @@ function StaffDashboard() {
     })
     return (
         <>
-            <div className="h-screen w-full flex overflow-hidden bg-white">
+            <div className="h-screen w-full flex overflow-hidden" style={{ backgroundColor: "#dcdef3" }}>
                 <Sidebar selected={selected} name={fullName} changeSelected={changeSelected} />
                 {selected == "dashboard" ? (
-                    <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "5vw", marginTop: "10vh" }}>
+                    <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "5vw", marginTop: "5vh" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span className="text-black text-3xl font-semibold" style={{ marginLeft: "10vw" }}>
+                                WELCOME BACK, {fullName}!
+                            </span>
                             <div style={{ width: "70vw", height: "50vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                <div onClick={() => setShowForm(prevShowForm => !prevShowForm)} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                                    <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
+                                <div
+                                    onClick={() => setShowForm((prevShowForm) => !prevShowForm)}
+                                    className="Pdashboard-Card-BoxShadow"
+                                    style={{
+                                        border: "2px solid #00008B",
+                                        width: "33%",
+                                        height: "85%",
+                                        borderRadius: "20px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "column",
+                                        background: "linear-gradient(to bottom right, #2657B7, #A5E4FF)",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                        }}
+                                    >
+                                        <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
+                                            PATIENTS
+                                        </span>
                                     </div>
-                                    <br />
-                                    <span className="ml-3 text-blue-900 text-2xl text-center font-semibold">Create New Patient</span>
+                                    <div
+                                        style={{
+                                            background: `url(${patientIco}) center center no-repeat`,
+                                            backgroundSize: "cover",
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "10px",
+                                            marginTop: "100px"
+                                        }}
+                                    ></div>
                                 </div>
-                                <div onClick={() => navigate('./record-diagnoses')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginLeft: "8vh" }}>
-                                    <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
+
+                                <div
+                                    onClick={() => navigate('./record-diagnoses')}
+                                    className="Pdashboard-Card-BoxShadow"
+                                    style={{
+                                        border: "2px solid #6f183e",
+                                        background: "linear-gradient(to bottom right, #E41818, #FB57FE)",
+                                        width: "33%",
+                                        height: "85%",
+                                        borderRadius: "20px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "column",
+                                        marginLeft: "8vh",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            textAlign: "center", // Add this line to center text within the div
+                                        }}
+                                    >
+                                        <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
+                                            OUTPATIENT <br /> FORM
+                                        </span>
                                     </div>
-                                    <br />
-                                    <span className="ml-3 text-blue-900 text-2xl text-center font-semibold">New Outpatient Form</span>
+                                    <div
+                                        style={{
+                                            background: `url(${outPatientIco}) center center no-repeat`,
+                                            backgroundSize: "cover",
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "10px"
+                                        }}
+                                    ></div>
                                 </div>
                             </div>
-                            <div style={{ width: "152vw", height: "30vh", display: "flex", alignItems: "center", marginTop: "4vh", marginLeft: "8.5vw" }}>
-                                <div onClick={() => navigate('./personal-information')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                                    <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
+                            <div style={{
+                                width: "152vw", height: "30vh", display: "flex", alignItems: "center", marginTop: "4vh", marginLeft: "8.5vw"
+                            }}>
+                                <div
+                                    onClick={() => navigate('./personal-information')}
+                                    className='Pdashboard-Card-BoxShadow'
+                                    style={{
+                                        border: "2px solid #00008B",
+                                        background: "linear-gradient(to right, #312DEB 5%, #DCB0FF 60%)",
+                                        marginLeft: "25px",
+                                        width: "33%",
+                                        height: "100%",
+                                        borderRadius: "20px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "column",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                            textAlign: "center", // Add this line to center text within the div
+                                        }}
+                                    >
+                                        <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
+                                            SCHEDULE <br /> APPOINTMENTS
+                                        </span>
                                     </div>
-                                    <br />
-                                    <span className="ml-3 text-blue-900 text-2xl text-center font-semibold">Patient List [Edit, Delete and Search]</span>
+                                    <div
+                                        style={{
+                                            background: `url(${calendarIco}) center center no-repeat`,
+                                            backgroundSize: "cover",
+                                            width: "100%", // Increase the width percentage to make the picture larger
+                                            height: "100%", // Keep the height at 100% to maintain the aspect ratio
+                                            borderRadius: "10px",
+                                            marginRight: "360px",
+                                        }}
+                                    ></div>
                                 </div>
+
                             </div>
                         </div>
                         {showForm && (
