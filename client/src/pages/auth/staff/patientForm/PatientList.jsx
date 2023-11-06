@@ -52,6 +52,17 @@ function PatientList() {
     const [historyDate, setHistoryDate] = useState("")
     const [historyRemarks, setHistoryRemarks] = useState("")
 
+    const [forms, setForms] = useState([0]);
+
+    const addForm = () => {
+        const newForms = [...forms, forms.length];
+        console.log('addForm called, newForms:', newForms);
+        setForms(newForms);
+    };
+
+    console.log('addForm in parent:', addForm);
+    
+
     async function initializeClinic(e) {
         e.preventDefault();
 
@@ -329,6 +340,7 @@ function PatientList() {
 
         fetchPatients();
     }, [clinicName]);
+    
 
     return (
         <>
@@ -741,12 +753,17 @@ function PatientList() {
 
 
                     {/* Vaccination */}
+                    {forms.map((_, index) => (
                     <Vaccination
+                        key={index}
                         getVaccineType={getVaccineType}
                         getVaccineBrand={getVaccineBrand}
                         getVaccineDate={getVaccineDate}
                         getVaccineRemarks={getVaccineRemarks}
+                        addForm={addForm}
                     />
+                    ))}
+                    
 
                     {/* Personal Medical History */}
                     <PersonalMedicalHistory

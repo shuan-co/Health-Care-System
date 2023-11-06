@@ -4,6 +4,7 @@ import React from 'react';
 import RequiredAsterisk from './asterisk';
 
 export default function Vaccination(props) {
+    console.log('Vaccination props:', props);
     return (
         <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-white">Vaccination</h2>
@@ -75,6 +76,16 @@ export default function Vaccination(props) {
                         />
                     </div>
                 </div>
+                <div className="mt-10">
+                <button 
+                  type="button"
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" 
+                  onClick={props.addForm}
+                  >
+                  Add Vaccine
+                </button>
+
+            </div>
             </div>
         </div>
     );
