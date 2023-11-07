@@ -332,7 +332,9 @@ function PatientList() {
                         const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                         baselineInformationSnapshot.forEach((baselineDoc) => {
-                            tempRecords.push(baselineDoc.data());
+                            const data = baselineDoc.data();
+                            data.uid = doc.id;
+                            tempRecords.push(data);
                         });
                     }
                     setFirstVisible(querySnapshot.docs[0]);
@@ -407,10 +409,27 @@ function PatientList() {
     }
 
     // Modal
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const [agreed, setAgreed] = useState(false)
     const cancelButtonRef = useRef(null)
 
+    // Presentation
+    const [showEmptyDiv, setShowEmptyDiv] = useState(false);
+
+    const toggleEmptyDiv = () => {
+        setShowEmptyDiv(!showEmptyDiv);
+    };
+
+
+    // Load key data
+    const [patientInfo, setCurrentData] = useState(null);
+    const handleClick = async (key) => {
+        setOpen(true);
+        const baselineInformationCollectionRef = doc(config.firestore, clinicName, "patients", "patientlist", key, "baselineInformation", "baselineInformation");
+        const baselineInformationSnapshot = await getDoc(baselineInformationCollectionRef);
+        setCurrentData(baselineInformationSnapshot.data());
+        console.log(`Clicked on element with key: ${key}`);
+    };
     return (
         <>
             {/* Modal */}
@@ -429,115 +448,71 @@ function PatientList() {
                     </Transition.Child>
 
                     <div className="fixed inset-0 z-10 overflow-y-auto">
+
                         <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                            <div className="bg-gray-50" style={{ width: "50vw", height: "80vh" }}>
-                                <div style={{
-                                    backgroundColor: "#485af4",
-                                    width: "100%",
-                                    height: "25%",
-                                    borderBottomLeftRadius: "10vh",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",  // Center vertically
-                                    justifyContent: "center",  // Center horizontally
-                                }}>
-                                    <img
-                                        src={pfp}
-                                        alt=""
-                                        style={{
-                                            width: "18%",
-                                            borderRadius: "50%", // Makes the image circular
-                                            border: "5px solid #A3ACFC", // Adds a 3px border with the specified color
-                                        }}
-                                    />
-                                    <div className="flex flex-col" style={{ textAlign: "left", marginLeft: "1.2vw", marginRight: "3vw" }}>
-                                        <p className="text-4xl font-normal text-white" style={{}}>Patient Name</p>
-                                        <p className="text-xl font-thin text-white" style={{ marginTop: "1vh", marginBottom: "2vh" }}>Sex | Age yrs old</p>
-                                    </div>
-
-                                    <button className="border-2 border-white text-2xl text-white px-5 py-3 rounded-lg hover:bg-white hover:text-[#485af4] hover:border-[#485af4] transition-all"
-                                        style={{ marginLeft: "2vw", marginBottom: "2vh" }}>
-                                        Edit Records
-                                    </button>
-                                </div>
-                                <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
-                                    <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
-                                        <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
-                                            <button
-                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu text-3xl font-normal"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "15vh"
-                                                }}
-                                            >
-                                                <span className="text-3xl font-normal">Personal Information</span>
-                                            </button>
-                                            <button
-                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "3vh",
-                                                }}
-                                            >
-                                                <span className="text-3xl font-normal">Patient Medical History</span>
-                                            </button>
-                                            <button
-                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "3vh",
-                                                }}
-                                            >
-                                                <span className="text-3xl font-normal">Vaccination Records</span>
-                                            </button>
-                                            <button
-                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "3vh",
-                                                }}
-                                            >
-                                                <span className="text-3xl font-normal">Family Medical History</span>
-                                            </button>
-                                            <button
-                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "3vh",
-                                                }}
-                                            >
-                                                <span className="text-3xl font-normal">Clinic Visit List</span>
-                                            </button>
+                            {showEmptyDiv ? (
+                                <div>
+                                    <div className="bg-gray-50 rounded-xl" style={{ width: "50vw", height: "80vh" }}>
+                                        <div style={{
+                                            backgroundColor: "#485af4",
+                                            width: "100%",
+                                            height: "13%",
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            alignItems: "center",  // Center vertically
+                                            justifyContent: "center",  // Center horizontally
+                                        }}>
+                                            <p className="text-4xl font-normal text-white" style={{}}>PATIENT INFORMATION FORM</p>
                                         </div>
-
-
-                                    </div>
-
-                                </div>
-
-                                <hr style={{ border: 'none', borderTop: '3px solid #d1d5db' }} />
-                                <div style={{ width: "100%", height: "8%", alignItems: "center", display: "flex" }}>
-                                    <button
-                                        style={{
-                                            border: '2px solid #909090',
-                                            borderRadius: '50%',
-                                            width: '40px',
-                                            height: '40px',
-                                            backgroundColor: 'transparent',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            color: '#444242',
-                                            fontSize: '24px',
-                                            textAlign: 'center',
-                                            marginLeft: "10px",
-                                        }}
-                                    >
-                                        <div>←</div>
-                                    </button>
-                                    <p style={{ marginLeft: "0.3vw", color: "#444242" }}>Back to Patients Database</p>
-                                </div>
-                                {/* <button
+                                        <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
+                                            <div>
+                                                <p className="text-sm text-gray-500">
+                                                    {/* Patient Information */}
+                                                    Allergies: {patientInfo.allergies}
+                                                    <br />
+                                                    Blood Type: {patientInfo.bloodType}
+                                                    <br />
+                                                    Email: {patientInfo.email}
+                                                    <br />
+                                                    Emergency Contact Name: {patientInfo.emergencyContactName}
+                                                    <br />
+                                                    Emergency Contact Number: {patientInfo.emergencyContactNumber}
+                                                    <br />
+                                                    First Name: {patientInfo.firstName}
+                                                    <br />
+                                                    Last Name: {patientInfo.lastName}
+                                                    <br />
+                                                    Phone Number: {patientInfo.phoneNumber}
+                                                    <br />
+                                                    Relationship with Relative: {patientInfo.relationshipWithRelative}
+                                                    <br />
+                                                    Relative Condition: {patientInfo.relativeCondition}
+                                                    <br />
+                                                    Relative Medications: {patientInfo.relativeMedications}
+                                                    <br />
+                                                    Relative Name: {patientInfo.relativeName}
+                                                    <br />
+                                                    Sex: {patientInfo.sex}
+                                                    <br />
+                                                    Street Address: {patientInfo.streetAddress}
+                                                    <br />
+                                                    Vaccine Brand: {patientInfo.vaccineBrand}
+                                                    <br />
+                                                    Vaccine Date: {patientInfo.vaccineDate}
+                                                    <br />
+                                                    Vaccine Remarks: {patientInfo.vaccineRemarks}
+                                                    <br />
+                                                    Vaccine Type: {patientInfo.vaccineType}
+                                                    <br />
+                                                    History Date: {patientInfo.historyDate}
+                                                    <br />
+                                                    History Remarks: {patientInfo.historyRemarks}
+                                                    <br />
+                                                    History Type: {patientInfo.historyType}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {/* <button
                                     type="button"
                                     className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
                                     onClick={() => setOpen(false)}
@@ -545,7 +520,129 @@ function PatientList() {
                                 >
                                     Return
                                 </button> */}
-                            </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 rounded-xl" style={{ width: "50vw", height: "80vh" }}>
+                                    <div style={{
+                                        backgroundColor: "#485af4",
+                                        width: "100%",
+                                        height: "25%",
+                                        borderBottomLeftRadius: "10vh",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",  // Center vertically
+                                        justifyContent: "center",  // Center horizontally
+                                    }}>
+                                        <img
+                                            src={pfp}
+                                            alt=""
+                                            style={{
+                                                width: "18%",
+                                                borderRadius: "50%", // Makes the image circular
+                                                border: "5px solid #A3ACFC", // Adds a 3px border with the specified color
+                                            }}
+                                        />
+                                        <div className="flex flex-col" style={{ textAlign: "left", marginLeft: "1.2vw", marginRight: "3vw" }}>
+                                            <p className="text-4xl font-normal text-white" style={{}}>Patient Name</p>
+                                            <p className="text-xl font-thin text-white" style={{ marginTop: "1vh", marginBottom: "2vh" }}>Sex | Age yrs old</p>
+                                        </div>
+
+                                        <button className="border-2 border-white text-2xl text-white px-5 py-3 rounded-lg hover:bg-white hover:text-[#485af4] hover:border-[#485af4] transition-all"
+                                            style={{ marginLeft: "2vw", marginBottom: "2vh" }}>
+                                            Edit Records
+                                        </button>
+                                    </div>
+                                    <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
+                                        <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                            <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                                <button
+                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu text-3xl font-normal"
+                                                    style={{
+                                                        width: "80%",
+                                                        marginTop: "15vh"
+                                                    }}
+                                                    onClick={toggleEmptyDiv}
+                                                >
+                                                    <span className="text-3xl font-normal">Personal Information</span>
+                                                </button>
+                                                <button
+                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                    style={{
+                                                        width: "80%",
+                                                        marginTop: "3vh",
+                                                    }}
+                                                >
+                                                    <span className="text-3xl font-normal">Patient Medical History</span>
+                                                </button>
+                                                <button
+                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                    style={{
+                                                        width: "80%",
+                                                        marginTop: "3vh",
+                                                    }}
+                                                >
+                                                    <span className="text-3xl font-normal">Vaccination Records</span>
+                                                </button>
+                                                <button
+                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                    style={{
+                                                        width: "80%",
+                                                        marginTop: "3vh",
+                                                    }}
+                                                >
+                                                    <span className="text-3xl font-normal">Family Medical History</span>
+                                                </button>
+                                                <button
+                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                    style={{
+                                                        width: "80%",
+                                                        marginTop: "3vh",
+                                                    }}
+                                                >
+                                                    <span className="text-3xl font-normal">Clinic Visit List</span>
+                                                </button>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                    <hr style={{ border: 'none', borderTop: '3px solid #d1d5db' }} />
+                                    <div style={{ width: "100%", height: "8%", alignItems: "center", display: "flex" }}>
+                                        <button
+                                            style={{
+                                                border: '2px solid #909090',
+                                                borderRadius: '50%',
+                                                width: '40px',
+                                                height: '40px',
+                                                backgroundColor: 'transparent',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                color: '#444242',
+                                                fontSize: '24px',
+                                                textAlign: 'center',
+                                                marginLeft: "10px",
+                                            }}
+                                            onClick={() => setOpen(false)}
+                                            ref={cancelButtonRef}
+                                        >
+                                            <div>←</div>
+                                        </button>
+                                        <p style={{ marginLeft: "0.3vw", color: "#444242" }}>Back to Patients Database</p>
+                                    </div>
+                                    {/* <button
+                                    type="button"
+                                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
+                                    onClick={() => setOpen(false)}
+                                    ref={cancelButtonRef}
+                                >
+                                    Return
+                                </button> */}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </Dialog>
@@ -774,7 +871,7 @@ function PatientList() {
                                                     </td>
 
                                                     <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <button class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-md font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                                        <button key={patient.uid} onClick={() => handleClick(patient.uid)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-md font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
                                                             VIEW
                                                         </button>
                                                     </td>

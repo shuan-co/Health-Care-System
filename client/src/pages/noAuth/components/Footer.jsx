@@ -6,6 +6,8 @@ export default function Footer() {
       <p className="text-xl lato">Contact us</p>
       <p className='sans-serif text-base'>contact@example.com</p>
       <p className='sans-serif text-base'>Call us at: +1 (123) 456-7890.</p>
+      <a className='sans-serif text-base' style={{ color: "blue" }} href="/tac">Terms and Conditions</a> <br />
+      <a className='sans-serif text-base' style={{ color: "blue" }} href="/policies">Privacy Policy</a>
     </footer >
   )
 }
