@@ -9,7 +9,7 @@ export default function Vaccination(props) {
         <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-black">Vaccination</h2>
 
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                     <label htmlFor="vaccineType" className="block text-sm font-medium leading-6 text-black">
                         Vaccine Type <RequiredAsterisk />
@@ -21,8 +21,9 @@ export default function Vaccination(props) {
                             id="vaccineType"
                             autoComplete="vaccineType"
                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            required
+                            value={props.vaccineType}
                             onChange={(e) => props.getVaccineType(e.target.value)}
+                            required
                         />
                     </div>
                 </div>
@@ -38,8 +39,9 @@ export default function Vaccination(props) {
                             id="vaccineBrand"
                             autoComplete="vaccineBrand"
                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            required
+                            value={props.vaccineBrand}
                             onChange={(e) => props.getVaccineBrand(e.target.value)}
+                            required
                         />
                     </div>
                 </div>
@@ -55,8 +57,9 @@ export default function Vaccination(props) {
                             id="vaccinationDate"
                             autoComplete="vaccinationDate"
                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
-                            required
+                            value={props.vaccineDate}
                             onChange={(e) => props.getVaccineDate(e.target.value)}
+                            required
                         />
                     </div>
                 </div>
@@ -73,6 +76,7 @@ export default function Vaccination(props) {
                             autoComplete="vaccineRemarks"
                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3 "
                             onChange={(e) => props.getVaccineRemarks(e.target.value)}
+                            value={props.vaccineRemarks}
                         />
                     </div>
                 </div>
