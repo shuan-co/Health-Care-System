@@ -22,8 +22,8 @@ function StaffDashboard() {
     const [selected, setSelected] = useState("dashboard")
     const [showForm, setShowForm] = useState(false)
     const [clinics, setClinics] = useState([])
-
     const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1)
 
     const handleViewMedicalRecordsClick = () => {
         navigate("/test");
@@ -46,7 +46,6 @@ function StaffDashboard() {
                         const docSnap = await getDoc(docRef);
                         const clinicName = docSnap.data().clinicName;
                         setClinics(clinicName);
-                        console.log(clinicName);
 
                         const docRefClinic = doc(db, clinicName, "staff", "staffList", user.uid);
                         const docSnapClinic = await getDoc(docRefClinic);
@@ -78,7 +77,7 @@ function StaffDashboard() {
         phoneNumber: '',
         streetAddress: '',
         sex: '',
-        bloodtype: '',
+        bloodType: '',
         emergencyContactName: '',
         emergencyContactNumber: '',
         allergies: '',
@@ -96,6 +95,20 @@ function StaffDashboard() {
         historyDate: '',
         historyRemarks: ''
     });
+    const [firstName, setFirstName] = useState("")
+    const [middleName, setMiddleName] = useState("")
+    const [lastName, setLastName] = useState("")
+
+    const [sex, setSex] = useState("")
+    const [bloodType, setBloodType] = useState("")
+    const [phoneNumber, setPhoneNumber] = useState("")
+    const [streetAddress, setStreetAddress] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [emergencyContactName, setEmergencyContactName] = useState("")
+    const [emergencyContactNumber, setEmergencyContactNumber] = useState("")
+    const [allergies, setAllergies] = useState("")
+
     const [relativeName, setRelativeName] = useState("")
     const [relationshipWithRelative, setRelationshipWithRelative] = useState("")
     const [relativeCondition, setRelativeCondition] = useState("")
@@ -113,7 +126,8 @@ function StaffDashboard() {
     async function initializeClinic(e) {
         e.preventDefault();
 
-        const firstName = e.target['first-name'].value;
+        /*const firstName = e.target['first-name'].value;
+        const middleName = e.target['middle-name'].value;
         const lastName = e.target['last-name'].value;
         const email = e.target['email'].value;
         const password = e.target['password'].value;
@@ -123,29 +137,13 @@ function StaffDashboard() {
         const bloodtype = e.target['bloodtype'].value;
         const emergencyContactName = e.target['emergencyContactName'].value;
         const emergencyContactNumber = e.target['emergencyContactNumber'].value;
-        const allergies = e.target['allergies'].value;
+        const allergies = e.target['allergies'].value;*/
         const emailFormatted = email;
-
-        // error in FamilyHistory.jsx
-        // family history
-
-        // error in Vaccination.jsx
-        // vaccination
-        /*
-        const vaccineType = e.target['vaccineType'].value;
-        const vaccineBrand = e.target['vaccineBrand'].value;
-        const vaccineDate = e.target['vaccineDate'].value;
-        const vaccineRemarks = e.target['vaccineRemarks'].value;
-
-        // error in FamilyHistory.jsx
-        // personal medical history
-        const historyType = e.target['historyType'].value;
-        const historyDate = e.target['historyDate'].value;
-        const historyRemarks = e.target['historyRemarks'].value;*/
 
         setFormData({
             ...formData,
             firstName,
+            middleName,
             lastName,
             email,
             emailFormatted,
@@ -153,7 +151,7 @@ function StaffDashboard() {
             phoneNumber,
             streetAddress,
             sex,
-            bloodtype,
+            bloodType,
             emergencyContactName,
             emergencyContactNumber,
             allergies,
@@ -268,16 +266,17 @@ function StaffDashboard() {
                                     setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid, "clinics", clinicName), {
                                         clinicName: clinicName
                                     });
-
+                                    console.log(formData)
                                     // TODO: ADD INPATIENT INFORMATION
                                     addDoc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), {
                                         firstname: formData.firstName,
+                                        middleName: formData.middleName,
                                         lastname: formData.lastName,
                                         email: formData.email,
                                         phoneNumber: formData.phoneNumber,
                                         streetAddress: formData.streetAddress,
                                         sex: formData.sex,
-                                        bloodtype: formData.bloodtype,
+                                        bloodType: formData.bloodType,
                                         emergencyContactName: formData.emergencyContactName,
                                         emergencyContactNumber: formData.emergencyContactNumber,
                                         allergies: formData.allergies,
@@ -285,7 +284,7 @@ function StaffDashboard() {
                                         relativeName: formData.relativeName,
                                         relationshipWithRelative: formData.relationshipWithRelative,
                                         relativeCondition: formData.relativeCondition,
-                                        relativeMedications: formData.relativeCondition,
+                                        relativeMedications: formData.relativeMedications,
 
                                         vaccineType: formData.vaccineType,
                                         vaccineBrand: formData.vaccineBrand,
@@ -483,10 +482,10 @@ function StaffDashboard() {
                         </div>
                         {showForm && (
                             <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                                <div className="relative w-full max-w-2xl max-h-full mx-auto">
+                                <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
                                     <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
-                                        <h3 className="text-xl font-semibold text-white-900 dark:text-white">
-                                            Add User
+                                        <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
+                                            PATIENT INFORMATION FORM
                                         </h3>
                                         <button
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
@@ -499,253 +498,354 @@ function StaffDashboard() {
                                         </button>
                                     </div>
                                     <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
-                                        <div className="p-12 space-y-6 text-black">
+                                        <div className="p-10 space-y-6 text-black">
                                             <form className="mx-auto exo" onSubmit={initializeClinic}>
                                                 <div className="space-y-12 text-black">
-                                                    <div className="border-b border-gray-900/10 pb-12">
-                                                        <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
+                                                    {currentPage == 1 ? (
+                                                        <div className="border-b border-gray-900/10 pb-12">
+                                                            <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
 
-                                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                                            <div className="sm:col-span-3">
-                                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
-                                                                    First name <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        name="first-name"
-                                                                        id="first-name"
-                                                                        autoComplete="given-name"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="sm:col-span-3">
-                                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
-                                                                    Last name <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        name="last-name"
-                                                                        id="last-name"
-                                                                        autoComplete="family-name"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="sm:col-span-full">
-                                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
-                                                                    Email address <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        id="email"
-                                                                        name="email"
-                                                                        type="email"
-                                                                        autoComplete="email"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="sm:col-span-full">
-                                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
-                                                                    Password <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="password"
-                                                                        name="password"
-                                                                        id="password"
-                                                                        autoComplete="current-password"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="sm:col-span-full">
-                                                                <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
-                                                                    Phone number <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        id="number"
-                                                                        name="number"
-                                                                        type="number"
-                                                                        autoComplete="phone number"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="col-span-full">
-                                                                <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
-                                                                    Street address <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        name="street-address"
-                                                                        id="street-address"
-                                                                        autoComplete="street-address"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-
-                                                                        required
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="sm:col-span-4">
-                                                                <fieldset>
-                                                                    <legend className="text-sm font-semibold leading-6 text-black">Sex <RequiredAsterisk /></legend>
-                                                                    <div className="flex items-center gap-x-3">
+                                                            <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
+                                                                        First name <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
                                                                         <input
-                                                                            id="male"
-                                                                            name="sex"
-                                                                            value="Male"
-                                                                            type="radio"
-                                                                            className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-
+                                                                            type="text"
+                                                                            name="first-name"
+                                                                            id="first-name"
+                                                                            autoComplete="given-name"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={firstName}
+                                                                            onChange={(e) => setFirstName(e.target.value)}
                                                                             required
                                                                         />
-                                                                        <label htmlFor="male" className="block text-sm font-medium leading-6 text-black mb-1">
-                                                                            Male
-                                                                        </label>
-
-
-                                                                        <input
-                                                                            id="female"
-                                                                            name="sex"
-                                                                            type="radio"
-                                                                            value="Female"
-                                                                            className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-
-                                                                            required
-                                                                        />
-                                                                        <label htmlFor="female" className="block text-sm font-medium leading-6 text-black mb-1">
-                                                                            Female
-                                                                        </label>
                                                                     </div>
-                                                                </fieldset>
-                                                            </div>
+                                                                </div>
 
-                                                            <div className="sm:col-span-6">
-                                                                <label htmlFor="bloodtype" className="block text-sm font-medium leading-6 text-black">
-                                                                    Blood Type <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <select
-                                                                        id="bloodtype"
-                                                                        name="bloodtype"
-                                                                        autoComplete="bloodtype"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
+                                                                        Middle name
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="middle-name"
+                                                                            id="middle-name"
+                                                                            autoComplete="middle-name"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={middleName}
+                                                                            onChange={(e) => setMiddleName(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
 
-                                                                    >
-                                                                        <option>A+</option>
-                                                                        <option>B+</option>
-                                                                        <option>AB+</option>
-                                                                        <option>O+</option>
-                                                                        <option>A-</option>
-                                                                        <option>B-</option>
-                                                                        <option>AB-</option>
-                                                                        <option>O-</option>
-                                                                    </select>
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
+                                                                        Last name <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="last-name"
+                                                                            id="last-name"
+                                                                            autoComplete="family-name"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={lastName}
+                                                                            onChange={(e) => setLastName(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="sm:col-span-3">
-                                                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                                    Emergency Contact Name <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        name="emergencyContactName"
-                                                                        id="emergencyContactName"
-                                                                        autoComplete="emergencyContactName"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                                <div className="sm:col-span-3">
+                                                                <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
+                                                                        Sex <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <select
+                                                                            id="sex"
+                                                                            name="sex"
+                                                                            autoComplete="sex"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                            value={sex}
+                                                                            onChange={(e) => setSex(e.target.value)}
+                                                                        >
+                                                                            <option value="Male" selected>Male</option>
+                                                                            <option value="Female">Female</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
 
-                                                                        required
-                                                                    />
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="bloodType" className="block text-sm font-medium leading-6 text-black">
+                                                                        Blood Type <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <select
+                                                                            id="bloodType"
+                                                                            name="bloodType"
+                                                                            autoComplete="bloodType"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                            value={bloodType}
+                                                                            onChange={(e) => setBloodType(e.target.value)}
+                                                                        >
+                                                                            <option selected>A+</option>
+                                                                            <option>B+</option>
+                                                                            <option>AB+</option>
+                                                                            <option>O+</option>
+                                                                            <option>A-</option>
+                                                                            <option>B-</option>
+                                                                            <option>AB-</option>
+                                                                            <option>O-</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
+                                                                        Phone number <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            id="number"
+                                                                            name="number"
+                                                                            type="number"
+                                                                            autoComplete="phone number"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={phoneNumber}
+                                                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="sm:col-span-3">
-                                                                <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                                    Emergency Contact Phone Number <RequiredAsterisk />
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="number"
-                                                                        name="emergencyContactNumber"
-                                                                        id="emergencyContactNumber"
-                                                                        autoComplete="emergencyContactNumber"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                                <div className="col-span-full">
+                                                                    <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
+                                                                        Street address <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="street-address"
+                                                                            id="street-address"
+                                                                            autoComplete="street-address"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={streetAddress}
+                                                                            onChange={(e) => setStreetAddress(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
+                                                                        Email address <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            id="email"
+                                                                            name="email"
+                                                                            type="email"
+                                                                            autoComplete="email"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={email}
+                                                                            onChange={(e) => setEmail(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
 
-                                                                        required
-                                                                    />
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
+                                                                        Password <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="password"
+                                                                            name="password"
+                                                                            id="password"
+                                                                            autoComplete="current-password"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={password}
+                                                                            onChange={(e) => setPassword(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="col-span-full">
-                                                                <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
-                                                                    Allergies
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <input
-                                                                        type="text"
-                                                                        name="allergies"
-                                                                        id="allergies"
-                                                                        autoComplete="allergies"
-                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
 
-                                                                    />
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                                        Emergency Contact Name <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="emergencyContactName"
+                                                                            id="emergencyContactName"
+                                                                            autoComplete="emergencyContactName"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={emergencyContactName}
+                                                                            onChange={(e) => setEmergencyContactName(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                                        Emergency Contact Phone Number <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            name="emergencyContactNumber"
+                                                                            id="emergencyContactNumber"
+                                                                            autoComplete="emergencyContactNumber"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={emergencyContactNumber}
+                                                                            onChange={(e) => setEmergencyContactNumber(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
+                                                                
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                                <div className="col-span-full">
+                                                                    <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
+                                                                        Allergies
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="allergies"
+                                                                            id="allergies"
+                                                                            autoComplete="allergies"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={allergies}
+                                                                            onChange={(e) => setAllergies(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>   
 
-                                                    {/* Family History */}
-                                                    <FamilyHistory
+                                                            <div className="flex justify-end mt-8">
+                                                                <button
+                                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    type='button'
+                                                                >
+                                                                    Next
+                                                                </button>
+                                                            </div>
+                                                          
+                                                        </div> 
+                                                    ) : (
+                                                        <></>
+                                                    )}     
+
+                                                    {currentPage == 2 ? (
+                                                        <FamilyHistory
+                                                        relativeFullName={relativeName}
+                                                        relationshipWithRelative={relationshipWithRelative}
+                                                        relativeCondition={relativeCondition}
+                                                        relativeMedications={relativeMedications}
                                                         getRelativeFullName={getRelativeFullName}
                                                         getRelationshipWithRelative={getRelationshipWithRelative}
                                                         getRelativeCondition={getRelativeCondition}
                                                         getRelativeMedications={getRelativeMedications}
-                                                    />
+                                                        />
+                                                    ) : (<></>)}
+                                                     
 
 
-                                                    {/* Vaccination */}
-                                                    <Vaccination
-                                                        getVaccineType={getVaccineType}
-                                                        getVaccineBrand={getVaccineBrand}
-                                                        getVaccineDate={getVaccineDate}
-                                                        getVaccineRemarks={getVaccineRemarks}
-                                                    />
+                                                    {currentPage == 3 ? (
+                                                        <Vaccination
+                                                            vaccineType={vaccineType}
+                                                            vaccineBrand={vaccineBrand}
+                                                            vaccineDate={vaccineDate}
+                                                            vaccineRemarks={vaccineRemarks}
+                                                            getVaccineType={getVaccineType}
+                                                            getVaccineBrand={getVaccineBrand}
+                                                            getVaccineDate={getVaccineDate}
+                                                            getVaccineRemarks={getVaccineRemarks}
+                                                        />
+                                                    ) : (<></>)}
 
-                                                    {/* Personal Medical History */}
-                                                    <PersonalMedicalHistory
-                                                        getHistoryType={getHistoryType}
-                                                        getHistoryDate={getHistoryDate}
-                                                        getHistoryRemarks={getHistoryRemarks}
-                                                    />
-                                                    <div className="mt-10 flex justify-end">
-                                                        <button
-                                                            className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        >
-                                                            Submit
-                                                        </button>
-                                                    </div>
+                                                    {currentPage == 4 ? (
+                                                        <PersonalMedicalHistory
+                                                            historyType={historyType}
+                                                            historyDate={historyDate}
+                                                            historyRemarks={historyRemarks}
+                                                            getHistoryType={getHistoryType}
+                                                            getHistoryDate={getHistoryDate}
+                                                            getHistoryRemarks={getHistoryRemarks}
+                                                        />
+                                                    ) : (<></>)}
+
+                                                    
+
+
+                                                    {currentPage >= 2 && currentPage <= 3 ? (
+                                                        <div className='flex justify-between mt-8'>
+                                                            <div className="inline">
+                                                                <button
+                                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    type='button'
+                                                                >
+                                                                    Back
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="inline">
+                                                                <button
+                                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    type='button'
+                                                                >
+                                                                    Next
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (<></>)}
+
+                    
+                                                   
+                                                   {currentPage == 4 ? (
+                                                        <div className='flex justify-between mt-8'>
+                                                            <div className="inline">
+                                                                <button
+                                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    type='button'
+                                                                >
+                                                                    Back
+                                                                </button>
+                                                            </div>
+                                                            <div className="inline">
+                                                                <button
+                                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    type='submit'
+                                                                >
+                                                                    Submit
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    
+                                                    ) : (<></>)}
+
                                                 </div>
                                             </form>
                                         </div>
