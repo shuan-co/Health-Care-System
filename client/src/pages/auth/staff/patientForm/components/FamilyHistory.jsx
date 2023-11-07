@@ -4,10 +4,10 @@ import RequiredAsterisk from './asterisk';
 export default function FamilyHistory(props) {
     return (
         <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-white">Family History</h2>
+            <h2 className="text-base font-semibold leading-7 text-black">Family History</h2>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    <label htmlFor="relativeName" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="relativeName" className="block text-sm font-medium leading-6 text-black">
                         Full name <RequiredAsterisk />
                     </label>
                     <div className="mt-2">
@@ -24,7 +24,7 @@ export default function FamilyHistory(props) {
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="relativeRelationship" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="relativeRelationship" className="block text-sm font-medium leading-6 text-black">
                         Relationship <RequiredAsterisk />
                     </label>
                     <div className="mt-2">
@@ -41,7 +41,7 @@ export default function FamilyHistory(props) {
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="relativeCondition" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="relativeCondition" className="block text-sm font-medium leading-6 text-black">
                         Condition
                     </label>
                     <div className="mt-2">
@@ -57,7 +57,7 @@ export default function FamilyHistory(props) {
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="relativeMedications" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="relativeMedications" className="block text-sm font-medium leading-6 text-black">
                         Medications
                     </label>
                     <div className="mt-2">

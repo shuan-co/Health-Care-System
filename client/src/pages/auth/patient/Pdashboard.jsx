@@ -6,6 +6,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import "./pdashboard.css"
 import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '../components/Sidebar';
+import PersonalInformation from './PersonalInformation'
 
 function Pdashboard() {
     const [fullName, setFullName] = useState("")
@@ -56,7 +57,7 @@ function Pdashboard() {
             {selected == "dashboard" ? (
                 <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "5vw", marginTop: "13vh" }}>
                     <div style={{ width: "70vw", height: "60vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <div onClick={() => navigate('./personal-information')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                        <div onClick={() => setSelected('personal-information')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                             <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
 
                             </div>
@@ -89,6 +90,12 @@ function Pdashboard() {
                 <div className="p-20 border-2 w-10/12">
                     <h1 className="text-4xl exo">Inbox</h1>
                 </div>
+            ) : (
+                <></>
+            )}
+
+            {selected == 'personal-information' ? (
+                <PersonalInformation />
             ) : (
                 <></>
             )}

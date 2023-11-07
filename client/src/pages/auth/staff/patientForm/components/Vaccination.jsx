@@ -7,11 +7,11 @@ export default function Vaccination(props) {
     console.log('Vaccination props:', props);
     return (
         <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-white">Vaccination</h2>
+            <h2 className="text-base font-semibold leading-7 text-black">Vaccination</h2>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    <label htmlFor="vaccineType" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="vaccineType" className="block text-sm font-medium leading-6 text-black">
                         Vaccine Type <RequiredAsterisk />
                     </label>
                     <div className="mt-2">
@@ -28,7 +28,7 @@ export default function Vaccination(props) {
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="vaccineBrand" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="vaccineBrand" className="block text-sm font-medium leading-6 text-black">
                         Brand <RequiredAsterisk />
                     </label> 
                     <div className="mt-2">
@@ -45,7 +45,7 @@ export default function Vaccination(props) {
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="vaccinationDate" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="vaccinationDate" className="block text-sm font-medium leading-6 text-black">
                         Date Administered <RequiredAsterisk />
                     </label>
                     <div className="mt-2">
@@ -62,7 +62,7 @@ export default function Vaccination(props) {
                 </div>
 
                 <div className="sm:col-span-full">
-                    <label htmlFor="vaccineRemarks" className="block text-sm font-medium leading-6 text-white">
+                    <label htmlFor="vaccineRemarks" className="block text-sm font-medium leading-6 text-black">
                         Remarks
                     </label>
                     <div className="mt-2">
