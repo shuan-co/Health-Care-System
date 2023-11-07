@@ -1,7 +1,7 @@
 import { config, signInAuth } from "../../../../firebase/Firebase";
 import { doc, setDoc, getDoc, getDocs, collection, addDoc, startAfter, limit, query, startAt } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 import pfp from './pfp.jpg'
 import searchIcon from "./search.png"
 
@@ -10,6 +10,10 @@ import emailjs from 'emailjs-com';
 import FamilyHistory from './components/FamilyHistory';
 import PersonalMedicalHistory from './components/PersonalMedicalHistory';
 import Vaccination from './components/Vaccination';
+
+import { Dialog, Transition } from '@headlessui/react'
+import { Switch } from '@headlessui/react'
+import { width } from "@mui/system";
 
 
 function PatientList() {
@@ -292,7 +296,6 @@ function PatientList() {
 
     const [clinicName, setClinicName] = useState('');
     const [loading, setLoading] = useState(true); // Initial loading state
-    const [last, setLast] = useState("");
 
     getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
         .then((docSnapshot) => {
@@ -401,8 +404,82 @@ function PatientList() {
         }
     }
 
+    // Modal
+    const [open, setOpen] = useState(true)
+    const [agreed, setAgreed] = useState(false)
+    const cancelButtonRef = useRef(null)
+
     return (
         <>
+            {/* Modal */}
+            <Transition.Root show={open} as={Fragment}>
+                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 z-10 overflow-y-auto">
+                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                            <div className="bg-gray-50" style={{ width: "50vw", height: "80vh" }}>
+                                <div style={{
+                                    backgroundColor: "#485af4",
+                                    width: "100%",
+                                    height: "25%",
+                                    borderBottomLeftRadius: "10vh",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",  // Center vertically
+                                    justifyContent: "center",  // Center horizontally
+                                }}>
+                                    <img
+                                        src={pfp}
+                                        alt=""
+                                        style={{
+                                            width: "18%",
+                                            borderRadius: "50%", // Makes the image circular
+                                            border: "5px solid #A3ACFC", // Adds a 3px border with the specified color
+                                        }}
+                                    />
+                                    <div className="flex flex-col" style={{ textAlign: "left", marginLeft: "1.2vw", marginRight: "3vw" }}>
+                                        <p className="text-4xl font-normal text-white" style={{}}>Patient Name</p>
+                                        <p className="text-xl font-thin text-white" style={{ marginTop: "1vh", marginBottom: "2vh" }}>Sex | Age yrs old</p>
+                                    </div>
+
+                                    <button className="border-2 border-white text-2xl text-white px-5 py-3 rounded-lg hover:bg-white hover:text-[#485af4] hover:border-[#485af4] transition-all"
+                                        style={{ marginLeft: "2vw", marginBottom: "2vh" }}>
+                                        Edit Records
+                                    </button>
+                                </div>
+                                <div style={{ width: "100%", height: "67%", backgroundColor: "black" }}>
+
+                                </div>
+                                <div style={{ width: "100%", height: "8%", backgroundColor: "green" }}>
+
+                                </div>
+                                {/* <button
+                                    type="button"
+                                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
+                                    onClick={() => setOpen(false)}
+                                    ref={cancelButtonRef}
+                                >
+                                    Return
+                                </button> */}
+                            </div>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition.Root>
+
+
+
             <div className="h-screen w-full flex overflow-hidden">
                 <nav className="flex flex-col bg-gray-200 dark:bg-gray-900 w-64 px-12 pt-4 pb-6">
 
