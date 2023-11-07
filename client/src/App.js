@@ -23,6 +23,9 @@ import PatientList from "./pages/auth/staff/patientForm/PatientList";
 import PersonalInformation from "./pages/auth/patient/PersonalInformation";
 import RecordDiagnoses from "./pages/auth/patient/RecordDiagnoses";
 
+import Policy from "./pages/noAuth/policies/Policy";
+import Terms from "./pages/noAuth/policies/Terms";
+
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
@@ -102,7 +105,8 @@ const App = () => {
                     <Route path="/aboutus" element={<Information />} />
                     <Route path="/questions" element={<QA />} />
                     <Route path="/login" element={<Login />} />
-
+                    <Route path="/policies" element={<Policy />} />
+                    <Route path="/tac" element={<Terms />} />
                     {/* SUPER ADMIN ROUTES */}
                     <Route
                         exact path="/admin"

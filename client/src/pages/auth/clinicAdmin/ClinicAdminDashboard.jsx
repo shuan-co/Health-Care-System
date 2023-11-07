@@ -26,7 +26,6 @@ function ClinicAdminDashboard() {
 
                         if (docSnap.exists()) {
                             setClinicName(docSnap.data().clinicName);
-                            console.log(clinicName);
                         } else {
                             console.log("No such document!");
                         }
