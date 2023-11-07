@@ -1,13 +1,12 @@
 import { config, signInAuth } from "../../../../firebase/Firebase";
 import { doc, setDoc, getDoc, getDocs, collection, addDoc, startAfter, limit, query, startAt } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState, useEffect } from "react";
-import Sidebar from "../../components/Sidebar";
 import pfp from './pfp.jpg'
 import searchIcon from "./search.png"
 
 import RequiredAsterisk from './components/asterisk';
-import emailjs, { send } from 'emailjs-com';
+import emailjs from 'emailjs-com';
 import FamilyHistory from './components/FamilyHistory';
 import PersonalMedicalHistory from './components/PersonalMedicalHistory';
 import Vaccination from './components/Vaccination';
@@ -219,7 +218,7 @@ function PatientList() {
                                     });
 
                                     // TODO: ADD INPATIENT INFORMATION
-                                    addDoc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), {
+                                    setDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), "baselineInformation"), {
                                         firstname: formData.firstName,
                                         lastname: formData.lastName,
                                         email: formData.email,
