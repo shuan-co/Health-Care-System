@@ -15,6 +15,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Switch } from '@headlessui/react'
 import { width } from "@mui/system";
 
+import "./patientlist.css"
+
 
 function PatientList() {
 
@@ -458,11 +460,82 @@ function PatientList() {
                                         Edit Records
                                     </button>
                                 </div>
-                                <div style={{ width: "100%", height: "67%", backgroundColor: "black" }}>
+                                <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
+                                    <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                        <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu text-3xl font-normal"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "15vh"
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Personal Information</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Patient Medical History</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Vaccination Records</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Family Medical History</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Clinic Visit List</span>
+                                            </button>
+                                        </div>
+
+
+                                    </div>
 
                                 </div>
-                                <div style={{ width: "100%", height: "8%", backgroundColor: "green" }}>
 
+                                <hr style={{ border: 'none', borderTop: '3px solid #d1d5db' }} />
+                                <div style={{ width: "100%", height: "8%", alignItems: "center", display: "flex" }}>
+                                    <button
+                                        style={{
+                                            border: '2px solid #909090',
+                                            borderRadius: '50%',
+                                            width: '40px',
+                                            height: '40px',
+                                            backgroundColor: 'transparent',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            color: '#444242',
+                                            fontSize: '24px',
+                                            textAlign: 'center',
+                                            marginLeft: "10px",
+                                        }}
+                                    >
+                                        <div>←</div>
+                                    </button>
+                                    <p style={{ marginLeft: "0.3vw", color: "#444242" }}>Back to Patients Database</p>
                                 </div>
                                 {/* <button
                                     type="button"

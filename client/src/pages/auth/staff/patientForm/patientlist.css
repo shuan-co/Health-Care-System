@@ -1,0 +1,17 @@
+/* Button styles */
+.button-choice-menu {
+    background-color: white;
+    width: 80%;
+    margin-top: 3vh;
+    transition: background-color 0.3s, color 0.3s;
+    color: #485AF4;
+    /* Set the default text color */
+}
+
+/* Hover effect */
+.button-choice-menu:hover {
+    background-color: rgba(72, 90, 244, 0.6);
+    /* #485AF4 at 60% opacity */
+    color: white;
+    /* Change text color to white on hover */
+}
