@@ -467,7 +467,7 @@ function StaffDashboard() {
                                         style={{
                                             background: `url(${calendarIco}) center center no-repeat`,
                                             backgroundSize: "cover",
-                                            width: "100%", // Increase the width percentage to make the picture larger
+                                            width: "50%", // Increase the width percentage to make the picture larger
                                             height: "100%", // Keep the height at 100% to maintain the aspect ratio
                                             borderRadius: "10px",
                                             marginRight: "360px",
