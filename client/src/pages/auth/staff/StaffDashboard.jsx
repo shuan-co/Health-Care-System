@@ -99,8 +99,8 @@ function StaffDashboard() {
     const [middleName, setMiddleName] = useState("")
     const [lastName, setLastName] = useState("")
 
-    const [sex, setSex] = useState("")
-    const [bloodType, setBloodType] = useState("")
+    const [sex, setSex] = useState("Male")
+    const [bloodType, setBloodType] = useState("A+")
     const [phoneNumber, setPhoneNumber] = useState("")
     const [streetAddress, setStreetAddress] = useState("")
     const [email, setEmail] = useState("")
@@ -335,11 +335,45 @@ function StaffDashboard() {
                         console.error("Error getting document:", error);
                     });
 
+                resetForm()
+                setShowForm(false)
+
             } catch (error) {
                 console.error("Error initializing clinic:", error);
             }
         }
     }, [formData]);
+
+    function resetForm(){
+        setFirstName("")
+        setMiddleName("")
+        setLastName("")
+
+        setSex("")
+        setBloodType("")
+        setPhoneNumber("")
+        setStreetAddress("")
+        setEmail("")
+        setPassword("")
+        setEmergencyContactName("")
+        setEmergencyContactNumber("")
+        setAllergies("")
+
+        setRelativeName("")
+        setRelationshipWithRelative("")
+        setRelativeCondition("")
+        setRelativeMedications("")
+
+        setVaccineType("")
+        setVaccineBrand("")
+        setVaccineDate("")
+        setVaccineRemarks("")
+
+        setHistoryType("")
+        setHistoryDate("")
+        setHistoryRemarks("")
+
+    }
 
     return (
         <>
