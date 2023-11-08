@@ -3,6 +3,11 @@ import pfp from './pfp.jpg'
 import sub from './sub.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faUser, faInbox, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { getAuth } from "firebase/auth";
+import { signOut } from "firebase/auth";
+import { config } from '../../../firebase/Firebase';
+import { useContext } from 'react';
+import { AuthContext } from '../../../AuthContext';
 
 const house = <FontAwesomeIcon icon={faHouse} />
 const profile = <FontAwesomeIcon icon={faUser} />
@@ -10,8 +15,21 @@ const inbox = <FontAwesomeIcon icon={faInbox} />
 const logout = <FontAwesomeIcon icon={faArrowRightFromBracket} rotation={180} />
 
 function Sidebar(props) {
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const selected = props.selected;
-    const name = props.adminName
+    const name = props.adminName;
+
+    const auth = getAuth()
+    const handleLogout = () => {
+        signOut(auth, config.auth.provider)
+            .then(() => {
+                setIsLoggedIn(false);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     return (
         <nav className="flex flex-col w-64 px-12 pt-4 pb-6 navbar" style={{ boxShadow: "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px" }}>
             <div className="mt-10">
@@ -60,8 +78,8 @@ function Sidebar(props) {
                 )}
 
                 <div className="w-52 h-10 hover:bg-indigo-300 hover:bg-opacity-60 hover:rounded-tl-[19px] hover:rounded-bl-[19px] ps-2 pt-1">
-                    <button className="text-xl">{logout}</button>
-                    <button className="text-xl ms-3 exo">Log Out</button>
+                    <button className="text-xl" onClick={() => handleLogout()}>{logout}</button>
+                    <button className="text-xl ms-3 exo" onClick={() => handleLogout()}>Log Out</button>
                 </div>
             </div>
         </nav>

@@ -12,23 +12,23 @@ function Landing() {
   }
   return (
     <div>
-      <div className="border-b border-black bg-center bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage1})` }}>
+      <div className="border-b border-black bg-center bg-cover py-44 px-3 " style={{ backgroundImage:`url(${landPage1})` }}>
         <div className="flex items-center m-20">
           <div className="w-1/2 justify-start">
             <p className="text-5xl arvo mb-2 ">Healthcare Management and Logistics</p>
             <p className="text-xl arvo">lorem ipsum</p>
           </div>
           <div className="justify-end w-1/3 h-3/4">
-            <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-300">
+            <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-200 transition-opacity">
             <p className="exo font-bold text-2xl mb-4 text-center">Sign In Now!</p>
             <button onClick={navigateLogin}
-                  className="rounded-full bg-pink-300 w-full text-xl
-                  h-10 font-bold lato hover:bg-pink-400 transition-opacity">Log In </button>
+                  className="rounded-full bg-white w-full text-xl
+                  h-10 font-bold lato hover:bg-pink-300 transition-opacity">Log In </button>
             </form>
           </div>
         </div>
       </div>
-      <div className="border-b border-black bg-center bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage2})` }}>
+      <div className="border-b border-black bg-center bg-cover py-44 px-3" style={{ backgroundImage:`url(${landPage2})` }}>
         <div className="flex items-end m-20 justify-end">
           <div className="w-1/4">
             <p className="text-5xl arvo mb-5 text-end">Made for clinics.</p>
@@ -38,7 +38,7 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="border-b border-black bg-top bg-cover py-44 px-3 mix-blend-darken" style={{ backgroundImage:`url(${landPage3})` }}>
+      <div className="border-b border-black bg-top bg-cover py-44 px-3 " style={{ backgroundImage:`url(${landPage3})` }}>
         <div className="flex items-center m-20 justify-start">
           <div className="w-1/4">
             <p className="text-5xl arvo mb-5 text-start">Made for patients.</p>
@@ -48,6 +48,22 @@ function Landing() {
           </div>
         </div>
       </div>
+      {/* <div className="border-b border-black py-1 px-3 bg-white">
+        <div className="flex items-center m-8 justify-center">
+          <div className="w-1/4">
+            <p className="text-5xl arvo text-start">Made for patients.</p>
+          </div>
+        </div>
+      </div>
+      <div className="border-b border-black py-1 px-3 bg-white">
+        <div className="flex items-center m-8 justify-center">
+          <div className="w-1/4">
+            <p className="text-5xl arvo text-start">Made for patients.</p>
+            <h3>Streamlined Patient Records</h3>
+            <p>Efficiently create, view, and update patient records, ensuring comprehensive and readily accessible patient information.</p>
+          </div>
+        </div>
+      </div> */}
     </div>
   );
 }

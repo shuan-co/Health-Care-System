@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../../../AuthContext';
 import { signOut } from "firebase/auth";
 import { config } from '../../../firebase/Firebase';
+import { getAuth } from "firebase/auth";
 
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -13,6 +14,10 @@ const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Information', href: '/aboutus', current: false },
   { name: 'FAQs', href: '/questions', current: false },
+  
+];
+
+const Login =[ 
   { name: 'Login', href: '/login', current: false },
 ];
 
@@ -20,7 +25,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar() {
+export default function Navbar() {    
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -32,10 +37,12 @@ export default function Navbar() {
     navigate(item.href);
   };
 
+  const auth = getAuth()
   const handleLogout = () => {
-    signOut(config.auth)
+    signOut(auth, config.auth.provider)
       .then(() => {
         setIsLoggedIn(false);
+        navigate('/login');
       })
       .catch((error) => {
         console.error(error);
@@ -85,6 +92,27 @@ export default function Navbar() {
                         {item.name}
                       </a>
                     ))}
+                    { isLoggedIn ?
+                      <a
+                        onClick={() => handleLogout() }
+                        className={classNames(
+                          selectedItem === "Logout" ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
+                          'rounded-md px-3 py-2 text-2xl font-bold'
+                        )}
+                      >
+                        Logout
+                      </a>
+                      :
+                      <a
+                        onClick={() => handleNavigationClick({ name: 'Login', href: '/login', current: false })}
+                        className={classNames(
+                          selectedItem === Login ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
+                          'rounded-md px-3 py-2 text-2xl font-bold'
+                        )}
+                      >
+                        Login
+                      </a>
+                    }
                   </div>
                 </div>
               </div>
