@@ -3,9 +3,9 @@ import pic from "./sub.png"
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../../AuthContext';
-import { signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { config } from '../../../firebase/Firebase';
-import { getAuth } from "firebase/auth";
+
 
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -37,9 +37,9 @@ export default function Navbar() {
     navigate(item.href);
   };
 
-  const auth = getAuth()
+  // const auth = getAuth()
   const handleLogout = () => {
-    signOut(auth, config.auth.provider)
+    signOut(config.auth)
       .then(() => {
         setIsLoggedIn(false);
         navigate('/login');
