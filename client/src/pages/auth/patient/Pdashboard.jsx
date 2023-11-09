@@ -23,7 +23,7 @@ function Pdashboard() {
         navigate("/patientform");
     };
 
-    function changeSelected(selected){
+    function changeSelected(selected) {
         setSelected(selected)
     }
 
@@ -31,19 +31,19 @@ function Pdashboard() {
         try {
             async function getPatientDoc() {
                 const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
-                    if (user.uid) {
-                    const docRef = doc(db, "clinicPatient", user.uid);
-                    const docSnap = await getDoc(docRef);
-            
-                    if (docSnap.exists()) {
-                        setFullName(docSnap.data().firstName + " " + docSnap.data().lastName);
-                    } else {
-                        console.log("No such document!");
-                    }
+                    if (user) {
+                        const docRef = doc(db, "clinicPatient", user.uid);
+                        const docSnap = await getDoc(docRef);
+
+                        if (docSnap.exists()) {
+                            setFullName(docSnap.data().firstName + " " + docSnap.data().lastName);
+                        } else {
+                            console.log("No such document!");
+                        }
                     }
                 });
-              }
-              getPatientDoc();
+            }
+            getPatientDoc();
 
         } catch (error) {
             console.log(error)
@@ -53,7 +53,7 @@ function Pdashboard() {
 
     return (
         <div className="h-screen w-full flex overflow-hidden bg-white">
-            <Sidebar selected={selected} name={fullName} changeSelected={changeSelected}/>
+            <Sidebar selected={selected} name={fullName} changeSelected={changeSelected} />
             {selected == "dashboard" ? (
                 <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "5vw", marginTop: "13vh" }}>
                     <div style={{ width: "70vw", height: "60vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -76,7 +76,7 @@ function Pdashboard() {
                 </div>
             ) : (
                 <></>
-            ) }
+            )}
 
             {selected == "profile" ? (
                 <div className="p-20 border-2 w-10/12">

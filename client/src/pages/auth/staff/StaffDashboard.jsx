@@ -44,15 +44,20 @@ function StaffDashboard() {
                     if (user) {
                         const docRef = doc(db, "clinicStaffs", user.uid);
                         const docSnap = await getDoc(docRef);
-                        const clinicName = docSnap.data().clinicName;
-                        setClinics(clinicName);
+                        try {
 
-                        const docRefClinic = doc(db, clinicName, "staff", "staffList", user.uid);
-                        const docSnapClinic = await getDoc(docRefClinic);
-                        if (docSnapClinic.exists()) {
-                            setFullName(docSnapClinic.data().firstname + " " + docSnapClinic.data().lastname);
-                        } else {
-                            console.log("No such document!");
+                            const clinicName = docSnap.data().clinicName;
+                            setClinics(clinicName);
+                            const docRefClinic = doc(db, clinicName, "staff", "staffList", user.uid);
+                            const docSnapClinic = await getDoc(docRefClinic);
+                            if (docSnapClinic.exists()) {
+                                setFullName(docSnapClinic.data().firstname + " " + docSnapClinic.data().lastname);
+                            } else {
+                                console.log("No such document!");
+                            }
+                        }
+                        catch (error) {
+                            console.log("Processing");
                         }
                     }
                 });
@@ -344,7 +349,7 @@ function StaffDashboard() {
         }
     }, [formData]);
 
-    function resetForm(){
+    function resetForm() {
         setFirstName("")
         setMiddleName("")
         setLastName("")
@@ -596,7 +601,7 @@ function StaffDashboard() {
 
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
                                                                 <div className="sm:col-span-3">
-                                                                <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
+                                                                    <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
                                                                         Sex <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
@@ -677,7 +682,7 @@ function StaffDashboard() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
                                                                 <div className="sm:col-span-4">
                                                                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
@@ -754,7 +759,7 @@ function StaffDashboard() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                                
+
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
                                                                 <div className="col-span-full">
                                                                     <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
@@ -772,7 +777,7 @@ function StaffDashboard() {
                                                                         />
                                                                     </div>
                                                                 </div>
-                                                            </div>   
+                                                            </div>
 
                                                             <div className="flex justify-end mt-8">
                                                                 <button
@@ -783,25 +788,25 @@ function StaffDashboard() {
                                                                     Next
                                                                 </button>
                                                             </div>
-                                                          
-                                                        </div> 
+
+                                                        </div>
                                                     ) : (
                                                         <></>
-                                                    )}     
+                                                    )}
 
                                                     {currentPage == 2 ? (
                                                         <FamilyHistory
-                                                        relativeFullName={relativeName}
-                                                        relationshipWithRelative={relationshipWithRelative}
-                                                        relativeCondition={relativeCondition}
-                                                        relativeMedications={relativeMedications}
-                                                        getRelativeFullName={getRelativeFullName}
-                                                        getRelationshipWithRelative={getRelationshipWithRelative}
-                                                        getRelativeCondition={getRelativeCondition}
-                                                        getRelativeMedications={getRelativeMedications}
+                                                            relativeFullName={relativeName}
+                                                            relationshipWithRelative={relationshipWithRelative}
+                                                            relativeCondition={relativeCondition}
+                                                            relativeMedications={relativeMedications}
+                                                            getRelativeFullName={getRelativeFullName}
+                                                            getRelationshipWithRelative={getRelationshipWithRelative}
+                                                            getRelativeCondition={getRelativeCondition}
+                                                            getRelativeMedications={getRelativeMedications}
                                                         />
                                                     ) : (<></>)}
-                                                     
+
 
 
                                                     {currentPage == 3 ? (
@@ -828,7 +833,7 @@ function StaffDashboard() {
                                                         />
                                                     ) : (<></>)}
 
-                                                    
+
 
 
                                                     {currentPage >= 2 && currentPage <= 3 ? (
@@ -855,9 +860,9 @@ function StaffDashboard() {
                                                         </div>
                                                     ) : (<></>)}
 
-                    
-                                                   
-                                                   {currentPage == 4 ? (
+
+
+                                                    {currentPage == 4 ? (
                                                         <div className='flex justify-between mt-8'>
                                                             <div className="inline">
                                                                 <button
@@ -877,7 +882,7 @@ function StaffDashboard() {
                                                                 </button>
                                                             </div>
                                                         </div>
-                                                    
+
                                                     ) : (<></>)}
 
                                                 </div>

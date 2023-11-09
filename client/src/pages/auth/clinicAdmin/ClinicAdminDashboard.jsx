@@ -39,7 +39,7 @@ function ClinicAdminDashboard() {
         try {
             async function getClinicName() {
                 const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
-                    if (user.uid) {
+                    if (user) {
                         const docRef = doc(db, "clinicAdmins", user.uid);
                         const docSnap = await getDoc(docRef);
 
@@ -60,7 +60,7 @@ function ClinicAdminDashboard() {
 
             async function getAdminName() {
                 const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
-                    if (clinicName) {
+                    if (clinicName && user) {
                         const docRef = doc(db, clinicName, "admin");
                         const docSnap = await getDoc(docRef);
 
@@ -100,7 +100,6 @@ function ClinicAdminDashboard() {
     }
 
     useEffect(() => {
-        console.log(config.auth.currentUser.email);
         if (formData.email) {
             try {
                 // EMAIL CREDENTIALS
