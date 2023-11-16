@@ -7,6 +7,7 @@ import "./pdashboard.css"
 import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '../components/Sidebar';
 import PersonalInformation from './PersonalInformation'
+import RecordDiagnoses from './RecordDiagnoses';
 
 function Pdashboard() {
     const [fullName, setFullName] = useState("")
@@ -65,7 +66,7 @@ function Pdashboard() {
                             <span className="ml-3 text-blue-900 text-2xl text-center font-semibold">My Personal & Medical <br /> Information</span>
                         </div>
 
-                        <div onClick={() => navigate('./record-diagnoses')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginLeft: "8vh" }}>
+                        <div onClick={() => setSelected('record-diagnoses')} className='Pdashboard-Card-BoxShadow' style={{ border: "2px solid #00008B", backgroundColor: "#FBF7F4", width: "35%", height: "100%", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", marginLeft: "8vh" }}>
                             <div style={{ border: "2px solid #00008B", background: "linear-gradient(to bottom, #F6FFF0, #87CEEB)", width: "60%", height: "50%", borderRadius: "10px" }}>
 
                             </div>
@@ -96,6 +97,12 @@ function Pdashboard() {
 
             {selected == 'personal-information' ? (
                 <PersonalInformation />
+            ) : (
+                <></>
+            )}
+
+            {selected == 'record-diagnoses' ? (
+                <RecordDiagnoses />
             ) : (
                 <></>
             )}
