@@ -25,6 +25,7 @@ import RecordDiagnoses from "./pages/auth/patient/RecordDiagnoses";
 
 import Policy from "./pages/noAuth/policies/Policy";
 import Terms from "./pages/noAuth/policies/Terms";
+import ClinicVisits from "./pages/auth/staff/ClinicVisits";
 
 const ProtectedRoute = ({ children, accessLevel }) => {
     const [loading, setLoading] = useState(true);
@@ -152,6 +153,17 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+
+                    <Route
+                        exact path="/clinic-staff/clinic-visits"
+                        element={
+                            <ProtectedRoute accessLevel="staff">
+                                <ClinicVisits />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
 
                     {/* PATIENT ROUTES */}
                     <Route

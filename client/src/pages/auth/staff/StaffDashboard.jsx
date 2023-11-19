@@ -16,6 +16,11 @@ import Vaccination from './patientForm/components/Vaccination';
 import patientIco from "./patient.png";
 import outPatientIco from "./outpatient.png";
 import calendarIco from "./calendar.png";
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ClinicVisits from './ClinicVisits';
+
+const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass}/>
 
 function StaffDashboard() {
     const [fullName, setFullName] = useState("")
@@ -893,7 +898,7 @@ function StaffDashboard() {
                                 </div>
                             </div>
                         )}
-                {ShowForm2 && (
+            {ShowForm2 && (
                 <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full shadow-2xl drop-shadow-2xl border border-black">
                     <div className="relative w-full max-w-2xl max-h-full mx-auto">
                         <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
@@ -999,6 +1004,8 @@ function StaffDashboard() {
                     </div>
                 </div>
             )}
+
+            {selected == 'clinic-visits' ? (<ClinicVisits />) : (<></>)}
                     </div>
                 ) : (
                     <></>
