@@ -20,7 +20,8 @@ import calendarIco from "./calendar.png";
 function StaffDashboard() {
     const [fullName, setFullName] = useState("")
     const [selected, setSelected] = useState("dashboard")
-    const [showForm, setShowForm] = useState(false)
+    const [ShowForm, setShowForm] = useState(false)
+    const [ShowForm2, setShowForm2] = useState(false)
     const [clinics, setClinics] = useState([])
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1)
@@ -432,7 +433,7 @@ function StaffDashboard() {
                                 </div>
 
                                 <div
-                                    onClick={() => navigate('./record-diagnoses')}
+                                    onClick={() => setShowForm2((prevShowForm2) => !prevShowForm2)}
                                     className="Pdashboard-Card-BoxShadow"
                                     style={{
                                         border: "2px solid #6f183e",
@@ -519,7 +520,7 @@ function StaffDashboard() {
 
                             </div>
                         </div>
-                        {showForm && (
+                        {ShowForm && (
                             <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                                 <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
                                     <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
@@ -892,11 +893,116 @@ function StaffDashboard() {
                                 </div>
                             </div>
                         )}
+                {ShowForm2 && (
+                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full shadow-2xl drop-shadow-2xl border border-black">
+                    <div className="relative w-full max-w-2xl max-h-full mx-auto">
+                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                            <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                Add User
+                            </h3>
+                            <button
+                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                                onClick={() => setShowForm2(false)}
+                            >
+                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span className="sr-only">Close modal</span>
+                            </button>
+                        </div>
+
+                        <div className="relative bg-slate-50 shadow exo">
+                            <div className="p-6 space-y-6">
+                                <form onSubmit={initializeClinic}>
+                                    <div className="border-b border-gray-900/10 pb-12">
+
+                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                            <div className="sm:col-span-3">
+                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
+                                                    First name <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="text"
+                                                        name="first-name"
+                                                        id="first-name"
+                                                        autoComplete="given-name"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="sm:col-span-3">
+                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
+                                                    Last name <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="text"
+                                                        name="last-name"
+                                                        id="last-name"
+                                                        autoComplete="last-name"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                            <div className="sm:col-span-6">
+                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
+                                                    Email <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="email"
+                                                        name="email"
+                                                        id="email"
+                                                        autoComplete="email"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="sm:col-span-full">
+                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
+                                                    Password <RequiredAsterisk />
+                                                </label>
+                                                <div className="mt-2">
+                                                    <input
+                                                        type="password"
+                                                        name="password"
+                                                        id="password"
+                                                        autoComplete="current-password"
+                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-10 flex justify-end">
+                                            <button
+                                                className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            >
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
                     </div>
                 ) : (
                     <></>
-                )}
-
+                )}                          
                 {selected == "profile" ? (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", marginLeft: "13vw" }}>
                         <div style={{ position: "relative", width: "60vw", height: "60vh" }}>
@@ -1188,7 +1294,7 @@ function StaffDashboard() {
             {/* <p>Staff Dashboard</p> */}
             {/* <button onClick={() => navigate('./patientlist')}>Create Patient</button> */}
         </>
-    )
-}
+        )               
+    }
 
 export default StaffDashboard;
