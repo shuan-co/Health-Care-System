@@ -20,7 +20,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ClinicVisits from './ClinicVisits';
 
-const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass}/>
+const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />
 
 function StaffDashboard() {
     const [fullName, setFullName] = useState("")
@@ -391,18 +391,18 @@ function StaffDashboard() {
             <div className="h-screen w-full flex overflow-hidden" style={{ backgroundColor: "#dcdef3" }}>
                 <Sidebar selected={selected} name={fullName} changeSelected={changeSelected} />
                 {selected == "dashboard" ? (
-                    <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "5vw", marginTop: "5vh" }}>
+                    <div style={{ float: "left", width: "100vh", height: "100vh", marginLeft: "12vw", marginTop: "9vh" }}>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span className="text-black text-3xl font-semibold" style={{ marginLeft: "10vw" }}>
+                            <span className="text-black text-3xl font-semibold" style={{ marginLeft: "5vw" }}>
                                 WELCOME BACK, {fullName}!
                             </span>
-                            <div style={{ width: "70vw", height: "50vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <div style={{ width: "60vw", height: "40vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 <div
-                                    onClick={() => setShowForm((prevShowForm) => !prevShowForm)}
+                                    onClick={() => { navigate("patientlist") }}
                                     className="Pdashboard-Card-BoxShadow"
                                     style={{
                                         border: "2px solid #00008B",
-                                        width: "33%",
+                                        width: "30%",
                                         height: "85%",
                                         borderRadius: "20px",
                                         display: "flex",
@@ -443,7 +443,7 @@ function StaffDashboard() {
                                     style={{
                                         border: "2px solid #6f183e",
                                         background: "linear-gradient(to bottom right, #E41818, #FB57FE)",
-                                        width: "33%",
+                                        width: "30%",
                                         height: "85%",
                                         borderRadius: "20px",
                                         display: "flex",
@@ -478,23 +478,61 @@ function StaffDashboard() {
                                     ></div>
                                 </div>
                             </div>
-                            <div style={{
-                                width: "152vw", height: "30vh", display: "flex", alignItems: "center", marginTop: "4vh", marginLeft: "8.5vw"
-                            }}>
+                            <div style={{ width: "60vw", height: "40vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 <div
-                                    onClick={() => navigate('./personal-information')}
-                                    className='Pdashboard-Card-BoxShadow'
+                                    onClick={() => setShowForm((prevShowForm) => !prevShowForm)}
+                                    className="Pdashboard-Card-BoxShadow"
                                     style={{
                                         border: "2px solid #00008B",
-                                        background: "linear-gradient(to right, #312DEB 5%, #DCB0FF 60%)",
-                                        marginLeft: "25px",
-                                        width: "33%",
-                                        height: "100%",
+                                        width: "30%",
+                                        height: "85%",
                                         borderRadius: "20px",
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
                                         flexDirection: "column",
+                                        background: "linear-gradient(to bottom right, #2657B7, #A5E4FF)",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            top: "50%",
+                                            left: "50%",
+                                            transform: "translate(-50%, -50%)",
+                                        }}
+                                    >
+                                        <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
+                                            PATIENTS
+                                        </span>
+                                    </div>
+                                    <div
+                                        style={{
+                                            background: `url(${patientIco}) center center no-repeat`,
+                                            backgroundSize: "cover",
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "10px",
+                                            marginTop: "100px"
+                                        }}
+                                    ></div>
+                                </div>
+
+                                <div
+                                    onClick={() => setShowForm2((prevShowForm2) => !prevShowForm2)}
+                                    className="Pdashboard-Card-BoxShadow"
+                                    style={{
+                                        border: "2px solid #6f183e",
+                                        background: "linear-gradient(to bottom right, #E41818, #FB57FE)",
+                                        width: "30%",
+                                        height: "85%",
+                                        borderRadius: "20px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        flexDirection: "column",
+                                        marginLeft: "8vh",
                                         position: "relative",
                                     }}
                                 >
@@ -508,21 +546,19 @@ function StaffDashboard() {
                                         }}
                                     >
                                         <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
-                                            SCHEDULE <br /> APPOINTMENTS
+                                            OUTPATIENT <br /> FORM
                                         </span>
                                     </div>
                                     <div
                                         style={{
-                                            background: `url(${calendarIco}) center center no-repeat`,
+                                            background: `url(${outPatientIco}) center center no-repeat`,
                                             backgroundSize: "cover",
-                                            width: "50%", // Increase the width percentage to make the picture larger
-                                            height: "100%", // Keep the height at 100% to maintain the aspect ratio
-                                            borderRadius: "10px",
-                                            marginRight: "360px",
+                                            width: "100%",
+                                            height: "100%",
+                                            borderRadius: "10px"
                                         }}
                                     ></div>
                                 </div>
-
                             </div>
                         </div>
                         {ShowForm && (
@@ -898,118 +934,118 @@ function StaffDashboard() {
                                 </div>
                             </div>
                         )}
-            {ShowForm2 && (
-                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full shadow-2xl drop-shadow-2xl border border-black">
-                    <div className="relative w-full max-w-2xl max-h-full mx-auto">
-                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
-                            <h3 className="text-xl font-semibold text-white-900 dark:text-white">
-                                Add User
-                            </h3>
-                            <button
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
-                                onClick={() => setShowForm2(false)}
-                            >
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                            </button>
-                        </div>
+                        {ShowForm2 && (
+                            <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full shadow-2xl drop-shadow-2xl border border-black">
+                                <div className="relative w-full max-w-2xl max-h-full mx-auto">
+                                    <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                                        <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                            Add User
+                                        </h3>
+                                        <button
+                                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                                            onClick={() => setShowForm2(false)}
+                                        >
+                                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                            </svg>
+                                            <span className="sr-only">Close modal</span>
+                                        </button>
+                                    </div>
 
-                        <div className="relative bg-slate-50 shadow exo">
-                            <div className="p-6 space-y-6">
-                                <form onSubmit={initializeClinic}>
-                                    <div className="border-b border-gray-900/10 pb-12">
+                                    <div className="relative bg-slate-50 shadow exo">
+                                        <div className="p-6 space-y-6">
+                                            <form onSubmit={initializeClinic}>
+                                                <div className="border-b border-gray-900/10 pb-12">
 
-                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                            <div className="sm:col-span-3">
-                                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
-                                                    First name <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="first-name"
-                                                        id="first-name"
-                                                        autoComplete="given-name"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
+                                                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                                        <div className="sm:col-span-3">
+                                                            <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
+                                                                First name <RequiredAsterisk />
+                                                            </label>
+                                                            <div className="mt-2">
+                                                                <input
+                                                                    type="text"
+                                                                    name="first-name"
+                                                                    id="first-name"
+                                                                    autoComplete="given-name"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                    required
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="sm:col-span-3">
+                                                            <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
+                                                                Last name <RequiredAsterisk />
+                                                            </label>
+                                                            <div className="mt-2">
+                                                                <input
+                                                                    type="text"
+                                                                    name="last-name"
+                                                                    id="last-name"
+                                                                    autoComplete="last-name"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                    required
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                                        <div className="sm:col-span-6">
+                                                            <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
+                                                                Email <RequiredAsterisk />
+                                                            </label>
+                                                            <div className="mt-2">
+                                                                <input
+                                                                    type="email"
+                                                                    name="email"
+                                                                    id="email"
+                                                                    autoComplete="email"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                    required
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="sm:col-span-full">
+                                                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
+                                                                Password <RequiredAsterisk />
+                                                            </label>
+                                                            <div className="mt-2">
+                                                                <input
+                                                                    type="password"
+                                                                    name="password"
+                                                                    id="password"
+                                                                    autoComplete="current-password"
+                                                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                    required
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-10 flex justify-end">
+                                                        <button
+                                                            className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                        >
+                                                            Submit
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <div className="sm:col-span-3">
-                                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
-                                                    Last name <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="text"
-                                                        name="last-name"
-                                                        id="last-name"
-                                                        autoComplete="last-name"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                            <div className="sm:col-span-6">
-                                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
-                                                    Email <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="email"
-                                                        name="email"
-                                                        id="email"
-                                                        autoComplete="email"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="sm:col-span-full">
-                                                <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
-                                                    Password <RequiredAsterisk />
-                                                </label>
-                                                <div className="mt-2">
-                                                    <input
-                                                        type="password"
-                                                        name="password"
-                                                        id="password"
-                                                        autoComplete="current-password"
-                                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-10 flex justify-end">
-                                            <button
-                                                className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                            >
-                                                Submit
-                                            </button>
+                                            </form>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                        )}
 
-            {selected == 'clinic-visits' ? (<ClinicVisits />) : (<></>)}
+                        {selected == 'clinic-visits' ? (<ClinicVisits />) : (<></>)}
                     </div>
                 ) : (
                     <></>
-                )}                          
+                )}
                 {selected == "profile" ? (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", marginLeft: "13vw" }}>
                         <div style={{ position: "relative", width: "60vw", height: "60vh" }}>
@@ -1301,7 +1337,7 @@ function StaffDashboard() {
             {/* <p>Staff Dashboard</p> */}
             {/* <button onClick={() => navigate('./patientlist')}>Create Patient</button> */}
         </>
-        )               
-    }
+    )
+}
 
 export default StaffDashboard;

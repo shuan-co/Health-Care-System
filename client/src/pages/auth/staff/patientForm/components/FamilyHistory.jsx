@@ -4,10 +4,10 @@ import RequiredAsterisk from './asterisk';
 export default function FamilyHistory(props) {
     return (
         <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-black">Family History</h2>
+            <h2 className="text-base font-semibold leading-7 text-black" style={{ marginTop: "2vh" }}>Family History</h2>
             <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    <label htmlFor="relativeName" className="block text-sm font-medium leading-6 text-black">
+                    <label htmlFor="relativeName" className="block text-sm font-medium leading-6 text-black" >
                         Full name <RequiredAsterisk />
                     </label>
                     <div className="mt-2">

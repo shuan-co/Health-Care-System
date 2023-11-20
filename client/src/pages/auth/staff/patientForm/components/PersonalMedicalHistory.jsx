@@ -5,10 +5,10 @@ export default function PersonalMedicalHistory(props) {
 
     return (
         <div className="border-b border-gray-900/10 pb-12">
-            <h2 className="text-base font-semibold leading-7 text-black">Personal Medical History</h2>
+            <h2 className="text-base font-semibold leading-7 text-black" style={{ marginTop: "2vh" }}>Personal Medical History</h2>
             <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    <label htmlFor="historyType" className="block text-sm font-medium leading-6 text-black">
+                    <label htmlFor="historyType" className="block text-sm font-medium leading-6 text-black" >
                         Type
                         <RequiredAsterisk />
                     </label>
@@ -56,7 +56,7 @@ export default function PersonalMedicalHistory(props) {
                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                             value={props.historyRemarks}
                             onChange={(e) => props.getHistoryRemarks(e.target.value)}
-                            
+
                         />
                     </div>
                 </div>
