@@ -27,6 +27,7 @@ function StaffDashboard() {
     const [selected, setSelected] = useState("dashboard")
     const [ShowForm, setShowForm] = useState(false)
     const [ShowForm2, setShowForm2] = useState(false)
+    const [ShowClinicVisits, setShowClinicVisits] = useState(false)
     const [clinics, setClinics] = useState([])
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1)
@@ -478,54 +479,16 @@ function StaffDashboard() {
                                     ></div>
                                 </div>
                             </div>
-                            <div style={{ width: "60vw", height: "40vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                            <div style={{ width: "56vw", height: "40vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                
+    
                                 <div
-                                    onClick={() => setShowForm((prevShowForm) => !prevShowForm)}
-                                    className="Pdashboard-Card-BoxShadow"
-                                    style={{
-                                        border: "2px solid #00008B",
-                                        width: "30%",
-                                        height: "85%",
-                                        borderRadius: "20px",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        flexDirection: "column",
-                                        background: "linear-gradient(to bottom right, #2657B7, #A5E4FF)",
-                                        position: "relative",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            top: "50%",
-                                            left: "50%",
-                                            transform: "translate(-50%, -50%)",
-                                        }}
-                                    >
-                                        <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
-                                            PATIENTS
-                                        </span>
-                                    </div>
-                                    <div
-                                        style={{
-                                            background: `url(${patientIco}) center center no-repeat`,
-                                            backgroundSize: "cover",
-                                            width: "100%",
-                                            height: "100%",
-                                            borderRadius: "10px",
-                                            marginTop: "100px"
-                                        }}
-                                    ></div>
-                                </div>
-
-                                <div
-                                    onClick={() => setShowForm2((prevShowForm2) => !prevShowForm2)}
+                                    onClick={() => setSelected("clinic-visits")}
                                     className="Pdashboard-Card-BoxShadow"
                                     style={{
                                         border: "2px solid #6f183e",
-                                        background: "linear-gradient(to bottom right, #E41818, #FB57FE)",
-                                        width: "30%",
+                                        background: "linear-gradient(to bottom right, #bfd9be, #83b67f)",
+                                        width: "60%",
                                         height: "85%",
                                         borderRadius: "20px",
                                         display: "flex",
@@ -546,12 +509,12 @@ function StaffDashboard() {
                                         }}
                                     >
                                         <span className="text-white text-4xl font-semibold" style={{ letterSpacing: "5px" }}>
-                                            OUTPATIENT <br /> FORM
+                                            CLINIC  <br /> VISITS
                                         </span>
                                     </div>
                                     <div
                                         style={{
-                                            background: `url(${outPatientIco}) center center no-repeat`,
+                                            
                                             backgroundSize: "cover",
                                             width: "100%",
                                             height: "100%",
@@ -1041,11 +1004,14 @@ function StaffDashboard() {
                             </div>
                         )}
 
-                        {selected == 'clinic-visits' ? (<ClinicVisits />) : (<></>)}
+                
                     </div>
                 ) : (
                     <></>
                 )}
+
+                {selected == 'clinic-visits' ? (<ClinicVisits changeSelected={changeSelected}/>) : (<></>)}
+
                 {selected == "profile" ? (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", marginLeft: "13vw" }}>
                         <div style={{ position: "relative", width: "60vw", height: "60vh" }}>

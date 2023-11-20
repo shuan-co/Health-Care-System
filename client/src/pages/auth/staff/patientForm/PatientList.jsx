@@ -1,6 +1,6 @@
-import { config, signInAuth } from "../../../../firebase/Firebase";
+import { config, signInAuth, db } from "../../../../firebase/Firebase";
 import { doc, setDoc, getDoc, getDocs, collection, updateDoc, startAfter, limit, query, startAt } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect, Fragment, useRef } from "react";
 import pfp from './pfp.jpg'
 import searchIcon from "./search.png"
@@ -10,6 +10,8 @@ import emailjs from 'emailjs-com';
 import FamilyHistory from './components/FamilyHistory';
 import PersonalMedicalHistory from './components/PersonalMedicalHistory';
 import Vaccination from './components/Vaccination';
+import Sidebar from "../../components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 import { Dialog, Transition } from '@headlessui/react'
 
@@ -17,7 +19,7 @@ import "./patientlist.css"
 
 
 function PatientList() {
-
+    const navigate = useNavigate();
     // FORM
     const [formData, setFormData] = useState({
         firstName: '',
@@ -78,6 +80,46 @@ function PatientList() {
     const [ShowForm2, setShowForm2] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
 
+    // staff info
+    const [selected, setSelected] = useState("patient-list")
+    const [fullName, setFullName] = useState("")
+    const [clinics, setClinics] = useState("")
+    function changeSelected(selected) {
+        setSelected(selected)
+    }
+
+    // get full name of staff
+    useEffect(() => {
+        try {
+            async function getPatientDoc() {
+                const unsubscribe = onAuthStateChanged(config.auth, async (user) => {
+                    if (user) {
+                        const docRef = doc(db, "clinicStaffs", user.uid);
+                        const docSnap = await getDoc(docRef);
+                        try {
+
+                            const clinicName = docSnap.data().clinicName;
+                            setClinics(clinicName);
+                            const docRefClinic = doc(db, clinicName, "staff", "staffList", user.uid);
+                            const docSnapClinic = await getDoc(docRefClinic);
+                            if (docSnapClinic.exists()) {
+                                setFullName(docSnapClinic.data().firstname + " " + docSnapClinic.data().lastname);
+                            } else {
+                                console.log("No such document!");
+                            }
+                        }
+                        catch (error) {
+                            console.log("Processing");
+                        }
+                    }
+                });
+            }
+            getPatientDoc();
+
+        } catch (error) {
+            console.log(error)
+        }
+    })
 
     async function initializeClinic(e) {
         e.preventDefault();
@@ -86,6 +128,7 @@ function PatientList() {
         setFormData({
             ...formData,
             firstName,
+            middleName,
             lastName,
             email,
             emailFormatted,
@@ -207,15 +250,17 @@ function PatientList() {
                                         clinicName: clinicName
                                     });
 
+                                    console.log(formData)
                                     // TODO: ADD INPATIENT INFORMATION
                                     setDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid, "baselineInformation"), "baselineInformation"), {
-                                        firstname: formData.firstName,
+                                        firstname: firstName,
+                                        middleName: formData.middleName,
                                         lastname: formData.lastName,
                                         email: formData.email,
                                         phoneNumber: formData.phoneNumber,
                                         streetAddress: formData.streetAddress,
-                                        sex: formData.sex,
-                                        bloodtype: formData.bloodtype,
+                                        sex: sex,
+                                        bloodType: bloodType,
                                         emergencyContactName: formData.emergencyContactName,
                                         emergencyContactNumber: formData.emergencyContactNumber,
                                         allergies: formData.allergies,
@@ -494,14 +539,15 @@ function PatientList() {
             firstName: firstName,
             lastName: lastName
         });
-
+        console.log(bloodType)
         setDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", currentUID, "baselineInformation"), "baselineInformation"), {
             firstname: firstName,
+            middleName: middleName,
             lastname: lastName,
             phoneNumber: phoneNumber,
             streetAddress: streetAddress,
             sex: sex,
-            bloodtype: bloodType,
+            bloodType: bloodType,
             emergencyContactName: emergencyContactName,
             emergencyContactNumber: emergencyContactNumber,
             allergies: allergies,
@@ -552,10 +598,10 @@ function PatientList() {
 
         // UPDATE FORM FIELDS
         setFirstName(baselineInformationSnapshot.data().firstname);
-        // INSERT MIDDLE NAME
+        setMiddleName(baselineInformationSnapshot.data().middleName)
         setLastName(baselineInformationSnapshot.data().lastname);
         setSex(baselineInformationSnapshot.data().sex);
-        setBloodType(baselineInformationSnapshot.data().bloodtype);
+        setBloodType(baselineInformationSnapshot.data().bloodType);
         setPhoneNumber(baselineInformationSnapshot.data().phoneNumber);
         setStreetAddress(baselineInformationSnapshot.data().streetAddress);
         setEmail(baselineInformationSnapshot.data().email);
@@ -687,1264 +733,1394 @@ function PatientList() {
     };
     return (
         <>
-            {/* Modal */}
-            <Transition.Root show={open} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-                    </Transition.Child>
+        {/* Modal */}
+        <Transition.Root show={open} as={Fragment}>
+            <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                </Transition.Child>
 
-                    <div className="fixed inset-0 z-10 overflow-y-auto">
+                <div className="fixed inset-0 z-10 overflow-y-auto">
 
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                            {showEmptyDiv ? (
-                                <div>
-                                    <div className="bg-gray-50 rounded-xl" style={{ width: "50vw", height: "80vh" }}>
-                                        <div style={{
-                                            backgroundColor: "#485af4",
-                                            width: "100%",
-                                            height: "13%",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            alignItems: "center",  // Center vertically
-                                            justifyContent: "center",  // Center horizontally
-                                        }}>
-                                            <p className="text-4xl font-normal text-white" style={{}}>PATIENT INFORMATION FORM</p>
-                                        </div>
-                                        <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
-                                            <div>
-                                                <p className="text-sm text-gray-500">
-                                                    {/* Patient Information */}
-                                                    Allergies: {patientInfo.allergies}
-                                                    <br />
-                                                    Blood Type: {patientInfo.bloodType}
-                                                    <br />
-                                                    Email: {patientInfo.email}
-                                                    <br />
-                                                    Emergency Contact Name: {patientInfo.emergencyContactName}
-                                                    <br />
-                                                    Emergency Contact Number: {patientInfo.emergencyContactNumber}
-                                                    <br />
-                                                    First Name: {patientInfo.firstname}
-                                                    <br />
-                                                    Last Name: {patientInfo.lastname}
-                                                    <br />
-                                                    Phone Number: {patientInfo.phoneNumber}
-                                                    <br />
-                                                    Sex: {patientInfo.sex}
-                                                    <br />
-                                                    Street Address: {patientInfo.streetAddress}
-
-                                                </p>
-                                            </div>
-                                        </div>
-                                        {/* <button
-                                    type="button"
-                                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
-                                    onClick={() => setOpen(false)}
-                                    ref={cancelButtonRef}
-                                >
-                                    Return
-                                </button> */}
-                                    </div>
-                                </div>
-                            ) : (
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        {showEmptyDiv ? (
+                            <div>
                                 <div className="bg-gray-50 rounded-xl" style={{ width: "50vw", height: "80vh" }}>
                                     <div style={{
                                         backgroundColor: "#485af4",
                                         width: "100%",
-                                        height: "25%",
-                                        borderBottomLeftRadius: "10vh",
+                                        height: "13%",
                                         display: "flex",
                                         flexDirection: "row",
                                         alignItems: "center",  // Center vertically
                                         justifyContent: "center",  // Center horizontally
                                     }}>
-                                        <img
-                                            src={pfp}
-                                            alt=""
-                                            style={{
-                                                width: "18%",
-                                                borderRadius: "50%", // Makes the image circular
-                                                border: "5px solid #A3ACFC", // Adds a 3px border with the specified color
-                                            }}
-                                        />
-                                        <div className="flex flex-col" style={{ textAlign: "left", marginLeft: "1.2vw", marginRight: "3vw" }}>
-                                            <p className="text-4xl font-normal text-white" style={{}}>Patient Name</p>
-                                            <p className="text-xl font-thin text-white" style={{ marginTop: "1vh", marginBottom: "2vh" }}>Sex | Age yrs old</p>
-                                        </div>
-
-                                        <button className="border-2 border-white text-2xl text-white px-5 py-3 rounded-lg hover:bg-white hover:text-[#485af4] hover:border-[#485af4] transition-all"
-                                            style={{ marginLeft: "2vw", marginBottom: "2vh" }}>
-                                            Edit Records
-                                        </button>
+                                        <p className="text-4xl font-normal text-white" style={{}}>PATIENT INFORMATION FORM</p>
                                     </div>
                                     <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
-                                        <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
-                                            <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
-                                                <button
-                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu text-3xl font-normal"
-                                                    style={{
-                                                        width: "80%",
-                                                        marginTop: "15vh"
-                                                    }}
-                                                    onClick={toggleEmptyDiv}
-                                                >
-                                                    <span className="text-3xl font-normal">Personal Information</span>
-                                                </button>
-                                                <button
-                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                    style={{
-                                                        width: "80%",
-                                                        marginTop: "3vh",
-                                                    }}
-                                                >
-                                                    <span className="text-3xl font-normal">Patient Medical History</span>
-                                                </button>
-                                                <button
-                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                    style={{
-                                                        width: "80%",
-                                                        marginTop: "3vh",
-                                                    }}
-                                                >
-                                                    <span className="text-3xl font-normal">Vaccination Records</span>
-                                                </button>
-                                                <button
-                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                    style={{
-                                                        width: "80%",
-                                                        marginTop: "3vh",
-                                                    }}
-                                                >
-                                                    <span className="text-3xl font-normal">Family Medical History</span>
-                                                </button>
-                                                <button
-                                                    className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
-                                                    style={{
-                                                        width: "80%",
-                                                        marginTop: "3vh",
-                                                    }}
-                                                >
-                                                    <span className="text-3xl font-normal">Clinic Visit List</span>
-                                                </button>
-                                            </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">
+                                                {/* Patient Information */}
+                                                Allergies: {patientInfo.allergies}
+                                                <br />
+                                                Blood Type: {patientInfo.bloodType}
+                                                <br />
+                                                Email: {patientInfo.email}
+                                                <br />
+                                                Emergency Contact Name: {patientInfo.emergencyContactName}
+                                                <br />
+                                                Emergency Contact Number: {patientInfo.emergencyContactNumber}
+                                                <br />
+                                                First Name: {patientInfo.firstname}
+                                                <br />
+                                                Last Name: {patientInfo.lastname}
+                                                <br />
+                                                Phone Number: {patientInfo.phoneNumber}
+                                                <br />
+                                                Sex: {patientInfo.sex}
+                                                <br />
+                                                Street Address: {patientInfo.streetAddress}
 
-
+                                            </p>
                                         </div>
-
-                                    </div>
-
-                                    <hr style={{ border: 'none', borderTop: '3px solid #d1d5db' }} />
-                                    <div style={{ width: "100%", height: "8%", alignItems: "center", display: "flex" }}>
-                                        <button
-                                            style={{
-                                                border: '2px solid #909090',
-                                                borderRadius: '50%',
-                                                width: '40px',
-                                                height: '40px',
-                                                backgroundColor: 'transparent',
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                color: '#444242',
-                                                fontSize: '24px',
-                                                textAlign: 'center',
-                                                marginLeft: "10px",
-                                            }}
-                                            onClick={() => setOpen(false)}
-                                            ref={cancelButtonRef}
-                                        >
-                                            <div>←</div>
-                                        </button>
-                                        <p style={{ marginLeft: "0.3vw", color: "#444242" }}>Back to Patients Database</p>
                                     </div>
                                     {/* <button
-                                    type="button"
-                                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
-                                    onClick={() => setOpen(false)}
-                                    ref={cancelButtonRef}
-                                >
-                                    Return
-                                </button> */}
+                                type="button"
+                                className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
+                                onClick={() => setOpen(false)}
+                                ref={cancelButtonRef}
+                            >
+                                Return
+                            </button> */}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                </Dialog>
-            </Transition.Root>
-
-
-
-            <div className="h-screen w-full flex overflow-hidden">
-                <nav className="flex flex-col bg-gray-200 dark:bg-gray-900 w-64 px-12 pt-4 pb-6">
-
-                    <div className="flex flex-row border-b items-center justify-between pb-2">
-                        <span className="text-lg font-semibold capitalize dark:text-gray-300">
-                            my admin
-                        </span>
-
-                        <span className="relative ">
-                            <a
-                                className="hover:text-green-500 dark-hover:text-green-300
-					text-gray-600 dark:text-gray-300"
-                                href="inbox/">
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round">
-                                    <path
-                                        d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                </svg>
-                            </a>
-                            <div
-                                className="absolute w-2 h-2 rounded-full bg-green-500
-					dark-hover:bg-green-300 right-0 mb-5 bottom-0"></div>
-                        </span>
-
-                    </div>
-
-                    <div className="mt-8">
-                        <img
-                            className="h-12 w-12 rounded-full object-cover"
-                            src="https://appzzang.me/data/editor/1608/f9c387cb6bd7a0b004f975cd92cbe2d9_1471626325_6802.png"
-                            alt="enoshima profile" />
-                        <h2
-                            className="mt-4 text-xl dark:text-gray-300 font-extrabold capitalize">
-                            Hello Enoshima
-                        </h2>
-                        <span className="text-sm dark:text-gray-300">
-                            <span className="font-semibold text-green-600 dark:text-green-300">
-                                Admin
-                            </span>
-                            id789038
-                        </span>
-                    </div>
-
-                    <button
-                        className="mt-8 flex items-center justify-between py-3 px-2 text-white
-                       dark:text-gray-200 bg-green-400 dark:bg-green-500 rounded-lg shadow"
-                    >
-                        <span>Add user</span>
-                        <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
-                        </svg>
-                    </button>
-
-
-                    <ul className="mt-2 text-gray-600">
-                        <li className="mt-8">
-                            <a href="#home" className="flex ">
-                                <svg
-                                    className="fill-current h-5 w-5 dark:text-gray-300"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M16 20h4v-4h-4m0-2h4v-4h-4m-6-2h4V4h-4m6
-							4h4V4h-4m-6 10h4v-4h-4m-6 4h4v-4H4m0 10h4v-4H4m6
-							4h4v-4h-4M4 8h4V4H4v4z"></path>
-                                </svg>
-                                <span
-                                    className="ml-2 capitalize font-medium text-black
-						dark:text-gray-300">
-                                    dashboard
-                                </span>
-                            </a>
-                        </li>
-
-                        <li className="mt-8">
-                            <a href="#home" className="flex">
-                                <svg
-                                    className="fill-current h-5 w-5 dark:text-gray-300"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2
-							2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0
-							00-2-2h-1V1m-1 11h-5v5h5v-5z"></path>
-                                </svg>
-                                <span
-                                    className="ml-2 capitalize font-medium text-black
-						dark:text-gray-300">
-                                    calendar
-                                </span>
-                            </a>
-                        </li>
-
-                        <li
-                            className="mt-8 shadow py-2 bg-white dark:bg-gray-200 rounded-lg
-				-ml-4">
-                            <a href="#home" className="flex pl-4">
-                                <svg className="fill-current h-5 w-5" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 4a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0
-							014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4
-							8-4z"></path>
-                                </svg>
-                                <span className="ml-2 capitalize font-medium">users</span>
-                            </a>
-                        </li>
-
-                        <li className="mt-8">
-                            <a href="#home" className="flex">
-                                <svg
-                                    className="fill-current h-5 w-5 dark:text-gray-300"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 13H7v5h5v2H5V10h2v1h5v2M8
-							4v2H4V4h4m2-2H2v6h8V2m10 9v2h-4v-2h4m2-2h-8v6h8V9m-2
-							9v2h-4v-2h4m2-2h-8v6h8v-6z"></path>
-                                </svg>
-                                <span
-                                    className="ml-2 capitalize font-medium text-black
-						dark:text-gray-300">
-                                    tasks
-                                </span>
-                            </a>
-                        </li>
-
-                    </ul>
-
-                    <div className="mt-auto flex items-center text-red-700 dark:text-red-400">
-                        <a href="#home" className="flex items-center">
-                            <svg className="fill-current h-5 w-5" viewBox="0 0 24 24">
-                                <path
-                                    d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 012
-						2v2h-2V4H5v16h9v-2h2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2
-						0 012-2h9z"></path>
-                            </svg>
-                            <span className="ml-2 capitalize font-medium">log out</span>
-                        </a>
-
-                    </div>
-                </nav>
-
-                <div className="staff-list flex-grow p-4">
-                    {loading ? (
-                        <p>Loading...</p>
-                    ) : (
-
-                        < div class="mx-auto  px-4 py-8 sm:px-8" >
-                            <div class="flex items-center justify-between pb-6">
-                                <div style={{ display: "flex" }}>
-                                    <input
-                                        type="text"
-                                        placeholder="SEARCH PATIENTS"
-                                        className="flex-1 rounded-3xl border border-gray-300 px-5 py-3 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                        style={{ width: '40vw', textAlign: 'center', fontSize: '1em', border: '1px solid' }}
+                            </div>
+                        ) : (
+                            <div className="bg-gray-50 rounded-xl" style={{ width: "50vw", height: "80vh" }}>
+                                <div style={{
+                                    backgroundColor: "#485af4",
+                                    width: "100%",
+                                    height: "25%",
+                                    borderBottomLeftRadius: "10vh",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",  // Center vertically
+                                    justifyContent: "center",  // Center horizontally
+                                }}>
+                                    <img
+                                        src={pfp}
+                                        alt=""
+                                        style={{
+                                            width: "18%",
+                                            borderRadius: "50%", // Makes the image circular
+                                            border: "5px solid #A3ACFC", // Adds a 3px border with the specified color
+                                        }}
                                     />
-                                    <img src={searchIcon} alt="" style={{ marginLeft: "0.5vw" }} />
-                                </div>
-                                <div class="flex items-center justify-between space-x-4">
-                                    <button class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
-                                        SORT BY
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
-                                        </svg>
-                                    </button>
-
-                                    <button onClick={() => setShowForm((prevShowForm) => !prevShowForm)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
-                                        CREATE NEW PATIENT
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="overflow-y-hidden rounded-lg border">
-                                <div class="overflow-x-auto">
-                                    <table class="w-full">
-                                        <thead>
-                                            <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
-                                                <th class="px-5 py-3"> </th>
-                                                <th class="px-5 py-3">Sex</th>
-                                                <th class="px-5 py-3">Full Name</th>
-                                                <th class="px-5 py-3">Contact No.</th>
-                                                <th class="px-5 py-3">Email</th>
-                                                <th class="px-5 py-3">Records</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-gray-500">
-                                            {patientList.map((patient, index) => (
-                                                <tr>
-                                                    <td class="border-b border-r border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <p class="whitespace-no-wrap">{index + 1}</p>
-                                                    </td>
-                                                    <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <span
-                                                            className={`rounded-full px-3 py-1 text-s font-semibold ${patient.sex === 'Male' ? 'bg-blue-200 text-blue-900' : 'bg-pink-200 text-pink-900'
-                                                                }`}
-                                                        >
-                                                            {patient.sex === 'Male' ? 'Male' : 'Female'}
-                                                        </span>
-                                                    </td>
-                                                    <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <div class="flex items-center">
-                                                            <div class="h-10 w-10 flex-shrink-0">
-                                                                <img class="h-full w-full rounded-full" src={pfp} alt="" />
-                                                            </div>
-                                                            <div class="ml-3">
-                                                                <p class="whitespace-no-wrap">{patient.firstname} {patient.lastname}</p>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <p class="whitespace-no-wrap">{patient.phoneNumber}</p>
-                                                    </td>
-                                                    <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <p class="whitespace-no-wrap">{patient.email}</p>
-                                                    </td>
-
-                                                    <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                                                        <button key={patient.uid} onClick={() => handleClick(patient.uid)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-md font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
-                                                            VIEW
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="flex flex-col items-center border-t bg-white px-5 py-5 sm:flex-row sm:justify-between">
-                                    <span class="text-xs text-gray-600 sm:text-sm"> Showing 1 to 5 of 12 Entries </span>
-                                    <div class="mt-2 inline-flex sm:mt-0">
-                                        <button class="mr-2 h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100" onClick={previousPatients}>Prev</button>
-                                        <button class="h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100" onClick={nextPatients}>Next</button>
+                                    <div className="flex flex-col" style={{ textAlign: "left", marginLeft: "1.2vw", marginRight: "3vw" }}>
+                                        <p className="text-4xl font-normal text-white" style={{}}>Patient Name</p>
+                                        <p className="text-xl font-thin text-white" style={{ marginTop: "1vh", marginBottom: "2vh" }}>Sex | Age yrs old</p>
                                     </div>
+
+                                    <button className="border-2 border-white text-2xl text-white px-5 py-3 rounded-lg hover:bg-white hover:text-[#485af4] hover:border-[#485af4] transition-all"
+                                        style={{ marginLeft: "2vw", marginBottom: "2vh" }}>
+                                        Edit Records
+                                    </button>
+                                </div>
+                                <div style={{ width: "100%", height: "67%", backgroundColor: "white" }}>
+                                    <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                        <div className="w-full h-2/3 bg-white flex flex-col items-center justify-center">
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu text-3xl font-normal"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "15vh"
+                                                }}
+                                                onClick={toggleEmptyDiv}
+                                            >
+                                                <span className="text-3xl font-normal">Personal Information</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Patient Medical History</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Vaccination Records</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Family Medical History</span>
+                                            </button>
+                                            <button
+                                                className="border-b-4 p-2 m-2 border-gray-300 button-choice-menu"
+                                                style={{
+                                                    width: "80%",
+                                                    marginTop: "3vh",
+                                                }}
+                                            >
+                                                <span className="text-3xl font-normal">Clinic Visit List</span>
+                                            </button>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+                                <hr style={{ border: 'none', borderTop: '3px solid #d1d5db' }} />
+                                <div style={{ width: "100%", height: "8%", alignItems: "center", display: "flex" }}>
+                                    <button
+                                        style={{
+                                            border: '2px solid #909090',
+                                            borderRadius: '50%',
+                                            width: '40px',
+                                            height: '40px',
+                                            backgroundColor: 'transparent',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            color: '#444242',
+                                            fontSize: '24px',
+                                            textAlign: 'center',
+                                            marginLeft: "10px",
+                                        }}
+                                        onClick={() => setOpen(false)}
+                                        ref={cancelButtonRef}
+                                    >
+                                        <div>←</div>
+                                    </button>
+                                    <p style={{ marginLeft: "0.3vw", color: "#444242" }}>Back to Patients Database</p>
+                                </div>
+                                {/* <button
+                                type="button"
+                                className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-lime-800 duration-300"
+                                onClick={() => setOpen(false)}
+                                ref={cancelButtonRef}
+                            >
+                                Return
+                            </button> */}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </Dialog>
+        </Transition.Root>
+
+
+
+        <div className="h-screen w-full flex overflow-hidden">
+            <Sidebar selected={selected} name={fullName} changeSelected={changeSelected} />
+
+            {selected == "patient-list" ? (
+            <div className="staff-list flex-grow p-4">
+                {loading ? (
+                    <p>Loading...</p>
+                ) : (
+
+                    < div class="mx-auto  px-4 py-8 sm:px-8" >
+                        <div class="flex items-center justify-between pb-6">
+                            <div style={{ display: "flex" }}>
+                                <input
+                                    type="text"
+                                    placeholder="SEARCH PATIENTS"
+                                    className="flex-1 rounded-3xl border border-gray-300 px-5 py-3 focus:outline-none focus:ring-1 focus:ring-gray-400"
+                                    style={{ width: '40vw', textAlign: 'center', fontSize: '1em', border: '1px solid' }}
+                                />
+                                <img src={searchIcon} alt="" style={{ marginLeft: "0.5vw" }} />
+                            </div>
+                            <div class="flex items-center justify-between space-x-4">
+                                <button class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                    SORT BY
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
+                                    </svg>
+                                </button>
+
+                                <button onClick={() => setShowForm((prevShowForm) => !prevShowForm)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                    CREATE NEW PATIENT
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-y-hidden rounded-lg border">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
+                                            <th class="px-5 py-3"> </th>
+                                            <th class="px-5 py-3">Sex</th>
+                                            <th class="px-5 py-3">Full Name</th>
+                                            <th class="px-5 py-3">Contact No.</th>
+                                            <th class="px-5 py-3">Email</th>
+                                            <th class="px-5 py-3">Records</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-gray-500">
+                                        {patientList.map((patient, index) => (
+                                            <tr>
+                                                <td class="border-b border-r border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{index + 1}</p>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <span
+                                                        className={`rounded-full px-3 py-1 text-s font-semibold ${patient.sex === 'Male' ? 'bg-blue-200 text-blue-900' : 'bg-pink-200 text-pink-900'
+                                                            }`}
+                                                    >
+                                                        {patient.sex === 'Male' ? 'Male' : 'Female'}
+                                                    </span>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <div class="flex items-center">
+                                                        <div class="h-10 w-10 flex-shrink-0">
+                                                            <img class="h-full w-full rounded-full" src={pfp} alt="" />
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <p class="whitespace-no-wrap">{patient.firstname} {patient.lastname}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{patient.phoneNumber}</p>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{patient.email}</p>
+                                                </td>
+
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <button key={patient.uid} onClick={() => handleClick(patient.uid)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-md font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                                        VIEW
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex flex-col items-center border-t bg-white px-5 py-5 sm:flex-row sm:justify-between">
+                                <span class="text-xs text-gray-600 sm:text-sm"> Showing 1 to 5 of 12 Entries </span>
+                                <div class="mt-2 inline-flex sm:mt-0">
+                                    <button class="mr-2 h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100" onClick={previousPatients}>Prev</button>
+                                    <button class="h-12 w-12 rounded-full border text-sm font-semibold text-gray-600 transition duration-150 hover:bg-gray-100" onClick={nextPatients}>Next</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                    )}
+                )}
+            </div>
+            ) : (<> </>)}
+
+{selected == 'dashboard' ? (navigate('../clinic-staff')) : (<></>)}
+        {selected == "profile" ? (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", marginLeft: "13vw" }}>
+                    <div style={{ position: "relative", width: "60vw", height: "60vh" }}>
+                        <div style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            background: "linear-gradient(to bottom right, #2657B7, #A5E4FF)",
+                            borderRadius: "20px",
+                            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                        }}>
+                            <div
+                                onClick={() => setShowForm((prevShowForm) => !prevShowForm)}
+                                className="Pdashboard-Card-BoxShadow"
+                                style={{
+                                    border: "2px solid #00008B",
+                                    width: "80%",
+                                    height: "80%",
+                                    borderRadius: "20px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    background: "white",
+                                    padding: "20px",
+                                }}
+                            >
+                                <p style={{ fontSize: "24px", fontWeight: "bold" }}>Fullname: {fullName}</p>
+                                <p style={{ fontSize: "18px" }}>Sex: </p>
+                                <p style={{ fontSize: "18px" }}>Age: </p>
+                                <p style={{ fontSize: "18px" }}>Clinic: {clinics}</p>
+                                <p style={{ fontSize: "18px" }}>Position: Clinic Staff</p>
+                                <p style={{ fontSize: "18px" }}>Birthday: </p>
+                                <p style={{ fontSize: "18px" }}>Address: </p>
+                                <p style={{ fontSize: "18px" }}>Email: </p>
+                                <p style={{ fontSize: "18px" }}>Contact Number: </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+            <></>
+        )}
+
+        {selected == "inbox" ? (
+            <main class="flex w-full h-full shadow-lg rounded-3xl">
+                <section class="flex flex-col w-2/12 bg-white">
+                    <div class="w-16 mx-auto mt-12 mb-20 p-4 bg-indigo-600 rounded-2xl text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                        </svg>
+                    </div>
+                    <nav class="relative flex flex-col py-4 items-center">
+                        <a href="#" class="relative w-16 p-4 bg-purple-100 text-purple-900 rounded-2xl mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+                            </svg>
+                            <span
+                                class="absolute -top-2 -right-2 bg-red-600 h-6 w-6 p-2 flex justify-center items-center text-white rounded-full">3</span>
+                        </a>
+                        <a href="#" class="w-16 p-4 border text-gray-700 rounded-2xl mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="w-16 p-4 border text-gray-700 rounded-2xl mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="w-16 p-4 border text-gray-700 rounded-2xl mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="w-16 p-4 border text-gray-700 rounded-2xl mb-24">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </a>
+                        <a href="#" class="w-16 p-4 border text-gray-700 rounded-2xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </a>
+                    </nav>
+                </section>
+                <section class="flex flex-col pt-3 w-4/12 bg-gray-50 h-full overflow-y-scroll">
+                    <label class="px-3">
+                        <input class="rounded-lg p-4 bg-gray-100 transition duration-200 focus:outline-none focus:ring-2 w-full"
+                            placeholder="Search..." />
+                    </label>
+
+                    <ul class="mt-6">
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 bg-indigo-600 text-white">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md">23m ago</p>
+                            </a>
+                            <div class="text-md">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                        <li class="py-5 border-b px-3 transition hover:bg-indigo-100">
+                            <a href="#" class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">{fullName}</h3>
+                                <p class="text-md text-gray-400">23m ago</p>
+                            </a>
+                            <div class="text-md italic text-gray-400">Patient Appointment Reminder!</div>
+                        </li>
+                    </ul>
+                </section>
+                <section class="w-6/12 px-4 flex flex-col bg-white rounded-r-3xl">
+                    <div class="flex justify-between items-center h-48 border-b-2 mb-8">
+                        <div class="flex space-x-4 items-center">
+                            <div class="h-12 w-12 rounded-full overflow-hidden">
+                                <img src="https://bit.ly/2KfKgdy" loading="lazy" class="h-full w-full object-cover" />
+                            </div>
+                            <div class="flex flex-col">
+                                <h3 class="font-semibold text-lg">Alexandar Gomez</h3>
+                                <p class="text-light text-gray-400">AlexGomez@gmail.com</p>
+                            </div>
+                        </div>
+                        <div>
+                            <ul class="flex text-gray-400 space-x-4">
+                                <li class="w-6 h-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" />
+                                    </svg>
+                                </li>
+                                <li class="w-6 h-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </li>
+
+                                <li class="w-6 h-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                </li>
+                                <li class="w-6 h-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </li>
+                                <li class="w-6 h-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                    </svg>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <section>
+                        <h1 class="font-bold text-2xl">Shuan Co | Patient Appointment | Heart Surgery Required</h1>
+                        <article class="mt-8 text-gray-500 leading-7 tracking-wider">
+                            <p>Hi {fullName},</p>
+                            <p>I hope this email finds you well. I wanted to reach out to you with some important medical information regarding the patient's recent examination and test results.
+
+                                After a thorough evaluation, our medical team has determined that you require immediate attention due to a significant heart condition. It has been advised by our expert cardiologists that the patient undergo heart surgery without any further delay.
+
+                                The procedure we recommend is known as Coronary Artery Bypass Grafting (CABG) to address the blockages in your coronary arteries. This surgery is essential to ensure the proper blood supply to the patient's heart muscles and to prevent any further complications.</p>
+                            <footer class="mt-12">
+                                <p>Thanks & Regards,</p>
+                                <p>Dr. Alexandar MD</p>
+                            </footer>
+                        </article>
+                        <ul class="flex space-x-4 mt-12">
+                            <li
+                                class="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-indigo-600 hover:bg-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                                </svg>
+                            </li>
+                            <li
+                                class="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-blue-800 hover:bg-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                                </svg>
+                            </li>
+                            <li
+                                class="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-pink-400 hover:bg-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                                </svg>
+                            </li>
+                            <li
+                                class="w-10 h-10 border rounded-lg p-1 cursor-pointer transition duration-200 text-yellow-500 hover:bg-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                                </svg>
+                            </li>
+                        </ul>
+                    </section>
+                    <section class="mt-6 border rounded-xl bg-gray-50 mb-3">
+                        <textarea class="w-full bg-gray-50 p-2 rounded-xl" placeholder="Type your reply here..." rows="3"></textarea>
+                        <div class="flex items-center justify-between p-2">
+                            <button class="h-6 w-6 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                </svg>
+                            </button>
+                            <button class="bg-purple-600 text-white px-6 py-2 rounded-xl">Reply</button>
+                        </div>
+                    </section>
+                </section>
+            </main>
+        ) : (
+            <></>
+        )}
+        </div>
+        {ShowForm && (
+            <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
+                    <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                        <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
+                            PATIENT INFORMATION FORM
+                        </h3>
+                        <button
+                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                            onClick={() => { setShowForm(false); clearFormValues(); setCurrentPage(1); }}
+                        >
+                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span className="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
+                        <div className="p-10 space-y-6 text-black">
+                            <form className="mx-auto exo" onSubmit={initializeClinic}>
+                                <div className="space-y-12 text-black">
+                                    {currentPage == 1 ? (
+                                        <div className="border-b border-gray-900/10 pb-12">
+                                            <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
+
+                                            <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
+                                                        First name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="first-name"
+                                                            id="first-name"
+                                                            autoComplete="given-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={firstName}
+                                                            onChange={(e) => setFirstName(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
+                                                        Middle name
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="middle-name"
+                                                            id="middle-name"
+                                                            autoComplete="middle-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={middleName}
+                                                            onChange={(e) => setMiddleName(e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
+                                                        Last name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="last-name"
+                                                            id="last-name"
+                                                            autoComplete="family-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={lastName}
+                                                            onChange={(e) => setLastName(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
+                                                        Sex <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <select
+                                                            id="sex"
+                                                            name="sex"
+                                                            autoComplete="sex"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                            value={sex}
+                                                            onChange={(e) => setSex(e.target.value)}
+                                                        >
+                                                            <option value="Male" selected>Male</option>
+                                                            <option value="Female">Female</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="bloodType" className="block text-sm font-medium leading-6 text-black">
+                                                        Blood Type <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <select
+                                                            id="bloodType"
+                                                            name="bloodType"
+                                                            autoComplete="bloodType"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                            value={bloodType}
+                                                            onChange={(e) => setBloodType(e.target.value)}
+                                                        >
+                                                            <option value="A+" selected>A+</option>
+                                                            <option value="B+">B+</option>
+                                                            <option value="AB+">AB+</option>
+                                                            <option value="O+">O+</option>
+                                                            <option value="A-">A-</option>
+                                                            <option value="B-">B-</option>
+                                                            <option value="AB-">AB-</option>
+                                                            <option value="O-">O-</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
+                                                        Phone number <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            id="number"
+                                                            name="number"
+                                                            type="number"
+                                                            autoComplete="phone number"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={phoneNumber}
+                                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                <div className="col-span-full">
+                                                    <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
+                                                        Street address <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="street-address"
+                                                            id="street-address"
+                                                            autoComplete="street-address"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={streetAddress}
+                                                            onChange={(e) => setStreetAddress(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
+                                                        Email address <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            id="email"
+                                                            name="email"
+                                                            type="email"
+                                                            autoComplete="email"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={email}
+                                                            onChange={(e) => setEmail(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
+                                                        Password <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="password"
+                                                            name="password"
+                                                            id="password"
+                                                            autoComplete="current-password"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={password}
+                                                            onChange={(e) => setPassword(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                        Emergency Contact Name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="emergencyContactName"
+                                                            id="emergencyContactName"
+                                                            autoComplete="emergencyContactName"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={emergencyContactName}
+                                                            onChange={(e) => setEmergencyContactName(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                        Emergency Contact Phone Number <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="number"
+                                                            name="emergencyContactNumber"
+                                                            id="emergencyContactNumber"
+                                                            autoComplete="emergencyContactNumber"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={emergencyContactNumber}
+                                                            onChange={(e) => setEmergencyContactNumber(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                <div className="col-span-full">
+                                                    <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
+                                                        Allergies
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="allergies"
+                                                            id="allergies"
+                                                            autoComplete="allergies"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={allergies}
+                                                            onChange={(e) => setAllergies(e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex justify-end mt-8">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )}
+
+                                    {currentPage == 2 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickFamily} disabled={personalList.length === 1}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickFamily}>Add Form</button>
+                                            </div>
+                                            {familyHistoryList.map((familyHistory, index) => (
+                                                <FamilyHistory
+                                                    key={index}
+                                                    relativeFullName={familyHistory.relativeName}
+                                                    relationshipWithRelative={familyHistory.relationshipWithRelative}
+                                                    relativeCondition={familyHistory.relativeCondition}
+                                                    relativeMedications={familyHistory.relativeMedications}
+                                                    getRelativeFullName={(fullname) => getRelativeFullName(fullname, index)}
+                                                    getRelationshipWithRelative={(relationship) => getRelationshipWithRelative(relationship, index)}
+                                                    getRelativeCondition={(condition) => getRelativeCondition(condition, index)}
+                                                    getRelativeMedications={(medications) => getRelativeMedications(medications, index)}
+                                                    style={{ marginTop: "1vh" }}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+                                    {currentPage == 3 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickVaccine} disabled={personalList.length === 1}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickVaccine}>Add Form</button>
+                                            </div>
+                                            {vaccinationList.map((vaccinationHistory, index) => (
+                                                <Vaccination
+                                                    key={index}
+                                                    vaccineType={vaccinationHistory.vaccineType}
+                                                    vaccineBrand={vaccinationHistory.vaccineBrand}
+                                                    vaccineDate={vaccinationHistory.vaccineDate}
+                                                    vaccineRemarks={vaccinationHistory.vaccineRemarks}
+                                                    getVaccineType={(vaccineType) => getVaccineType(vaccineType, index)}
+                                                    getVaccineBrand={(vaccineBrand) => getVaccineBrand(vaccineBrand, index)}
+                                                    getVaccineDate={(vaccineDate) => getVaccineDate(vaccineDate, index)}
+                                                    getVaccineRemarks={(vaccineRemarks) => getVaccineRemarks(vaccineRemarks, index)}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+                                    {currentPage == 4 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickPersonal} disabled={personalList.length === 1}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickPersonal}>Add Form</button>
+                                            </div>
+                                            {personalList.map((personalHistory, index) => (
+                                                <PersonalMedicalHistory
+                                                    key={index}
+                                                    historyType={personalHistory.historyType}
+                                                    historyDate={personalHistory.historyDate}
+                                                    historyRemarks={personalHistory.historyRemarks}
+                                                    getHistoryType={(historyType) => getHistoryType(historyType, index)}
+                                                    getHistoryDate={(historyDate) => getHistoryDate(historyDate, index)}
+                                                    getHistoryRemarks={(historyRemarks) => getHistoryRemarks(historyRemarks, index)}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+
+                                    {currentPage >= 2 && currentPage <= 3 ? (
+                                        <div className='flex justify-between mt-8'>
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Back
+                                                </button>
+                                            </div>
+
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+                                    {currentPage == 4 ? (
+                                        <div className='flex justify-between mt-8'>
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Back
+                                                </button>
+                                            </div>
+                                            <div className="inline">
+                                                <button
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='submit'
+                                                >
+                                                    Submit
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    ) : (<></>)}
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-            {ShowForm && (
-                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
-                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
-                            <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
-                                PATIENT INFORMATION FORM
-                            </h3>
-                            <button
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
-                                onClick={() => { setShowForm(false); clearFormValues(); setCurrentPage(1); }}
-                            >
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
-                            <div className="p-10 space-y-6 text-black">
-                                <form className="mx-auto exo" onSubmit={initializeClinic}>
-                                    <div className="space-y-12 text-black">
-                                        {currentPage == 1 ? (
-                                            <div className="border-b border-gray-900/10 pb-12">
-                                                <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
+        )}
 
-                                                <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
-                                                            First name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="first-name"
-                                                                id="first-name"
-                                                                autoComplete="given-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={firstName}
-                                                                onChange={(e) => setFirstName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
 
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
-                                                            Middle name
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="middle-name"
-                                                                id="middle-name"
-                                                                autoComplete="middle-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={middleName}
-                                                                onChange={(e) => setMiddleName(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
+        {ShowForm2 && (
+            <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
+                    <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                        <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
+                            EDIT PATIENT INFORMATION FORM
+                        </h3>
+                        <button
+                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                            onClick={() => { setShowForm2(false); clearFormValues(); setCurrentPage(1); }}
+                        >
+                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span className="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
+                        <div className="p-10 space-y-6 text-black">
+                            <form className="mx-auto exo">
+                                <div className="space-y-12 text-black">
+                                    {currentPage == 1 ? (
+                                        <div className="border-b border-gray-900/10 pb-12">
+                                            <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
 
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
-                                                            Last name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="last-name"
-                                                                id="last-name"
-                                                                autoComplete="family-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={lastName}
-                                                                onChange={(e) => setLastName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
+                                            <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
+                                                        First name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="first-name"
+                                                            id="first-name"
+                                                            autoComplete="given-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={firstName}
+                                                            onChange={(e) => setFirstName(e.target.value)}
+                                                            required
+                                                        />
                                                     </div>
                                                 </div>
 
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
-                                                            Sex <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <select
-                                                                id="sex"
-                                                                name="sex"
-                                                                autoComplete="sex"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                value={sex}
-                                                                onChange={(e) => setSex(e.target.value)}
-                                                            >
-                                                                <option value="Male" selected>Male</option>
-                                                                <option value="Female">Female</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="bloodType" className="block text-sm font-medium leading-6 text-black">
-                                                            Blood Type <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <select
-                                                                id="bloodType"
-                                                                name="bloodType"
-                                                                autoComplete="bloodType"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                value={bloodType}
-                                                                onChange={(e) => setBloodType(e.target.value)}
-                                                            >
-                                                                <option selected>A+</option>
-                                                                <option>B+</option>
-                                                                <option>AB+</option>
-                                                                <option>O+</option>
-                                                                <option>A-</option>
-                                                                <option>B-</option>
-                                                                <option>AB-</option>
-                                                                <option>O-</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
-                                                            Phone number <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                id="number"
-                                                                name="number"
-                                                                type="number"
-                                                                autoComplete="phone number"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={phoneNumber}
-                                                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
+                                                        Middle name
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="middle-name"
+                                                            id="middle-name"
+                                                            autoComplete="middle-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={middleName}
+                                                            onChange={(e) => setMiddleName(e.target.value)}
+                                                        />
                                                     </div>
                                                 </div>
 
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                    <div className="col-span-full">
-                                                        <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
-                                                            Street address <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="street-address"
-                                                                id="street-address"
-                                                                autoComplete="street-address"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={streetAddress}
-                                                                onChange={(e) => setStreetAddress(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
+                                                        Last name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="last-name"
+                                                            id="last-name"
+                                                            autoComplete="family-name"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={lastName}
+                                                            onChange={(e) => setLastName(e.target.value)}
+                                                            required
+                                                        />
                                                     </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
-                                                            Email address <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                id="email"
-                                                                name="email"
-                                                                type="email"
-                                                                autoComplete="email"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={email}
-                                                                onChange={(e) => setEmail(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
-                                                            Password <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="password"
-                                                                name="password"
-                                                                id="password"
-                                                                autoComplete="current-password"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={password}
-                                                                onChange={(e) => setPassword(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                            Emergency Contact Name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="emergencyContactName"
-                                                                id="emergencyContactName"
-                                                                autoComplete="emergencyContactName"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={emergencyContactName}
-                                                                onChange={(e) => setEmergencyContactName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                            Emergency Contact Phone Number <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="number"
-                                                                name="emergencyContactNumber"
-                                                                id="emergencyContactNumber"
-                                                                autoComplete="emergencyContactNumber"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={emergencyContactNumber}
-                                                                onChange={(e) => setEmergencyContactNumber(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                    <div className="col-span-full">
-                                                        <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
-                                                            Allergies
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="allergies"
-                                                                id="allergies"
-                                                                autoComplete="allergies"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={allergies}
-                                                                onChange={(e) => setAllergies(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex justify-end mt-8">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-
-                                            </div>
-                                        ) : (
-                                            <></>
-                                        )}
-
-                                        {currentPage == 2 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickFamily} disabled={personalList.length === 1}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickFamily}>Add Form</button>
-                                                </div>
-                                                {familyHistoryList.map((familyHistory, index) => (
-                                                    <FamilyHistory
-                                                        key={index}
-                                                        relativeFullName={familyHistory.relativeName}
-                                                        relationshipWithRelative={familyHistory.relationshipWithRelative}
-                                                        relativeCondition={familyHistory.relativeCondition}
-                                                        relativeMedications={familyHistory.relativeMedications}
-                                                        getRelativeFullName={(fullname) => getRelativeFullName(fullname, index)}
-                                                        getRelationshipWithRelative={(relationship) => getRelationshipWithRelative(relationship, index)}
-                                                        getRelativeCondition={(condition) => getRelativeCondition(condition, index)}
-                                                        getRelativeMedications={(medications) => getRelativeMedications(medications, index)}
-                                                        style={{ marginTop: "1vh" }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-                                        {currentPage == 3 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickVaccine} disabled={personalList.length === 1}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickVaccine}>Add Form</button>
-                                                </div>
-                                                {vaccinationList.map((vaccinationHistory, index) => (
-                                                    <Vaccination
-                                                        key={index}
-                                                        vaccineType={vaccinationHistory.vaccineType}
-                                                        vaccineBrand={vaccinationHistory.vaccineBrand}
-                                                        vaccineDate={vaccinationHistory.vaccineDate}
-                                                        vaccineRemarks={vaccinationHistory.vaccineRemarks}
-                                                        getVaccineType={(vaccineType) => getVaccineType(vaccineType, index)}
-                                                        getVaccineBrand={(vaccineBrand) => getVaccineBrand(vaccineBrand, index)}
-                                                        getVaccineDate={(vaccineDate) => getVaccineDate(vaccineDate, index)}
-                                                        getVaccineRemarks={(vaccineRemarks) => getVaccineRemarks(vaccineRemarks, index)}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-                                        {currentPage == 4 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickPersonal} disabled={personalList.length === 1}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickPersonal}>Add Form</button>
-                                                </div>
-                                                {personalList.map((personalHistory, index) => (
-                                                    <PersonalMedicalHistory
-                                                        key={index}
-                                                        historyType={personalHistory.historyType}
-                                                        historyDate={personalHistory.historyDate}
-                                                        historyRemarks={personalHistory.historyRemarks}
-                                                        getHistoryType={(historyType) => getHistoryType(historyType, index)}
-                                                        getHistoryDate={(historyDate) => getHistoryDate(historyDate, index)}
-                                                        getHistoryRemarks={(historyRemarks) => getHistoryRemarks(historyRemarks, index)}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-
-                                        {currentPage >= 2 && currentPage <= 3 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-                                        {currentPage == 4 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-                                                <div className="inline">
-                                                    <button
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='submit'
-                                                    >
-                                                        Submit
-                                                    </button>
                                                 </div>
                                             </div>
 
-                                        ) : (<></>)}
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
+                                                        Sex <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <select
+                                                            id="sex"
+                                                            name="sex"
+                                                            autoComplete="sex"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                            value={sex}
+                                                            readOnly={true}
+                                                        >
+                                                            <option value="Male" selected>Male</option>
+                                                            <option value="Female">Female</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
 
-                                    </div>
-                                </form>
-                            </div>
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="bloodType" className="block text-sm font-medium leading-6 text-black">
+                                                        Blood Type <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <select
+                                                            id="bloodType"
+                                                            name="bloodType"
+                                                            autoComplete="bloodType"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                            value={bloodType}
+                                                            onChange={(e) => setBloodType(e.target.value)}
+                                                        >
+                                                            <option selected>A+</option>
+                                                            <option>B+</option>
+                                                            <option>AB+</option>
+                                                            <option>O+</option>
+                                                            <option>A-</option>
+                                                            <option>B-</option>
+                                                            <option>AB-</option>
+                                                            <option>O-</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-3">
+                                                    <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
+                                                        Phone number <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            id="number"
+                                                            name="number"
+                                                            type="number"
+                                                            autoComplete="phone number"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={phoneNumber}
+                                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                <div className="col-span-full">
+                                                    <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
+                                                        Street address <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="street-address"
+                                                            id="street-address"
+                                                            autoComplete="street-address"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={streetAddress}
+                                                            onChange={(e) => setStreetAddress(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
+                                                        Email address <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            id="email"
+                                                            name="email"
+                                                            type="email"
+                                                            autoComplete="email"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={email}
+                                                            readOnly={true}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                        Emergency Contact Name <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="emergencyContactName"
+                                                            id="emergencyContactName"
+                                                            autoComplete="emergencyContactName"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={emergencyContactName}
+                                                            onChange={(e) => setEmergencyContactName(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="sm:col-span-4">
+                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
+                                                        Emergency Contact Phone Number <RequiredAsterisk />
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="number"
+                                                            name="emergencyContactNumber"
+                                                            id="emergencyContactNumber"
+                                                            autoComplete="emergencyContactNumber"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={emergencyContactNumber}
+                                                            onChange={(e) => setEmergencyContactNumber(e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                <div className="col-span-full">
+                                                    <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
+                                                        Allergies
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="allergies"
+                                                            id="allergies"
+                                                            autoComplete="allergies"
+                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                            value={allergies}
+                                                            onChange={(e) => setAllergies(e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex justify-end mt-8">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )}
+
+                                    {currentPage == 2 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickFamily}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickFamily}>Add Form</button>
+                                            </div>
+                                            {familyHistoryList.map((familyHistory, index) => (
+                                                <FamilyHistory
+                                                    key={index}
+                                                    relativeFullName={familyHistory.relativeName}
+                                                    relationshipWithRelative={familyHistory.relationshipWithRelative}
+                                                    relativeCondition={familyHistory.relativeCondition}
+                                                    relativeMedications={familyHistory.relativeMedications}
+                                                    getRelativeFullName={(fullname) => getRelativeFullName(fullname, index)}
+                                                    getRelationshipWithRelative={(relationship) => getRelationshipWithRelative(relationship, index)}
+                                                    getRelativeCondition={(condition) => getRelativeCondition(condition, index)}
+                                                    getRelativeMedications={(medications) => getRelativeMedications(medications, index)}
+                                                    style={{ marginTop: "1vh" }}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+                                    {currentPage == 3 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickVaccine}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickVaccine}>Add Form</button>
+                                            </div>
+                                            {vaccinationList.map((vaccinationHistory, index) => (
+                                                <Vaccination
+                                                    key={index}
+                                                    vaccineType={vaccinationHistory.vaccineType}
+                                                    vaccineBrand={vaccinationHistory.vaccineBrand}
+                                                    vaccineDate={vaccinationHistory.vaccineDate}
+                                                    vaccineRemarks={vaccinationHistory.vaccineRemarks}
+                                                    getVaccineType={(vaccineType) => getVaccineType(vaccineType, index)}
+                                                    getVaccineBrand={(vaccineBrand) => getVaccineBrand(vaccineBrand, index)}
+                                                    getVaccineDate={(vaccineDate) => getVaccineDate(vaccineDate, index)}
+                                                    getVaccineRemarks={(vaccineRemarks) => getVaccineRemarks(vaccineRemarks, index)}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+                                    {currentPage == 4 ? (
+                                        <div>
+                                            <br />
+                                            <div style={{ float: "right" }}>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' onClick={handleRemoveClickPersonal}>
+                                                    Remove
+                                                </button>
+                                                <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickPersonal}>Add Form</button>
+                                            </div>
+                                            {personalList.map((personalHistory, index) => (
+                                                <PersonalMedicalHistory
+                                                    key={index}
+                                                    historyType={personalHistory.historyType}
+                                                    historyDate={personalHistory.historyDate}
+                                                    historyRemarks={personalHistory.historyRemarks}
+                                                    getHistoryType={(historyType) => getHistoryType(historyType, index)}
+                                                    getHistoryDate={(historyDate) => getHistoryDate(historyDate, index)}
+                                                    getHistoryRemarks={(historyRemarks) => getHistoryRemarks(historyRemarks, index)}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+
+                                    {currentPage >= 2 && currentPage <= 3 ? (
+                                        <div className='flex justify-between mt-8'>
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Back
+                                                </button>
+                                            </div>
+
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Next
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (<></>)}
+
+
+
+                                    {currentPage == 4 ? (
+                                        <div className='flex justify-between mt-8'>
+                                            <div className="inline">
+                                                <button
+                                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='button'
+                                                >
+                                                    Back
+                                                </button>
+                                            </div>
+                                            <div className="inline">
+                                                <button
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='buttom'
+                                                    onClick={updatePatientInformation}
+                                                >
+                                                    Update
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    ) : (<></>)}
+
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            )}
-
-
-            {ShowForm2 && (
-                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
-                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
-                            <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
-                                EDIT PATIENT INFORMATION FORM
-                            </h3>
-                            <button
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
-                                onClick={() => { setShowForm2(false); clearFormValues(); setCurrentPage(1); }}
-                            >
-                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
-                            <div className="p-10 space-y-6 text-black">
-                                <form className="mx-auto exo">
-                                    <div className="space-y-12 text-black">
-                                        {currentPage == 1 ? (
-                                            <div className="border-b border-gray-900/10 pb-12">
-                                                <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
-
-                                                <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
-                                                            First name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="first-name"
-                                                                id="first-name"
-                                                                autoComplete="given-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={firstName}
-                                                                onChange={(e) => setFirstName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
-                                                            Middle name
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="middle-name"
-                                                                id="middle-name"
-                                                                autoComplete="middle-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={middleName}
-                                                                onChange={(e) => setMiddleName(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
-                                                            Last name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="last-name"
-                                                                id="last-name"
-                                                                autoComplete="family-name"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={lastName}
-                                                                onChange={(e) => setLastName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
-                                                            Sex <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <select
-                                                                id="sex"
-                                                                name="sex"
-                                                                autoComplete="sex"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                value={sex}
-                                                                readOnly={true}
-                                                            >
-                                                                <option value="Male" selected>Male</option>
-                                                                <option value="Female">Female</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="bloodType" className="block text-sm font-medium leading-6 text-black">
-                                                            Blood Type <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <select
-                                                                id="bloodType"
-                                                                name="bloodType"
-                                                                autoComplete="bloodType"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                value={bloodType}
-                                                                onChange={(e) => setBloodType(e.target.value)}
-                                                            >
-                                                                <option selected>A+</option>
-                                                                <option>B+</option>
-                                                                <option>AB+</option>
-                                                                <option>O+</option>
-                                                                <option>A-</option>
-                                                                <option>B-</option>
-                                                                <option>AB-</option>
-                                                                <option>O-</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-3">
-                                                        <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
-                                                            Phone number <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                id="number"
-                                                                name="number"
-                                                                type="number"
-                                                                autoComplete="phone number"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={phoneNumber}
-                                                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                    <div className="col-span-full">
-                                                        <label htmlFor="street-address" className="block text-sm font-medium leading-6 text-black">
-                                                            Street address <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="street-address"
-                                                                id="street-address"
-                                                                autoComplete="street-address"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={streetAddress}
-                                                                onChange={(e) => setStreetAddress(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
-                                                            Email address <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                id="email"
-                                                                name="email"
-                                                                type="email"
-                                                                autoComplete="email"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={email}
-                                                                readOnly={true}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                            Emergency Contact Name <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="emergencyContactName"
-                                                                id="emergencyContactName"
-                                                                autoComplete="emergencyContactName"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={emergencyContactName}
-                                                                onChange={(e) => setEmergencyContactName(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="sm:col-span-4">
-                                                        <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                            Emergency Contact Phone Number <RequiredAsterisk />
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="number"
-                                                                name="emergencyContactNumber"
-                                                                id="emergencyContactNumber"
-                                                                autoComplete="emergencyContactNumber"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={emergencyContactNumber}
-                                                                onChange={(e) => setEmergencyContactNumber(e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                    <div className="col-span-full">
-                                                        <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
-                                                            Allergies
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                name="allergies"
-                                                                id="allergies"
-                                                                autoComplete="allergies"
-                                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                value={allergies}
-                                                                onChange={(e) => setAllergies(e.target.value)}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex justify-end mt-8">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-
-                                            </div>
-                                        ) : (
-                                            <></>
-                                        )}
-
-                                        {currentPage == 2 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickFamily}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickFamily}>Add Form</button>
-                                                </div>
-                                                {familyHistoryList.map((familyHistory, index) => (
-                                                    <FamilyHistory
-                                                        key={index}
-                                                        relativeFullName={familyHistory.relativeName}
-                                                        relationshipWithRelative={familyHistory.relationshipWithRelative}
-                                                        relativeCondition={familyHistory.relativeCondition}
-                                                        relativeMedications={familyHistory.relativeMedications}
-                                                        getRelativeFullName={(fullname) => getRelativeFullName(fullname, index)}
-                                                        getRelationshipWithRelative={(relationship) => getRelationshipWithRelative(relationship, index)}
-                                                        getRelativeCondition={(condition) => getRelativeCondition(condition, index)}
-                                                        getRelativeMedications={(medications) => getRelativeMedications(medications, index)}
-                                                        style={{ marginTop: "1vh" }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-                                        {currentPage == 3 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickVaccine}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickVaccine}>Add Form</button>
-                                                </div>
-                                                {vaccinationList.map((vaccinationHistory, index) => (
-                                                    <Vaccination
-                                                        key={index}
-                                                        vaccineType={vaccinationHistory.vaccineType}
-                                                        vaccineBrand={vaccinationHistory.vaccineBrand}
-                                                        vaccineDate={vaccinationHistory.vaccineDate}
-                                                        vaccineRemarks={vaccinationHistory.vaccineRemarks}
-                                                        getVaccineType={(vaccineType) => getVaccineType(vaccineType, index)}
-                                                        getVaccineBrand={(vaccineBrand) => getVaccineBrand(vaccineBrand, index)}
-                                                        getVaccineDate={(vaccineDate) => getVaccineDate(vaccineDate, index)}
-                                                        getVaccineRemarks={(vaccineRemarks) => getVaccineRemarks(vaccineRemarks, index)}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-                                        {currentPage == 4 ? (
-                                            <div>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' onClick={handleRemoveClickPersonal}>
-                                                        Remove
-                                                    </button>
-                                                    <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button' style={{ marginLeft: "1vw" }} onClick={handleAddClickPersonal}>Add Form</button>
-                                                </div>
-                                                {personalList.map((personalHistory, index) => (
-                                                    <PersonalMedicalHistory
-                                                        key={index}
-                                                        historyType={personalHistory.historyType}
-                                                        historyDate={personalHistory.historyDate}
-                                                        historyRemarks={personalHistory.historyRemarks}
-                                                        getHistoryType={(historyType) => getHistoryType(historyType, index)}
-                                                        getHistoryDate={(historyDate) => getHistoryDate(historyDate, index)}
-                                                        getHistoryRemarks={(historyRemarks) => getHistoryRemarks(historyRemarks, index)}
-                                                    />
-                                                ))}
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-
-                                        {currentPage >= 2 && currentPage <= 3 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (<></>)}
-
-
-
-                                        {currentPage == 4 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-                                                <div className="inline">
-                                                    <button
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='buttom'
-                                                        onClick={updatePatientInformation}
-                                                    >
-                                                        Update
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                        ) : (<></>)}
-
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+            </div>
+        )}
+    </>
     )
 }
 
