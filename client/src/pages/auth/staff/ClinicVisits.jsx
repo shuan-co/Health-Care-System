@@ -7,7 +7,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass}/>
 
-export default function ClinicVisits() {
+export default function ClinicVisits(props) {
     const [clinic, setClinic] = useState([])
     const [diagnoses, setDiagnoses] = useState([])
     const [showFullData, setShowFullData] = useState("")
@@ -50,13 +50,16 @@ export default function ClinicVisits() {
     
     // Use another useEffect to listen to changes in patientsUID and trigger diagnoses retrieval
     useEffect(() => {
+        console.log(patientsUID.length)
         if (patientsUID.length > 0) {
             const fetchDiagnoses = async () => {
                 const diagnosesArray = [];
+                console.log("im in")
                 for (let i = 0; i < patientsUID.length; i++) {
                     const querySnapshot = await getDocs(collection(db, clinic, "patients", "patientlist", patientsUID[i], "diagnoses"));
                     querySnapshot.forEach((doc) => {
                         diagnosesArray.push(doc.data());
+                        console.log(doc.data())
                     });
                 }
                 setDiagnoses(diagnosesArray);
@@ -137,7 +140,7 @@ export default function ClinicVisits() {
                         </h3>
                         <button
                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
-                            onClick={() => setShowFullData(false)}
+                            onClick={() => props.changeSelected(false)}
                         >
                             <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
