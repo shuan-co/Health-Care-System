@@ -22,6 +22,7 @@ import StaffDashboard from "./pages/auth/staff/StaffDashboard";
 import PatientList from "./pages/auth/staff/patientForm/PatientList";
 import PersonalInformation from "./pages/auth/patient/PersonalInformation";
 import RecordDiagnoses from "./pages/auth/patient/RecordDiagnoses";
+import PersonalInfo from "./pages/auth/patient/PersonalInfo";
 
 import Policy from "./pages/noAuth/policies/Policy";
 import Terms from "./pages/noAuth/policies/Terms";
@@ -189,6 +190,15 @@ const App = () => {
                         element={
                             <ProtectedRoute accessLevel="gmail">
                                 <Pdashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        exact path="/patient/PersonalInfo"
+                        element={
+                            <ProtectedRoute accessLevel="gmail">
+                                <PersonalInfo />
                             </ProtectedRoute>
                         }
                     />
