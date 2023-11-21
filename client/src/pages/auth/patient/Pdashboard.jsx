@@ -6,7 +6,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import "./pdashboard.css"
 import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '../components/Sidebar';
-import PersonalInformation from './PersonalInformation'
+import PersonalInformation from './PersonalInformation';
 import RecordDiagnoses from './RecordDiagnoses';
 
 function Pdashboard() {

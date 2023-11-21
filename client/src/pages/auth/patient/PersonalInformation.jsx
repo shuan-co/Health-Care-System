@@ -4,11 +4,18 @@ import { db, config } from '../../../firebase/Firebase';
 import { collection, query, getDocs } from 'firebase/firestore';
 import pfp from '../components/pfp.jpg';
 import { useNavigate } from "react-router-dom";
+import PersonalInfo from "./PersonalInfo";
 
 export default function PersonalInformation() {
     const [clinics, setClinics] = useState([]);
     const [information, setInformation] = useState({});
+    const [selected, setSelected] = useState("dashboard")
+    const [fullName, setFullName] = useState("")
     const navigate = useNavigate();
+
+    function changeSelected(selected) {
+        setSelected(selected)
+    }
 
     useEffect(() => {
         async function getClinics() {
@@ -64,6 +71,7 @@ export default function PersonalInformation() {
 return (
     <div className='w-screen p-10'>
         <div className='flex lato justify-center items-center h-full'>
+            {selected == "dashboard" ? (
             <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 w-2/3 Pdashboard-Card-BoxShadow'>
                 <div className='relative w-full lato'>
                     <div className='flex bg-blue-400 rounded-t-xl rounded-bl-3xl text-white exo text-center p-3'>
@@ -80,7 +88,7 @@ return (
                     <div classname='p-4'>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => navigate('/PersonalInfo')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Information</button>
+                                <button onClick={() => {setSelected('PersonalInfo')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Information</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
@@ -103,9 +111,18 @@ return (
                                 <button onClick={() => navigate('')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Clinic Visit List</button>
                             </div>
                         </div>
+
+                        <div className='bg-slate-100 rounded-b-lg flex'>
+                            <div className='items-start justify-start p-4 border-b-2 border-slate-200 w-32'>
+                                <button onClick={() => setSelected('dashboard')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Back</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            ) : (
+                <></>
+            )}
 
                 {/* <div classname='flex w-full bg-cyan-200 border-solid'>
                     <div classname='w-40'>
