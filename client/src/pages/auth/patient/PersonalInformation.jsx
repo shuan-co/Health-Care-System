@@ -5,8 +5,11 @@ import { collection, query, getDocs } from 'firebase/firestore';
 import pfp from '../components/pfp.jpg';
 import { useNavigate } from "react-router-dom";
 import PersonalInfo from "./PersonalInfo";
+import FamilyMedical from './FamilyMedical';
+import PersonalMedical from './PersonalMedical';
+import Vaccination from './Vaccination';
 
-export default function PersonalInformation() {
+export default function PersonalInformation(props) {
     const [clinics, setClinics] = useState([]);
     const [information, setInformation] = useState({});
     const [selected, setSelected] = useState("dashboard")
@@ -67,12 +70,16 @@ export default function PersonalInformation() {
 
     }, [clinics]); // Only run this effect when clinics change
 
+    function backButtonHandler () {
+        setSelected("dashboard")
+    }
+
 
 return (
     <div className='w-screen p-10'>
         <div className='flex lato justify-center items-center h-full'>
             {selected == "dashboard" ? (
-            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 w-2/3 Pdashboard-Card-BoxShadow'>
+            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 w-2/3 Pdashboard-Card-BoxShadow mb-32'>
                 <div className='relative w-full lato'>
                     <div className='flex bg-blue-400 rounded-t-xl rounded-bl-3xl text-white exo text-center p-3'>
                         <img className="rounded-full h-32 w-32" src={pfp}></img>
@@ -93,22 +100,22 @@ return (
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => navigate('')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Medical History</button>
+                                <button onClick={() => {setSelected('PersonalMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Medical History</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => navigate('')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Vaccination Records</button>
+                                <button onClick={() => {setSelected('Vaccination')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Vaccination Records</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => navigate('')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Family Medical History</button>
+                                <button onClick={() => {setSelected('FamilyMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Family Medical History</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 border-b-2 border-slate-200 w-full'>
-                                <button onClick={() => navigate('')} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Clinic Visit List</button>
+                                <button onClick={() => {setSelected('ClinicVisit')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Clinic Visit List</button>
                             </div>
                         </div>
 
@@ -123,6 +130,27 @@ return (
             ) : (
                 <></>
             )}
+
+            {selected == 'PersonalInfo' ? (
+                <PersonalInfo backButtonHandler={backButtonHandler}/>
+            ) : (<></>)}
+
+            {selected == 'PersonalMedical' ? (
+                <PersonalMedical backButtonHandler={backButtonHandler}/>
+            ) : (<></>)}
+
+            {selected == 'Vaccination' ? (
+                <Vaccination backButtonHandler={backButtonHandler}/>
+            ) : (<></>)}
+
+            {selected == 'FamilyMedical' ? (
+                <FamilyMedical backButtonHandler={backButtonHandler}/>
+            ) : (<></>)}
+
+            {selected == 'ClinicVisit' ? (
+                props.changeSelected('record-diagnoses')
+            ) : (<></>)}
+
 
                 {/* <div classname='flex w-full bg-cyan-200 border-solid'>
                     <div classname='w-40'>

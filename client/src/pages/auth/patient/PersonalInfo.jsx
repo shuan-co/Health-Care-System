@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, config } from '../../../firebase/Firebase';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs, getDoc, doc } from 'firebase/firestore';
 import pfp from '../components/pfp.jpg';
 import { useNavigate } from "react-router-dom";
 
-export default function PersonalInfo() {
+export default function PersonalInfo(props) {
     const [clinics, setClinics] = useState([]);
     const [information, setInformation] = useState({});
+    const [email, setEmail] = useState("")
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -60,30 +61,73 @@ export default function PersonalInfo() {
 
     }, [clinics]); // Only run this effect when clinics change
 
+    // get email of user
+    useEffect(() => {
+        async function getEmail () {
+            try {
+                const user = config.auth.currentUser;
+                const docRef = doc(db, "clinicPatient", user.uid);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    setEmail(docSnap.data().email)
+                } else {
+                // docSnap.data() will be undefined in this case
+                console.log("No such document!");
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getEmail()
+    })
+
 return (
-    <div className='w-screen p-10'>
-        <div className='flex lato justify-center items-center h-full'>
-            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 w-2/3 Pdashboard-Card-BoxShadow'>
-            <h1 className='font-bold text-2xl mb-3 '>My Personal Information</h1>
-                <div>
-                    <h1 className='inline font-bold'>Full Name: </h1>
+    <div className='w-3/4'>
+        <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
+            <div className="flex items-start justify-between p-4 border-b rounded-t bg-sky-800">
+                <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white exo mx-auto">
+                    Personal Information
+                </h3>
+                
+            </div>
+            <div className='bg-slate-100 rounded-xl space-y-4 h-3/4 Pdashboard-Card-BoxShadow p-14 lato'>    
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Full Name: </h1>
                     <p className='inline'>{information.firstname} {information.lastname}</p>
                 </div>
-                <div>
-                    <h1 className='inline font-bold'>Email Address: </h1>
-                    <p className='inline'>{information.email}</p>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Email Address: </h1>
+                    <p className='inline'>{email}</p>
                 </div>
-                <div> 
-                    <h1 className='inline font-bold'>Phone Number: </h1>
+                <div className='grid grid-cols-2'> 
+                    <h1 className='inline font-bold text-sky-800'>Phone Number: </h1>
                     <p className='inline'>{information.phoneNumber}</p>
                 </div>
-                <div>
-                    <h1 className='inline font-bold'>Street Address: </h1>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Street Address: </h1>
                     <p className='inline'>{information.streetAddress}</p>
                 </div>
-                <div>
-                    <h1 className='inline font-bold'>Gender: </h1>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Gender: </h1>
                     <p className='inline'>{information.sex}</p>
+                </div>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Emergency Contact Name: </h1>
+                    <p className='inline'>{information.emergencyContactName}</p>
+                </div>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Emergency Contact Phone Number: </h1>
+                    <p className='inline'>{information.emergencyContactNumber}</p>
+                </div>
+                <div className='grid grid-cols-2'>
+                    <h1 className='inline font-bold text-sky-800'>Allergies: </h1>
+                    <p className='inline'>{information.allergies}</p>
+                </div>
+
+                <div className='flex justify-end'>
+                    <button onClick={() => props.backButtonHandler()} className='mt-8 border-2 border-red-600 rounded-lg  p-1 w-20 text-red-600 hover:bg-red-600 hover:text-white'>Exit</button>
                 </div>
             </div>
         </div>

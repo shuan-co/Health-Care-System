@@ -476,12 +476,12 @@ function StaffDashboard() {
                             const clinicName = data.clinicName;
                             console.log(formData2.UID)
                             addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
-                                temperature: formData2.Temperature,
+                                Temperature: formData2.Temperature,
                                 BP: formData2.BP,
                                 ChiefComplaint: formData2.chief_complaint,
-                                sex: formData2.sex2,
-                                disposition: Disposition,
-                                patienttype: formData2.TypeofPatient,
+                                Sex: formData2.sex2,
+                                Disposition: Disposition,
+                                Patienttype: formData2.TypeofPatient,
                                 VisitDate: formData2.VisitDate,
                                 FollowUpDate: formData2.FollowUpDate,
                                 ProviderNotes: formData2.notes,

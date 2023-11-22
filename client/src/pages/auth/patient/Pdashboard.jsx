@@ -96,7 +96,7 @@ function Pdashboard() {
             )}
 
             {selected == 'personal-information' ? (
-                <PersonalInformation />
+                <PersonalInformation changeSelected={changeSelected}/>
             ) : (
                 <></>
             )}

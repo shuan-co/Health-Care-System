@@ -60,6 +60,7 @@ export default function ClinicVisits(props) {
                     querySnapshot.forEach((doc) => {
                         diagnosesArray.push(doc.data());
                         console.log(doc.data())
+                        console.log(doc.data())
                     });
                 }
                 setDiagnoses(diagnosesArray);
@@ -114,9 +115,9 @@ export default function ClinicVisits(props) {
                     <div className='grid grid-cols-5 text-center p-4 border border-black' key={index}>
                         {/* Add key={index} to the outer div */}
                         <h3 className='font-bold'>{index + 1}</h3>
-                        <h3 className='border bg-purple-200 rounded-2xl'>{diagnosis.date}</h3>
-                        <h3 className='capitalize'>{diagnosis.chief_complaint}</h3>
-                        <h3 className='capitalize'>{diagnosis.clinic}</h3>
+                        <h3 className='border bg-purple-200 rounded-2xl'>{diagnosis.VisitDate}</h3>
+                        <h3 className='capitalize'>{diagnosis.ChiefComplaint}</h3>
+                        <h3 className='capitalize'>{diagnosis.Clinic}</h3>
                         <button onClick={() => showForm(index)} className='hover:bg-slate-200 rounded-lg border border-black enriqueta'>
                             View Form
                         </button>
@@ -151,33 +152,35 @@ export default function ClinicVisits(props) {
                     <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
                         <div className='p-6 grid grid-cols-2'>
                             <h3 className='font-bold'>Clinic</h3>
-                            <p>{diagnoses[index].clinic}</p>
+                            <p>{diagnoses[index].Clinic}</p>
                             <h3 className='font-bold'>Chief Complaint</h3>
-                            <p>{diagnoses[index].chief_complaint}</p>
+                            <p>{diagnoses[index].ChiefComplaint}</p>
                             <h3 className='font-bold'>Assessment</h3>
-                            <p>{diagnoses[index].assessment}</p>
+                            <p>{diagnoses[index].Assessment}</p>
                             <h3 className='font-bold'>Date</h3>
-                            <p>{diagnoses[index].date}</p>
+                            <p>{diagnoses[index].VisitDate}</p>
                             <h3 className='font-bold'>Follow Up Date</h3>
-                            <p>{diagnoses[index].follow_up_date}</p>
+                            <p>{diagnoses[index].FollowUpDate}</p>
                             <h3 className='font-bold'>Disposition</h3>
-                            <p>{diagnoses[index].disposition}</p>
+                            <p>{diagnoses[index].Disposition}</p>
                             <h3 className='font-bold'>Treatment</h3>
-                            <p>{diagnoses[index].treatment}</p>
+                            <p>{diagnoses[index].Treatment}</p>
                             <h3 className='font-bold'>Blood Pressure</h3>
-                            <p>{diagnoses[index].bp}</p>
+                            <p>{diagnoses[index].BP}</p>
                             <h3 className='font-bold'>Heart Rate</h3>
-                            <p>{diagnoses[index].heart_rate}</p>
+                            <p>{diagnoses[index].HeartRate}</p>
                             <h3 className='font-bold'>Respiratory Rate</h3>
-                            <p>{diagnoses[index].respiratory_rate}</p>
+                            <p>{diagnoses[index].RespiratoryRate}</p>
                             <h3 className='font-bold'>Height</h3>
-                            <p>{diagnoses[index].height}</p>
+                            <p>{diagnoses[index].Height}</p>
                             <h3 className='font-bold'>Weight</h3>
-                            <p>{diagnoses[index].weight}</p>
+                            <p>{diagnoses[index].Weight}</p>
                             <h3 className='font-bold'>Last Menstration Date</h3>
-                            <p>{diagnoses[index].last_mens_date}</p>
+                            <p>{diagnoses[index].LastMensDate}</p>
                             <h3 className='font-bold'>Temperature</h3>
-                            <p>{diagnoses[index].temperature}</p>
+                            <p>{diagnoses[index].Temperature}</p>
+                            <h3 className='font-bold'>Notes:</h3>
+                            <p>{diagnoses[index].ProviderNotes}</p>
                         </div>
                     </div>
                 
