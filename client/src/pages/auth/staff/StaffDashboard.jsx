@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { db, user } from '../../../firebase/Firebase';
-import { doc, getDoc, setDoc, addDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import Sidebar from '../components/Sidebar';
 import { config, signInAuth } from '../../../firebase/Firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -185,34 +185,79 @@ function StaffDashboard() {
         });
     };
 
+    const [selectedPatient, setSelectedPatient] = useState("");
+
+    const [clinicName, setClinicName] = useState('');
+    const [loading, setLoading] = useState(true); // Initial loading state
+    const [patientList, setPatientList] = useState([]);
+
+    getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
+        .then((docSnapshot) => {
+            if (docSnapshot.exists()) {
+                const clinicName = docSnapshot.data().clinicName;
+                setClinicName(clinicName);
+            } else {
+                console.error("No document found for the current user");
+            }
+        })
+        .catch((error) => {
+            console.error("Error getting document:", error);
+        });
+
+    useEffect(() => {
+        async function fetchPatients() {
+            if (clinicName) {
+                try {
+                    const tempRecords = [];
+                    const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
+                    const patientsQueried = query(patientsCollectionRef, limit(5));
+                    const querySnapshot = await getDocs(patientsQueried);
+
+                    console.log(querySnapshot.docs);
+
+                    for (const doc of querySnapshot.docs) {
+                        const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", doc.id, "baselineInformation");
+                        const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
+
+                        baselineInformationSnapshot.forEach((baselineDoc) => {
+                            const data = baselineDoc.data();
+                            data.uid = doc.id;
+                            tempRecords.push(data);
+                        });
+                    }
+                    setPatientList(tempRecords);
+                    setLoading(false);
+                } catch (error) {
+                    console.error("Error getting documents from patientlist collection:", error);
+                }
+            }
+        }
+
+        fetchPatients();
+    }, [clinicName]);
 
     const [formData2, setFormData2] = useState({
-        firstName2: '',
-        lastName2: '',
-        email2: '',
-        emailFormatted2: '',
+        UID: '',
+        Temperature: '',
         clinicName2: '',
-        phoneNumber2: '',
-        streetAddress2: '',
-        password2: '',
+        BP: '',
+        chief_complaint: '',
+        Disposition: '',
         sex2: '',
         TypeofPatient: '',
-        emergencyContactName2: '',
-        emergencyContactNumber2: '',
+        VisitDate: '',
+        FollowUpDate: '',
         notes: '',
     });
-    const [firstName2, setfirstName2] = useState("")
-    const [middleName2, setMiddleName2] = useState("")
-    const [lastName2, setLastName2] = useState("")
-
+    const [UID, setUID] = useState("")
     const [sex2, setSex2] = useState("Male")
     const [TypeofPatient, setTypeofPatient] = useState("New")
-    const [phoneNumber2, setPhoneNumber2] = useState("")
-    const [streetAddress2, setStreetAddress2] = useState("")
-    const [password2, setPassword2] = useState("")
-    const [email2, setEmail2] = useState("")
-    const [emergencyContactName2, setEmergencyContactName2] = useState("")
-    const [emergencyContactNumber2, setEmergencyContactNumber2] = useState("")
+    const [BP, setBP] = useState("")
+    const [chief_complaint, setchief_complaint] = useState("")
+    const [Disposition, setDisposition] = useState("")
+    const [Temperature, setTemperature] = useState("")
+    const [VisitDate, setVisitDate] = useState("")
+    const [FollowUpDate, setFollowUpDate] = useState("")
     const [notes, setNotes] = useState("")
 
     async function initializeClinic2(e) {
@@ -230,22 +275,18 @@ function StaffDashboard() {
         const emergencyContactName = e.target['emergencyContactName'].value;
         const emergencyContactNumber = e.target['emergencyContactNumber'].value;
         const allergies = e.target['allergies'].value;*/
-        const emailFormatted2 = email2;
 
         setFormData2({
             ...formData2,
-            firstName2,
-            middleName2,
-            lastName2,
-            email2,
-            emailFormatted2,
-            phoneNumber2,
-            streetAddress2,
-            password2,
+            UID: selectedPatient.uid,
+            Temperature,
+            BP,
+            chief_complaint,
+            Disposition,
             sex2,
             TypeofPatient,
-            emergencyContactName2,
-            emergencyContactNumber2,
+            VisitDate,
+            FollowUpDate,
             notes,
         });
     };
@@ -422,28 +463,8 @@ function StaffDashboard() {
     }, [formData]);
 
     useEffect(() => {
-        if (formData2.email2) {
+        if (formData2.UID) {
             try {
-                // EMAIL CREDENTIALS
-                function sendEmail() {
-                    emailjs
-                        .send(
-                            'service_t8pkk4o',
-                            'template_x65vfmj',
-                            formData,
-                            'guzJ5EN-eKEHV_0jW'
-                        )
-                        .then(
-                            (result) => {
-                                alert('Email sent successfully!');
-                            },
-                            (error) => {
-                                console.error('Email error:', error.text);
-                                alert('Failed to send email.');
-                            }
-                        );
-                }
-
                 getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
                     .then((docSnapshot) => {
                         if (docSnapshot.exists()) {
@@ -453,62 +474,18 @@ function StaffDashboard() {
 
                             // Now you can access individual fields within the document
                             const clinicName = data.clinicName;
-                            createUserWithEmailAndPassword(signInAuth.auth, formData2.emailFormatted2, formData2.password2)
-                                .then((userCredential) => {
-                                    setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid), {
-                                        firstName2: formData2.firstName2,
-                                        lastName: formData2.lastName2,
-                                        email: formData2.email2,
-
-                                    });
-                                    setDoc(doc(config.firestore, "clinicPatient", userCredential.user.uid, "clinics", clinicName), {
-                                        clinicName: clinicName
-                                    });
-                                    console.log(formData)
-                                    // TODO: ADD INPATIENT INFORMATION
-                                    addDoc(collection(config.firestore, clinicName, "patients", "outpatientlist", userCredential.user.uid, "Outpatient Information"), {
-                                        firstname: formData2.firstName2,
-                                        middleName: formData2.middleName2,
-                                        lastname: formData2.lastName2,
-                                        email: formData2.email2,
-                                        phoneNumber: formData2.phoneNumber2,
-                                        streetAddress: formData2.streetAddress2,
-                                        sex: formData2.sex2,
-                                        patienttype: formData2.TypeofPatient,
-                                        emergencyContactName: formData2.emergencyContactName2,
-                                        emergencyContactNumber: formData2.emergencyContactNumber2,
-                                        ProviderNotes: formData2.notes,
-                                    });
-
-                                    setDoc(doc(config.firestore, clinicName, "patients", "patientlist", userCredential.user.uid), {
-                                        identifier: "identifier"
-                                    });
-                                    // 
-
-
-
-                                    sendEmail();
-                                    // SignOut 2nd authentication
-                                    signOut(signInAuth.auth).then(() => {
-                                        // Sign-out successful.
-                                    }).catch((error) => {
-                                        // An error happened.
-                                    });
-                                    // ...
-                                })
-                                .catch((error) => {
-                                    console.error("Error creating user:", error.message);
-                                    const errorCode = error.code;
-                                    const errorMessage = error.message;
-                                    // ..
-                                    console.log(errorCode + " | " + errorMessage)
-                                    if (errorCode == "auth/email-already-in-use") {
-                                        alert("Email is already in use")
-                                    } else if (errorCode == "auth/weak-password") {
-                                        alert("Password is too weak")
-                                    }
-
-                                });
+                            console.log(formData2.UID)
+                            addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
+                                temperature: formData2.Temperature,
+                                BP: formData2.BP,
+                                ChiefComplaint: formData2.chief_complaint,
+                                sex: formData2.sex2,
+                                disposition: Disposition,
+                                patienttype: formData2.TypeofPatient,
+                                VisitDate: formData2.VisitDate,
+                                FollowUpDate: formData2.FollowUpDate,
+                                ProviderNotes: formData2.notes,
+                            });
 
                         } else {
                             console.log("Document does not exist");
@@ -1092,60 +1069,28 @@ function StaffDashboard() {
                                                 <div className="border-b border-gray-900/10 pb-12">
 
                                                 <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-black">
-                                                                        First name <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="first-name"
-                                                                            id="first-name"
-                                                                            autoComplete="given-name"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={firstName2}
-                                                                            onChange={(e) => setfirstName2(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="middle-name" className="block text-sm font-medium leading-6 text-black">
-                                                                        Middle name
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="middle-name"
-                                                                            id="middle-name"
-                                                                            autoComplete="middle-name"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={middleName2}
-                                                                            onChange={(e) => setMiddleName2(e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-black">
-                                                                        Last name <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="last-name2"
-                                                                            id="last-name2"
-                                                                            autoComplete="family-name"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={lastName2}
-                                                                            onChange={(e) => setLastName2(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
+                                                  <div className="sm:col-span-3">
+                                                    <label htmlFor="patient-list" className="block text-sm font-medium leading-6 text-black">
+                                                        Patient List <RequiredAsterisk />
+                                                    </label>
+                                                  <div className="mt-2">
+                                                    <select
+                                                     name="patient-list"
+                                                     id="patient-list"
+                                                     className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                     value={selectedPatient}
+                                                     onChange={(e) => setSelectedPatient(e.target.value)}
+                                                     required
+                                                    >
+                                                    {patientList.map((patient, index) => (
+                                                    <option key={index} value={patient.uid}>
+                                                       {patient.firstname}
+                                                  </option>
+                                                   ))}
+                                                    </select>
+                                                  </div>
+                                                 </div>
+                                                </div>
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
                                                                 <div className="sm:col-span-3">
                                                                     <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
@@ -1187,7 +1132,7 @@ function StaffDashboard() {
 
                                                                 <div className="sm:col-span-3">
                                                                     <label htmlFor="number2" className="block text-sm font-medium leading-6 text-black">
-                                                                        Phone number <RequiredAsterisk />
+                                                                        BP <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
@@ -1196,8 +1141,8 @@ function StaffDashboard() {
                                                                             type="number2"
                                                                             autoComplete="phone number"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={phoneNumber2}
-                                                                            onChange={(e) => setPhoneNumber2(e.target.value)}
+                                                                            value={BP}
+                                                                            onChange={(e) => setBP(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
@@ -1207,7 +1152,7 @@ function StaffDashboard() {
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
                                                                 <div className="col-span-full">
                                                                     <label htmlFor="street-address2" className="block text-sm font-medium leading-6 text-black">
-                                                                        Address <RequiredAsterisk />
+                                                                        Chief Complaint <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
@@ -1216,8 +1161,8 @@ function StaffDashboard() {
                                                                             id="street-address2"
                                                                             autoComplete="street-address2"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={streetAddress2}
-                                                                            onChange={(e) => setStreetAddress2(e.target.value)}
+                                                                            value={chief_complaint}
+                                                                            onChange={(e) => setchief_complaint(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
@@ -1226,36 +1171,36 @@ function StaffDashboard() {
 
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
                                                                 <div className="sm:col-span-4">
-                                                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-black">
-                                                                        Email address <RequiredAsterisk />
+                                                                    <label htmlFor="Temperature" className="block text-sm font-medium leading-6 text-black">
+                                                                        Temperature <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
-                                                                            id="email"
-                                                                            name="email"
-                                                                            type="email"
-                                                                            autoComplete="email"
+                                                                            id="Temperature"
+                                                                            name="Temperature"
+                                                                            type="Temperaturemail"
+                                                                            autoComplete="Temperature"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={email2}
-                                                                            onChange={(e) => setEmail2(e.target.value)}
+                                                                            value={Temperature}
+                                                                            onChange={(e) => setTemperature(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
                                                                 </div>
 
                                                                 <div className="sm:col-span-4">
-                                                                    <label htmlFor="password" className="block text-sm font-medium leading-6 text-black">
-                                                                        Password<RequiredAsterisk />
+                                                                    <label htmlFor="Disposition" className="block text-sm font-medium leading-6 text-black">
+                                                                        Disposition<RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
-                                                                            type="password"
-                                                                            name="password"
-                                                                            id="password"
-                                                                            autoComplete="password"
+                                                                            type="Disposition"
+                                                                            name="Disposition"
+                                                                            id="Disposition"
+                                                                            autoComplete="Disposition"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={password2}
-                                                                            onChange={(e) => setPassword2(e.target.value)}
+                                                                            value={Disposition}
+                                                                            onChange={(e) => setDisposition(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
@@ -1265,36 +1210,36 @@ function StaffDashboard() {
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
 
                                                                 <div className="sm:col-span-4">
-                                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                                        Emergency Contact Name <RequiredAsterisk />
+                                                                    <label htmlFor="VisitDate" className="block text-sm font-medium leading-6 text-black">
+                                                                        Visit Date <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
-                                                                            type="text"
-                                                                            name="emergencyContactName"
-                                                                            id="emergencyContactName"
-                                                                            autoComplete="emergencyContactName"
+                                                                            type="date"
+                                                                            name="VisitDate"
+                                                                            id="VisitDate"
+                                                                            autoComplete="VisitDate"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={emergencyContactName2}
-                                                                            onChange={(e) => setEmergencyContactName2(e.target.value)}
+                                                                            value={VisitDate}
+                                                                            onChange={(e) => setVisitDate(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
                                                                 </div>
 
                                                                 <div className="sm:col-span-4">
-                                                                    <label htmlFor="emergencyContactName" className="block text-sm font-medium leading-6 text-black">
-                                                                        Emergy Contact Number <RequiredAsterisk />
+                                                                    <label htmlFor="FollowUpDate" className="block text-sm font-medium leading-6 text-black">
+                                                                        Follow Up Date <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
-                                                                            type="number"
-                                                                            name="emergencyContactNumber"
-                                                                            id="emergencyContactNumber"
-                                                                            autoComplete="emergencyContactNumber"
+                                                                            type="date"
+                                                                            name="FollowUpDate"
+                                                                            id="FollowUpDate"
+                                                                            autoComplete="FollowUpDate"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={emergencyContactNumber2}
-                                                                            onChange={(e) => setEmergencyContactNumber2(e.target.value)}
+                                                                            value={FollowUpDate}
+                                                                            onChange={(e) => setFollowUpDate(e.target.value)}
                                                                             required
                                                                         />
                                                                     </div>
