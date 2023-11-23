@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import NavPatient from './components/NavPatient';
 import { useEffect, useState } from 'react';
@@ -26,6 +27,10 @@ function Pdashboard() {
 
     function changeSelected(selected) {
         setSelected(selected)
+    }
+
+    function backButtonHandler () {
+        setSelected("dashboard")
     }
 
     useEffect(() => {
@@ -79,6 +84,10 @@ function Pdashboard() {
                 <></>
             )}
 
+            {selected == 'personal-information' ? (
+                <PersonalInformation backButtonHandler={backButtonHandler}/>
+            ) : (<></>)}
+
             {selected == "profile" ? (
                 <div className="p-20 border-2 w-10/12">
                     <h1 className="text-4xl exo">Profile</h1>
@@ -94,18 +103,22 @@ function Pdashboard() {
             ) : (
                 <></>
             )}
-
-            {selected == 'personal-information' ? (
+            
+            {/* {selected == 'personal-information' ? (
                 <PersonalInformation changeSelected={changeSelected}/>
             ) : (
                 <></>
-            )}
+            )} */}
 
             {selected == 'record-diagnoses' ? (
                 <RecordDiagnoses />
             ) : (
                 <></>
             )}
+
+            
+
+            
 
             {/* 
                         <p style={{ fontSize: "30px" }}>Patient Logged In</p>
