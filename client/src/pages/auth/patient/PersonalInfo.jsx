@@ -126,6 +126,11 @@ return (
                     <p className='inline'>{information.allergies}</p>
                 </div>
 
+                <div className='grid grid-cols-1'>
+                    <h1 className='mt-3 inline font-bold text-red-600 underline underline-offset-1 text-sm'>
+                        For any revisions, please report to your nearest clinic for the necessary corrections </h1>
+                </div>
+
                 <div className='flex justify-end'>
                     <button onClick={() => props.backButtonHandler()} className='mt-8 border-2 border-red-600 rounded-lg  p-1 w-20 text-red-600 hover:bg-red-600 hover:text-white'>Exit</button>
                 </div>

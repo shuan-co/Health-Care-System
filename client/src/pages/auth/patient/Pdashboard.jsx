@@ -84,9 +84,7 @@ function Pdashboard() {
                 <></>
             )}
 
-            {selected == 'personal-information' ? (
-                <PersonalInformation backButtonHandler={backButtonHandler}/>
-            ) : (<></>)}
+            
 
             {selected == "profile" ? (
                 <div className="p-20 border-2 w-10/12">
@@ -103,12 +101,10 @@ function Pdashboard() {
             ) : (
                 <></>
             )}
-            
-            {/* {selected == 'personal-information' ? (
-                <PersonalInformation changeSelected={changeSelected}/>
-            ) : (
-                <></>
-            )} */}
+
+            {selected == 'personal-information' ? (
+                <PersonalInformation backButtonHandler={backButtonHandler} changeSelected={changeSelected} />
+            ) : (<></>)}
 
             {selected == 'record-diagnoses' ? (
                 <RecordDiagnoses />
