@@ -28,6 +28,7 @@ function StaffDashboard() {
     const [ShowForm, setShowForm] = useState(false)
     const [ShowForm2, setShowForm2] = useState(false)
     const [ShowClinicVisits, setShowClinicVisits] = useState(false)
+    const [clinicName, setClinicName] = useState('');
     const [clinics, setClinics] = useState([])
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1)
@@ -55,6 +56,7 @@ function StaffDashboard() {
 
                             const clinicName = docSnap.data().clinicName;
                             setClinics(clinicName);
+                            setClinicName(clinicName);
                             const docRefClinic = doc(db, clinicName, "staff", "staffList", user.uid);
                             const docSnapClinic = await getDoc(docRefClinic);
                             if (docSnapClinic.exists()) {
@@ -187,26 +189,8 @@ function StaffDashboard() {
 
     const [selectedPatient, setSelectedPatient] = useState("");
 
-    useEffect(() => {
-        setFormData2({ ...formData2, UID: selectedPatient });
-    }, [selectedPatient]);
-    
-    const [clinicName, setClinicName] = useState('');
     const [loading, setLoading] = useState(true); // Initial loading state
     const [patientList, setPatientList] = useState([]);
-
-    getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
-        .then((docSnapshot) => {
-            if (docSnapshot.exists()) {
-                const clinicName = docSnapshot.data().clinicName;
-                setClinicName(clinicName);
-            } else {
-                console.error("No document found for the current user");
-            }
-        })
-        .catch((error) => {
-            console.error("Error getting document:", error);
-        });
 
     useEffect(() => {
         async function fetchPatients() {
@@ -588,6 +572,7 @@ function StaffDashboard() {
         setFollowUpDate("")
         setNotes("")
     }
+
 
     return (
         <>
