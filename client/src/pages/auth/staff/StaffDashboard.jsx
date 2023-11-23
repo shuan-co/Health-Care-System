@@ -499,7 +499,7 @@ function StaffDashboard() {
                                 ChiefComplaint: formData2.chief_complaint,
                                 Sex: formData2.sex2,
                                 Disposition: formData2.Disposition,
-                                MensDate: formData2.MensDate,
+                                LastMensDate: formData2.MensDate,
                                 RespiratoryRate: formData2.RespiratoryRate,
                                 Height: formData2.Height,
                                 Weight: formData2.Weight,
@@ -508,6 +508,7 @@ function StaffDashboard() {
                                 VisitDate: formData2.VisitDate,
                                 FollowUpDate: formData2.FollowUpDate,
                                 ProviderNotes: formData2.notes,
+                                Clinic: clinicName
                             });
 
                         } else {
@@ -1182,6 +1183,7 @@ function StaffDashboard() {
                                                                             autoComplete="sex"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
                                                                             value={sex2}
+                                                                            defaultValue={"Male"}
                                                                             onChange={(e) => setSex2(e.target.value)}
                                                                         >
                                                                             <option value="Male" selected>Male</option>
@@ -1201,9 +1203,10 @@ function StaffDashboard() {
                                                                             autoComplete="patienttype"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
                                                                             value={TypeofPatient}
+                                                                            defaultValue={"New"}
                                                                             onChange={(e) => setTypeofPatient(e.target.value)}
                                                                         >
-                                                                            <option selected>New</option>
+                                                                            <option>New</option>
                                                                             <option>Existing</option>
                                                                         </select>
                                                                     </div>
@@ -1359,7 +1362,7 @@ function StaffDashboard() {
 
                                                                 <div className="sm:col-span-3">
                                                                     <label htmlFor="MensDate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Last Menstruation Date<RequiredAsterisk />
+                                                                        Last Menstruation Date
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
@@ -1370,7 +1373,7 @@ function StaffDashboard() {
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                                                             value={MensDate}
                                                                             onChange={(e) => setMensDate(e.target.value)}
-                                                                            required
+                                                                      
                                                                         />
                                                                     </div>
                                                                 </div>
