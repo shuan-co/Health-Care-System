@@ -187,6 +187,10 @@ function StaffDashboard() {
 
     const [selectedPatient, setSelectedPatient] = useState("");
 
+    useEffect(() => {
+        setFormData2({ ...formData2, UID: selectedPatient });
+    }, [selectedPatient]);
+    
     const [clinicName, setClinicName] = useState('');
     const [loading, setLoading] = useState(true); // Initial loading state
     const [patientList, setPatientList] = useState([]);
@@ -237,9 +241,17 @@ function StaffDashboard() {
     }, [clinicName]);
 
     const [formData2, setFormData2] = useState({
+        SelectedPatient: '',
         UID: '',
         Temperature: '',
         clinicName2: '',
+        Assessment: '',
+        Treatment: '',
+        MensDate: '',
+        HeartRate: '',
+        Weight: '',
+        Height: '',
+        RespiratoryRate: '',
         BP: '',
         chief_complaint: '',
         Disposition: '',
@@ -252,7 +264,14 @@ function StaffDashboard() {
     const [UID, setUID] = useState("")
     const [sex2, setSex2] = useState("Male")
     const [TypeofPatient, setTypeofPatient] = useState("New")
+    const [Assessment, setAssessment] = useState("")
+    const [Treatment, setTreatment] = useState("")
+    const [MensDate, setMensDate] = useState("")
+    const [Weight, setWeight] = useState("")
+    const [Height, setHeight] = useState("")
     const [BP, setBP] = useState("")
+    const [RespiratoryRate, setRespiratoryRate] = useState("")
+    const [HeartRate, setHeartRate] = useState("")
     const [chief_complaint, setchief_complaint] = useState("")
     const [Disposition, setDisposition] = useState("")
     const [Temperature, setTemperature] = useState("")
@@ -278,9 +297,16 @@ function StaffDashboard() {
 
         setFormData2({
             ...formData2,
-            UID: selectedPatient.uid,
+            UID,
             Temperature,
             BP,
+            Assessment,
+            Treatment,
+            MensDate,
+            HeartRate,
+            RespiratoryRate,
+            Weight,
+            Height,
             chief_complaint,
             Disposition,
             sex2,
@@ -463,6 +489,7 @@ function StaffDashboard() {
     }, [formData]);
 
     useEffect(() => {
+        console.log(formData2.UID)
         if (formData2.UID) {
             try {
                 getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
@@ -478,9 +505,16 @@ function StaffDashboard() {
                             addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
                                 Temperature: formData2.Temperature,
                                 BP: formData2.BP,
+                                Assessment: formData2.Assessment,
+                                Treatment: formData2.Treatment,
                                 ChiefComplaint: formData2.chief_complaint,
                                 Sex: formData2.sex2,
-                                Disposition: Disposition,
+                                Disposition: formData2.Disposition,
+                                MensDate: formData2.MensDate,
+                                RespiratoryRate: formData2.RespiratoryRate,
+                                Height: formData2.Height,
+                                Weight: formData2.Weight,
+                                HeartRate: formData2.HeartRate,
                                 Patienttype: formData2.TypeofPatient,
                                 VisitDate: formData2.VisitDate,
                                 FollowUpDate: formData2.FollowUpDate,
@@ -495,8 +529,8 @@ function StaffDashboard() {
                         console.error("Error getting document:", error);
                     });
 
-                resetForm()
-                setShowForm(false)
+                resetForm2()
+                setShowForm2(false)
 
             } catch (error) {
                 console.error("Error initializing clinic:", error);
@@ -533,6 +567,26 @@ function StaffDashboard() {
         setHistoryDate("")
         setHistoryRemarks("")
 
+    }
+
+    function resetForm2() {
+        setUID("")
+        setTemperature("")
+        setBP("")
+        setAssessment("")
+        setTreatment("")
+        setMensDate("")
+        setHeartRate("")
+        setRespiratoryRate("")
+        setWeight("")
+        setHeight("")
+        setchief_complaint("")
+        setDisposition("")
+        setSex2("")
+        setTypeofPatient("")
+        setVisitDate("")
+        setFollowUpDate("")
+        setNotes("")
     }
 
     return (
@@ -1078,8 +1132,11 @@ function StaffDashboard() {
                                                      name="patient-list"
                                                      id="patient-list"
                                                      className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                     value={selectedPatient}
-                                                     onChange={(e) => setSelectedPatient(e.target.value)}
+                                                     value={UID}
+                                                     onChange={(e) => {
+                                                        setUID(e.target.value)
+                                                        //setSelectedPatient(e.target.value);
+                                                    }}
                                                      required
                                                     >
                                                     {patientList.map((patient, index) => (
@@ -1089,6 +1146,38 @@ function StaffDashboard() {
                                                    ))}
                                                     </select>
                                                   </div>
+                                                 </div>
+                                                 <div className="sm:col-span-3">
+                                                    <label htmlFor="Assessment" className="block text-sm font-medium leading-6 text-black">
+                                                      Assessment <RequiredAsterisk />
+                                                    </label>
+                                                     <div className="mt-2">
+                                                        <input
+                                                        id="Assessment"
+                                                        name="Assessment"
+                                                        autoComplete="Assessment"
+                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                        value={Assessment}
+                                                        onChange={(e) => setAssessment(e.target.value)}
+                                                        required
+                                                        />
+                                                   </div>
+                                                 </div>
+                                                 <div className="sm:col-span-3">
+                                                    <label htmlFor="Treatment" className="block text-sm font-medium leading-6 text-black">
+                                                      Treatment <RequiredAsterisk />
+                                                    </label>
+                                                     <div className="mt-2">
+                                                        <input
+                                                        id="Treatment"
+                                                        name="Treatment"
+                                                        autoComplete="Treatment"
+                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                        value={Treatment}
+                                                        onChange={(e) => setTreatment(e.target.value)}
+                                                        required
+                                                        />
+                                                   </div>
                                                  </div>
                                                 </div>
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
@@ -1150,16 +1239,52 @@ function StaffDashboard() {
                                                             </div>
 
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                                <div className="col-span-full">
-                                                                    <label htmlFor="street-address2" className="block text-sm font-medium leading-6 text-black">
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="Height" className="block text-sm font-medium leading-6 text-black">
+                                                                        Height <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            id="Height"
+                                                                            name="Height"
+                                                                            autoComplete="Height"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                            value={Height}
+                                                                            onChange={(e) => setHeight(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="sm:col-span-4">
+                                                                    <label htmlFor="Weight" className="block text-sm font-medium leading-6 text-black">
+                                                                        Weight <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="number"
+                                                                            id="Weight"
+                                                                            name="Weight"
+                                                                            autoComplete="Weight"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                            value={Weight}
+                                                                            onChange={(e) => setWeight(e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="ChiefComplaint" className="block text-sm font-medium leading-6 text-black">
                                                                         Chief Complaint <RequiredAsterisk />
                                                                     </label>
                                                                     <div className="mt-2">
                                                                         <input
                                                                             type="text"
-                                                                            name="street-address2"
-                                                                            id="street-address2"
-                                                                            autoComplete="street-address2"
+                                                                            name="ChiefComplaint"
+                                                                            id="ChiefComplaint"
+                                                                            autoComplete="ChiefComplaint"
                                                                             className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                                                             value={chief_complaint}
                                                                             onChange={(e) => setchief_complaint(e.target.value)}
@@ -1167,10 +1292,46 @@ function StaffDashboard() {
                                                                         />
                                                                     </div>
                                                                 </div>
+
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="HeartRate" className="block text-sm font-medium leading-6 text-black">
+                                                                        Heart Rate <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="HeartRate"
+                                                                            id="HeartRate"
+                                                                            autoComplete="HeartRate"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={HeartRate}
+                                                                            onChange={(e) => setHeartRate(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="RespiratoryRate" className="block text-sm font-medium leading-6 text-black">
+                                                                        Respiratory Rate <RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            name="RespiratoryRate"
+                                                                            id="RespiratoryRate"
+                                                                            autoComplete="RespiratoryRate"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={RespiratoryRate}
+                                                                            onChange={(e) => setRespiratoryRate(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
                                                             </div>
 
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                                <div className="sm:col-span-4">
+                                                                <div className="sm:col-span-3">
                                                                     <label htmlFor="Temperature" className="block text-sm font-medium leading-6 text-black">
                                                                         Temperature <RequiredAsterisk />
                                                                     </label>
@@ -1188,7 +1349,7 @@ function StaffDashboard() {
                                                                     </div>
                                                                 </div>
 
-                                                                <div className="sm:col-span-4">
+                                                                <div className="sm:col-span-3">
                                                                     <label htmlFor="Disposition" className="block text-sm font-medium leading-6 text-black">
                                                                         Disposition<RequiredAsterisk />
                                                                     </label>
@@ -1205,6 +1366,25 @@ function StaffDashboard() {
                                                                         />
                                                                     </div>
                                                                 </div>
+
+                                                                <div className="sm:col-span-3">
+                                                                    <label htmlFor="MensDate" className="block text-sm font-medium leading-6 text-black">
+                                                                        Last Menstruation Date<RequiredAsterisk />
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <input
+                                                                            type="date"
+                                                                            name="MensDate"
+                                                                            id="MensDate"
+                                                                            autoComplete="MensDate"
+                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                            value={MensDate}
+                                                                            onChange={(e) => setMensDate(e.target.value)}
+                                                                            required
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
                                                             </div>
 
                                                             <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
