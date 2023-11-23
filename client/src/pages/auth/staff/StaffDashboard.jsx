@@ -301,7 +301,12 @@ function StaffDashboard() {
         });
     };
 
-
+    useEffect(() => {
+        if (patientList.length > 0) {
+            setUID(patientList[0].uid);
+        }
+    }, [patientList]);
+    
     // functions for getting family history
     function getRelativeFullName(fullname) {
         setRelativeName(fullname)
