@@ -80,12 +80,45 @@ function PatientList() {
     const [ShowForm2, setShowForm2] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
 
+    // navigator for edit patient form pages
+    const [page1Bg, setPage1Bg] = useState('bg-blue-800')
+    const [page2Bg, setPage2Bg] = useState('bg-white')
+    const [page3Bg, setPage3Bg] = useState('bg-white')
+    const [page4Bg, setPage4Bg] = useState('bg-white')
+
     // staff info
     const [selected, setSelected] = useState("patient-list")
     const [fullName, setFullName] = useState("")
     const [clinics, setClinics] = useState("")
     function changeSelected(selected) {
         setSelected(selected)
+    }
+
+    // handle edit patient navigation
+    function handleEditPatientNavigaton (pageSelected) {
+        switch (pageSelected) {
+            case 1: setPage1Bg('bg-blue-800');
+                    setPage2Bg('bg-white')
+                    setPage3Bg('bg-white')
+                    setPage4Bg('bg-white')
+                    setCurrentPage(1); break;
+            case 2: setPage1Bg('bg-white')
+                    setPage2Bg('bg-blue-800');
+                    setPage3Bg('bg-white')
+                    setPage4Bg('bg-white')
+                    setCurrentPage(2); break;
+            case 3: setPage1Bg('bg-white')
+                    setPage2Bg('bg-white')
+                    setPage3Bg('bg-blue-800');
+                    setPage4Bg('bg-white')
+                    setCurrentPage(3); break;
+            case 4: setPage1Bg('bg-white')
+                    setPage2Bg('bg-white')
+                    setPage3Bg('bg-white')
+                    setPage4Bg('bg-blue-800');
+                    setCurrentPage(4); break;
+
+        }
     }
 
     // get full name of staff
@@ -1744,6 +1777,39 @@ function PatientList() {
                             <div className="p-10 space-y-6 text-black">
                                 <form className="mx-auto exo">
                                     <div className="space-y-12 text-black">
+                                        <div className="flex justify-between text-center text-xs">
+                                            {/* 
+                                                TODO: ADD CONNECTOR TO EACH OF THE CIRCLES
+                                            */}
+                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(1)}>
+                                                <div  className={`w-8 h-8 rounded-full ${page1Bg} border-2 border-blue-800 mx-auto`}>
+                                                    
+                                                </div>
+                                                <h1>Personal <br/> Information</h1>
+                                            </div>
+                                            
+                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(2)}>
+                                                <div className={`w-8 h-8 rounded-full ${page2Bg} border-2 border-blue-800 mx-auto`}>
+                                                
+                                                </div>
+                                                <h1>Family Medical <br/> History</h1>
+                                            </div>
+                                            
+
+                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(3)}>
+                                                <div className={`w-8 h-8 rounded-full ${page3Bg} border-2 border-blue-800 mx-auto`}>
+                                                
+                                                </div>
+                                                <h1>Vaccination <br/> History</h1>
+                                            </div>
+
+                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(4)}> 
+                                                <div className={`w-8 h-8 rounded-full ${page4Bg} border-2 border-blue-800 mx-auto`}>
+                                                
+                                                </div>
+                                                <h1>Personal Medical <br/> History</h1>
+                                            </div>
+                                        </div>
                                         {currentPage == 1 ? (
                                             <div className="border-b border-gray-900/10 pb-12">
                                                 <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
