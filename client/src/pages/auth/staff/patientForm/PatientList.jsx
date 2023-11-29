@@ -2030,16 +2030,17 @@ function PatientList() {
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <div className="flex justify-end mt-8">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
+                                                {/*
+                                                    <div className="flex justify-end mt-8">
+                                                        <button
+                                                            onClick={() => setCurrentPage(currentPage + 1)}
+                                                            className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            type='button'
+                                                        >
+                                                            Next
+                                                        </button>
+                                                    </div>
+                                                */}
 
                                             </div>
                                         ) : (
@@ -2048,7 +2049,6 @@ function PatientList() {
 
                                         {currentPage == 2 ? (
                                             <div>
-                                                <br />
                                                 <div style={{ float: "right" }}>
                                                     <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                         type='button' onClick={handleRemoveClickFamily}>
@@ -2078,7 +2078,6 @@ function PatientList() {
 
                                         {currentPage == 3 ? (
                                             <div>
-                                                <br />
                                                 <div style={{ float: "right" }}>
                                                     <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                         type='button' onClick={handleRemoveClickVaccine}>
@@ -2105,7 +2104,6 @@ function PatientList() {
 
                                         {currentPage == 4 ? (
                                             <div>
-                                                <br />
                                                 <div style={{ float: "right" }}>
                                                     <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                                         type='button' onClick={handleRemoveClickPersonal}>
@@ -2131,7 +2129,7 @@ function PatientList() {
 
 
 
-                                        {currentPage >= 2 && currentPage <= 3 ? (
+                                        {/*currentPage >= 2 && currentPage <= 3 ? (
                                             <div className='flex justify-between mt-8'>
                                                 <div className="inline">
                                                     <button
@@ -2153,11 +2151,11 @@ function PatientList() {
                                                     </button>
                                                 </div>
                                             </div>
-                                        ) : (<></>)}
+                                        ) : (<></>)*/}
 
 
 
-                                        {currentPage == 4 ? (
+                                        {/*
                                             <div className='flex justify-between mt-8'>
                                                 <div className="inline">
                                                     <button
@@ -2167,19 +2165,21 @@ function PatientList() {
                                                     >
                                                         Back
                                                     </button>
+                                        </div>*/}
+                                                <div className="flex justify-end mt-0">
+                                                    <div className="inline">
+                                                        <button
+                                                            className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            type='buttom'
+                                                            onClick={updatePatientInformation}
+                                                        >
+                                                            Update
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="inline">
-                                                    <button
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='buttom'
-                                                        onClick={updatePatientInformation}
-                                                    >
-                                                        Update
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            
 
-                                        ) : (<></>)}
+                                        
 
                                     </div>
                                 </form>

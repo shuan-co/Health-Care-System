@@ -6,7 +6,7 @@ export default function PersonalMedicalHistory(props) {
     return (
         <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-black" style={{ marginTop: "2vh" }}>Personal Medical History</h2>
-            <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                     <label htmlFor="historyType" className="block text-sm font-medium leading-6 text-black" >
                         Type
