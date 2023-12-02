@@ -32,6 +32,9 @@ function StaffDashboard() {
     const [clinics, setClinics] = useState([])
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1)
+    const [currentPage2, setCurrentPage2] = useState(1)
+    const [searchText, setSearchText] = useState('');
+    const [filteredPatients, setFilteredPatients] = useState([]);
 
     const handleViewMedicalRecordsClick = () => {
         navigate("/test");
@@ -245,7 +248,8 @@ function StaffDashboard() {
         FollowUpDate: '',
         notes: '',
     });
-    const [UID, setUID] = useState("")
+    const [UID, setUID] = useState()
+    const [Fullname, SetFullName] = useState("")
     const [sex2, setSex2] = useState("Male")
     const [TypeofPatient, setTypeofPatient] = useState("New")
     const [Assessment, setAssessment] = useState("")
@@ -478,7 +482,14 @@ function StaffDashboard() {
     }, [formData]);
 
     useEffect(() => {
-        console.log(formData2.UID)
+        for(let i = 0; i < patientList.length; i++){
+            if(patientList[i].uid == UID){
+                SetFullName(patientList[i].lastname + ", " + patientList[i].firstname)
+            }
+        }
+    })
+
+    useEffect(() => {
         if (formData2.UID) {
             try {
                 getDoc(doc(config.firestore, "clinicStaffs", config.auth.currentUser.uid))
@@ -490,26 +501,31 @@ function StaffDashboard() {
 
                             // Now you can access individual fields within the document
                             const clinicName = data.clinicName;
-                            console.log(formData2.UID)
-                            addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
-                                Temperature: formData2.Temperature,
-                                BP: formData2.BP,
-                                Assessment: formData2.Assessment,
-                                Treatment: formData2.Treatment,
-                                ChiefComplaint: formData2.chief_complaint,
-                                Sex: formData2.sex2,
-                                Disposition: formData2.Disposition,
-                                LastMensDate: formData2.MensDate,
-                                RespiratoryRate: formData2.RespiratoryRate,
-                                Height: formData2.Height,
-                                Weight: formData2.Weight,
-                                HeartRate: formData2.HeartRate,
-                                Patienttype: formData2.TypeofPatient,
-                                VisitDate: formData2.VisitDate,
-                                FollowUpDate: formData2.FollowUpDate,
-                                ProviderNotes: formData2.notes,
-                                Clinic: clinicName
-                            });
+                            
+                            console.log(Fullname)
+                            if(Fullname) {
+                                addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
+                                    Name: Fullname,
+                                    Temperature: formData2.Temperature,
+                                    BP: formData2.BP,
+                                    Assessment: formData2.Assessment,
+                                    Treatment: formData2.Treatment,
+                                    ChiefComplaint: formData2.chief_complaint,
+                                    Sex: sex2,
+                                    Disposition: formData2.Disposition,
+                                    LastMensDate: formData2.MensDate,
+                                    RespiratoryRate: formData2.RespiratoryRate,
+                                    Height: formData2.Height,
+                                    Weight: formData2.Weight,
+                                    HeartRate: formData2.HeartRate,
+                                    Patienttype: TypeofPatient,
+                                    VisitDate: formData2.VisitDate,
+                                    FollowUpDate: formData2.FollowUpDate,
+                                    ProviderNotes: formData2.notes,
+                                    Clinic: clinicName
+                                });
+                            }
+                            
 
                         } else {
                             console.log("Document does not exist");
@@ -533,8 +549,8 @@ function StaffDashboard() {
         setMiddleName("")
         setLastName("")
 
-        setSex("")
-        setBloodType("")
+        setSex("Male")
+        setBloodType("A+")
         setPhoneNumber("")
         setStreetAddress("")
         setEmail("")
@@ -572,13 +588,36 @@ function StaffDashboard() {
         setHeight("")
         setchief_complaint("")
         setDisposition("")
-        setSex2("")
-        setTypeofPatient("")
+        setSex2("Male")
+        setTypeofPatient("New")
         setVisitDate("")
         setFollowUpDate("")
         setNotes("")
+        setCurrentPage2(1)
     }
 
+    function handleSelectPatient(patientUID){
+        setUID(patientUID)
+        setCurrentPage2(2)
+    }
+
+    function closeOutpatient(){
+        setCurrentPage2(1)
+        setShowForm2(false)
+    }
+
+    const handleSearchInputChange = (e) => {
+        const { value } = e.target;
+        setSearchText(value);
+
+        // Filter patient list based on input text
+        const filtered = patientList.filter(
+            (patient) =>
+                patient.firstname.toLowerCase().includes(value.toLowerCase()) ||
+                patient.lastname.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredPatients(filtered);
+    };
 
     return (
         <>
@@ -626,7 +665,6 @@ function StaffDashboard() {
                                             width: "100%",
                                             height: "100%",
                                             borderRadius: "10px",
-                                            marginTop: "100px"
                                         }}
                                     ></div>
                                 </div>
@@ -1093,362 +1131,405 @@ function StaffDashboard() {
                         {ShowForm2 && (
                             <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full shadow-2xl drop-shadow-2xl border border-black">
                                 <div className="relative w-full max-w-2xl max-h-full mx-auto">
-                                    <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
-                                        <h3 className="text-xl font-semibold text-white-900 dark:text-white">
-                                            Outpatient Form
-                                        </h3>
-                                        <button
-                                            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
-                                            onClick={() => setShowForm2(false)}
-                                        >
-                                            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                            </svg>
-                                            <span className="sr-only">Close modal</span>
-                                        </button>
-                                    </div>
+                                    {currentPage2 == 1 ? (<div>
 
-                                    <div className="relative bg-slate-50 shadow exo">
-                                        <div className="p-6 space-y-6">
-                                            <form onSubmit={initializeClinic2}>
-                                                <div className="border-b border-gray-900/10 pb-12">
-
-                                                <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
-                                                  <div className="sm:col-span-3">
-                                                    <label htmlFor="patient-list" className="block text-sm font-medium leading-6 text-black">
-                                                        Patient List <RequiredAsterisk />
-                                                    </label>
-                                                  <div className="mt-2">
-                                                    <select
-                                                     name="patient-list"
-                                                     id="patient-list"
-                                                     className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                     value={UID}
-                                                     onChange={(e) => {
-                                                        setUID(e.target.value)
-                                                        //setSelectedPatient(e.target.value);
-                                                    }}
-                                                     required
-                                                    >
-                                                    {patientList.map((patient, index) => (
-                                                    <option key={index} value={patient.uid}>
-                                                       {patient.firstname}
-                                                  </option>
-                                                   ))}
-                                                    </select>
-                                                  </div>
-                                                 </div>
-                                                 <div className="sm:col-span-3">
-                                                    <label htmlFor="Assessment" className="block text-sm font-medium leading-6 text-black">
-                                                      Assessment <RequiredAsterisk />
-                                                    </label>
-                                                     <div className="mt-2">
-                                                        <input
-                                                        id="Assessment"
-                                                        name="Assessment"
-                                                        autoComplete="Assessment"
-                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                        value={Assessment}
-                                                        onChange={(e) => setAssessment(e.target.value)}
-                                                        required
-                                                        />
-                                                   </div>
-                                                 </div>
-                                                 <div className="sm:col-span-3">
-                                                    <label htmlFor="Treatment" className="block text-sm font-medium leading-6 text-black">
-                                                      Treatment <RequiredAsterisk />
-                                                    </label>
-                                                     <div className="mt-2">
-                                                        <input
-                                                        id="Treatment"
-                                                        name="Treatment"
-                                                        autoComplete="Treatment"
-                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                        value={Treatment}
-                                                        onChange={(e) => setTreatment(e.target.value)}
-                                                        required
-                                                        />
-                                                   </div>
-                                                 </div>
-                                                </div>
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
-                                                                        Sex <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <select
-                                                                            id="sex2"
-                                                                            name="sex2"
-                                                                            autoComplete="sex"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                            value={sex2}
-                                                                            defaultValue={"Male"}
-                                                                            onChange={(e) => setSex2(e.target.value)}
-                                                                        >
-                                                                            <option value="Male" selected>Male</option>
-                                                                            <option value="Female">Female</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="patienttype" className="block text-sm font-medium leading-6 text-black">
-                                                                        Type of Patient <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <select
-                                                                            id="patienttype"
-                                                                            name="patienttype"
-                                                                            autoComplete="patienttype"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                            value={TypeofPatient}
-                                                                            defaultValue={"New"}
-                                                                            onChange={(e) => setTypeofPatient(e.target.value)}
-                                                                        >
-                                                                            <option>New</option>
-                                                                            <option>Existing</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="number2" className="block text-sm font-medium leading-6 text-black">
-                                                                        BP <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            id="number2"
-                                                                            name="number2"
-                                                                            type="number2"
-                                                                            autoComplete="phone number"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={BP}
-                                                                            onChange={(e) => setBP(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                                <div className="sm:col-span-4">
-                                                                    <label htmlFor="Height" className="block text-sm font-medium leading-6 text-black">
-                                                                        Height <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="number"
-                                                                            id="Height"
-                                                                            name="Height"
-                                                                            autoComplete="Height"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                            value={Height}
-                                                                            onChange={(e) => setHeight(e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-4">
-                                                                    <label htmlFor="Weight" className="block text-sm font-medium leading-6 text-black">
-                                                                        Weight <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="number"
-                                                                            id="Weight"
-                                                                            name="Weight"
-                                                                            autoComplete="Weight"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                            value={Weight}
-                                                                            onChange={(e) => setWeight(e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="ChiefComplaint" className="block text-sm font-medium leading-6 text-black">
-                                                                        Chief Complaint <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="ChiefComplaint"
-                                                                            id="ChiefComplaint"
-                                                                            autoComplete="ChiefComplaint"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={chief_complaint}
-                                                                            onChange={(e) => setchief_complaint(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="HeartRate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Heart Rate <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="HeartRate"
-                                                                            id="HeartRate"
-                                                                            autoComplete="HeartRate"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={HeartRate}
-                                                                            onChange={(e) => setHeartRate(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="RespiratoryRate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Respiratory Rate <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="RespiratoryRate"
-                                                                            id="RespiratoryRate"
-                                                                            autoComplete="RespiratoryRate"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={RespiratoryRate}
-                                                                            onChange={(e) => setRespiratoryRate(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="Temperature" className="block text-sm font-medium leading-6 text-black">
-                                                                        Temperature <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            id="Temperature"
-                                                                            name="Temperature"
-                                                                            type="Temperaturemail"
-                                                                            autoComplete="Temperature"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={Temperature}
-                                                                            onChange={(e) => setTemperature(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="Disposition" className="block text-sm font-medium leading-6 text-black">
-                                                                        Disposition<RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="Disposition"
-                                                                            name="Disposition"
-                                                                            id="Disposition"
-                                                                            autoComplete="Disposition"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={Disposition}
-                                                                            onChange={(e) => setDisposition(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-3">
-                                                                    <label htmlFor="MensDate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Last Menstruation Date
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="date"
-                                                                            name="MensDate"
-                                                                            id="MensDate"
-                                                                            autoComplete="MensDate"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={MensDate}
-                                                                            onChange={(e) => setMensDate(e.target.value)}
-                                                                      
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-
-                                                                <div className="sm:col-span-4">
-                                                                    <label htmlFor="VisitDate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Visit Date <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="date"
-                                                                            name="VisitDate"
-                                                                            id="VisitDate"
-                                                                            autoComplete="VisitDate"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={VisitDate}
-                                                                            onChange={(e) => setVisitDate(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="sm:col-span-4">
-                                                                    <label htmlFor="FollowUpDate" className="block text-sm font-medium leading-6 text-black">
-                                                                        Follow Up Date <RequiredAsterisk />
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="date"
-                                                                            name="FollowUpDate"
-                                                                            id="FollowUpDate"
-                                                                            autoComplete="FollowUpDate"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={FollowUpDate}
-                                                                            onChange={(e) => setFollowUpDate(e.target.value)}
-                                                                            required
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
-                                                                <div className="col-span-full">
-                                                                    <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
-                                                                        Provider Notes
-                                                                    </label>
-                                                                    <div className="mt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            name="Provider Notes"
-                                                                            id="Provider Notes"
-                                                                            autoComplete="Provider Notes"
-                                                                            className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
-                                                                            value={notes}
-                                                                            onChange={(e) => setNotes(e.target.value)}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                    <div className="mt-10 flex justify-end">
+                                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                                            <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                                Select a Patient
+                                            </h3>
+                                            <button
+                                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                                                onClick={(e) => closeOutpatient()}
+                                            >
+                                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                                </svg>
+                                                <span className="sr-only">Close modal</span>
+                                            </button>
+                                        </div>
+                                        <div className="relative bg-slate-50 shadow exo p-10 space-y-2 lato">
+                                            <div className='mb-7'>
+                                                <h1 className="text-xl font-semibold text-white-900 exo mb-2">
+                                                    Search Patient
+                                                </h1>
+                                                <input
+                                                    type="text"
+                                                    className="ext-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                    value={searchText}
+                                                    onChange={handleSearchInputChange}
+                                                />
+                                            </div>
+                                            {/* Render filtered patient list */}
+                                            {searchText !== '' ? (
+                                                filteredPatients.map((patient, index) => (
+                                                    <div className="uppercase justify-between flex" key={index}>
+                                                        {patient.lastname}, {patient.firstname}
                                                         <button
-                                                            className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            className="bg-blue-600 p-2 rounded-xl drop-shadow-2xl shadow-2xl text-white"
+                                                            onClick={() => handleSelectPatient(patient.uid)}
                                                         >
-                                                            Submit
+                                                            Select
                                                         </button>
                                                     </div>
-                                                </div>
-                                            </form>
+                                                ))
+                                            ) : (
+                                                patientList.map((patient, index) => (
+                                                    <div className="uppercase justify-between flex" key={index}>
+                                                        {patient.lastname}, {patient.firstname}
+                                                        <button
+                                                            className="bg-blue-600 p-2 rounded-xl drop-shadow-2xl shadow-2xl text-white"
+                                                            onClick={() => handleSelectPatient(patient.uid)}
+                                                        >
+                                                            Select
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            )}
                                         </div>
-                                    </div>
+                                    </div>) : (<></>)}
+
+                                    {currentPage2 == 2 ? (<div>
+                                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                                            <h3 className="text-xl font-semibold text-white-900 dark:text-white">
+                                                Outpatient Form
+                                            </h3>
+                                            <button
+                                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                                                onClick={(e) => closeOutpatient()}
+                                            >
+                                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                                </svg>
+                                                <span className="sr-only">Close modal</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="relative bg-slate-50 shadow exo">
+                                            <div className="p-6 space-y-6">
+                                                <form onSubmit={initializeClinic2}>
+                                                    <h1 className='exo'>{Fullname}</h1>
+                                                    <div className="border-b border-gray-900/10 pb-12">
+
+                                                        <div className="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9">
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="ChiefComplaint" className="block text-sm font-medium leading-6 text-black">
+                                                                    Chief Complaint <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        name="ChiefComplaint"
+                                                                        id="ChiefComplaint"
+                                                                        autoComplete="ChiefComplaint"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={chief_complaint}
+                                                                        onChange={(e) => setchief_complaint(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="Assessment" className="block text-sm font-medium leading-6 text-black">
+                                                                Assessment <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                    id="Assessment"
+                                                                    name="Assessment"
+                                                                    autoComplete="Assessment"
+                                                                    className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                    value={Assessment}
+                                                                    onChange={(e) => setAssessment(e.target.value)}
+                                                                    required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="Treatment" className="block text-sm font-medium leading-6 text-black">
+                                                                Treatment <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                    id="Treatment"
+                                                                    name="Treatment"
+                                                                    autoComplete="Treatment"
+                                                                    className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                    value={Treatment}
+                                                                    onChange={(e) => setTreatment(e.target.value)}
+                                                                    required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="sex" className="block text-sm font-medium leading-6 text-black">
+                                                                    Sex <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <select
+                                                                        id="sex2"
+                                                                        name="sex2"
+                                                                        autoComplete="sex"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={sex2}
+                                                                        defaultValue={"Male"}
+                                                                        onChange={(e) => setSex2(e.target.value)}
+                                                                    >
+                                                                        <option value="Male" selected>Male</option>
+                                                                        <option value="Female">Female</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="patienttype" className="block text-sm font-medium leading-6 text-black">
+                                                                    Type of Patient <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <select
+                                                                        id="patienttype"
+                                                                        name="patienttype"
+                                                                        autoComplete="patienttype"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={TypeofPatient}
+                                                                        defaultValue={"New"}
+                                                                        onChange={(e) => setTypeofPatient(e.target.value)}
+                                                                    >
+                                                                        <option>New</option>
+                                                                        <option>Existing</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="number2" className="block text-sm font-medium leading-6 text-black">
+                                                                    BP <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        id="number2"
+                                                                        name="number2"
+                                                                        type="number"
+                                                                        autoComplete="phone number"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={BP}
+                                                                        onChange={(e) => setBP(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="Height" className="block text-sm font-medium leading-6 text-black">
+                                                                    Height <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="number"
+                                                                        id="Height"
+                                                                        name="Height"
+                                                                        autoComplete="Height"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={Height}
+                                                                        onChange={(e) => setHeight(e.target.value)}
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="Weight" className="block text-sm font-medium leading-6 text-black">
+                                                                    Weight <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="number"
+                                                                        id="Weight"
+                                                                        name="Weight"
+                                                                        autoComplete="Weight"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={Weight}
+                                                                        onChange={(e) => setWeight(e.target.value)}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
+                                                        
+
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="HeartRate" className="block text-sm font-medium leading-6 text-black">
+                                                                    Heart Rate <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="number"
+                                                                        name="HeartRate"
+                                                                        id="HeartRate"
+                                                                        autoComplete="HeartRate"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={HeartRate}
+                                                                        onChange={(e) => setHeartRate(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="RespiratoryRate" className="block text-sm font-medium leading-6 text-black">
+                                                                    Respiratory Rate <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="number"
+                                                                        name="RespiratoryRate"
+                                                                        id="RespiratoryRate"
+                                                                        autoComplete="RespiratoryRate"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={RespiratoryRate}
+                                                                        onChange={(e) => setRespiratoryRate(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="sm:col-span-3">
+                                                                <label htmlFor="Temperature" className="block text-sm font-medium leading-6 text-black">
+                                                                    Temperature <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        id="Temperature"
+                                                                        name="Temperature"
+                                                                        type="number"
+                                                                        autoComplete="Temperature"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={Temperature}
+                                                                        onChange={(e) => setTemperature(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="Disposition" className="block text-sm font-medium leading-6 text-black">
+                                                                    Disposition<RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="Disposition"
+                                                                        name="Disposition"
+                                                                        id="Disposition"
+                                                                        autoComplete="Disposition"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={Disposition}
+                                                                        onChange={(e) => setDisposition(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="MensDate" className="block text-sm font-medium leading-6 text-black">
+                                                                    Last Menstruation Date
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="date"
+                                                                        name="MensDate"
+                                                                        id="MensDate"
+                                                                        autoComplete="MensDate"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={MensDate}
+                                                                        onChange={(e) => setMensDate(e.target.value)}
+                                                                
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="VisitDate" className="block text-sm font-medium leading-6 text-black">
+                                                                    Visit Date <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="date"
+                                                                        name="VisitDate"
+                                                                        id="VisitDate"
+                                                                        autoComplete="VisitDate"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={VisitDate}
+                                                                        onChange={(e) => setVisitDate(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="sm:col-span-4">
+                                                                <label htmlFor="FollowUpDate" className="block text-sm font-medium leading-6 text-black">
+                                                                    Follow Up Date <RequiredAsterisk />
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="date"
+                                                                        name="FollowUpDate"
+                                                                        id="FollowUpDate"
+                                                                        autoComplete="FollowUpDate"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={FollowUpDate}
+                                                                        onChange={(e) => setFollowUpDate(e.target.value)}
+                                                                        required
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-8'>
+                                                            <div className="col-span-full">
+                                                                <label htmlFor="allergies" className="block text-sm font-medium leading-6 text-black">
+                                                                    Provider Notes
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        name="Provider Notes"
+                                                                        id="Provider Notes"
+                                                                        autoComplete="Provider Notes"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                                                        value={notes}
+                                                                        onChange={(e) => setNotes(e.target.value)}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-10 flex justify-between">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCurrentPage2(1)}
+                                                                className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            >
+                                                                Back
+                                                            </button>
+                                                            <button
+                                                                className="rounded-md bg-indigo-600 p-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                            >
+                                                                Submit
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>) : (<></>)}
                                 </div>
                             </div>
                         )}

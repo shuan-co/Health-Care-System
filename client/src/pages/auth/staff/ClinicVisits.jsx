@@ -4,6 +4,7 @@ import { db, config } from '../../../firebase/Firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from "react-router-dom";
 
 const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass}/>
 
@@ -13,6 +14,7 @@ export default function ClinicVisits(props) {
     const [showFullData, setShowFullData] = useState("")
     const [index, setIndex] = useState(0)
     const [patientsUID, setPatientsUID] = useState([])
+    const navigate  = useNavigate()
 
     useEffect(() => {
         async function fetchData() {
@@ -102,8 +104,9 @@ export default function ClinicVisits(props) {
         </div>
 
         <div className='relative w-full lato'>
-            <div className='grid grid-cols-5 bg-blue-800 rounded-t-lg text-white exo text-center p-3'>
+            <div className='grid grid-cols-6 bg-blue-800 rounded-t-lg text-white exo text-center p-3'>
                 <h1>ENTRY</h1>
+                <h1>NAME</h1>
                 <h1>DATE</h1>
                 <h1>CHIEF COMPLAINT</h1>
                 <h1>CLINIC</h1>
@@ -112,9 +115,10 @@ export default function ClinicVisits(props) {
             
             <div className='bg-slate-100 rounded-b-lg'>
                 {diagnoses.map((diagnosis, index) => (
-                    <div className='grid grid-cols-5 text-center p-4 border border-black' key={index}>
+                    <div className='grid grid-cols-6 text-center p-4 border border-black' key={index}>
                         {/* Add key={index} to the outer div */}
                         <h3 className='font-bold'>{index + 1}</h3>
+                        <h3 className='capitalize'>{diagnosis.Name}</h3>
                         <h3 className='border bg-purple-200 rounded-2xl'>{diagnosis.VisitDate}</h3>
                         <h3 className='capitalize'>{diagnosis.ChiefComplaint}</h3>
                         <h3 className='capitalize'>{diagnosis.Clinic}</h3>
@@ -149,10 +153,16 @@ export default function ClinicVisits(props) {
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
+            
+                    <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black exo">
+                        <div>
+                            <button className='ms-6 mt-5 underline underline-offset-4 hover:text-blue-600' onClick={() => navigate('./patientlist')}>Check Patient's Personal Information</button>
+                        </div>
                         <div className='p-6 grid grid-cols-2'>
                             <h3 className='font-bold'>Clinic</h3>
-                            <p>{diagnoses[index].Clinic}</p>
+                            <p className='capitalize'>{diagnoses[index].Clinic}</p>
+                            <h3 className='font-bold'>Name</h3>
+                            <p className='capitalize'>{diagnoses[index].Name}</p>
                             <h3 className='font-bold'>Chief Complaint</h3>
                             <p>{diagnoses[index].ChiefComplaint}</p>
                             <h3 className='font-bold'>Assessment</h3>
