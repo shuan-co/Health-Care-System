@@ -142,6 +142,19 @@ function StaffDashboard() {
 
     async function initializeClinic(e) {
         e.preventDefault();
+
+        /*const firstName = e.target['first-name'].value;
+        const middleName = e.target['middle-name'].value;
+        const lastName = e.target['last-name'].value;
+        const email = e.target['email'].value;
+        const password = e.target['password'].value;
+        const phoneNumber = e.target['number'].value;
+        const streetAddress = e.target['street-address'].value;
+        const sex = e.target['sex'].value;
+        const bloodtype = e.target['bloodtype'].value;
+        const emergencyContactName = e.target['emergencyContactName'].value;
+        const emergencyContactNumber = e.target['emergencyContactNumber'].value;
+        const allergies = e.target['allergies'].value;*/
         const emailFormatted = email;
 
         setFormData({
@@ -181,6 +194,38 @@ function StaffDashboard() {
 
     const [loading, setLoading] = useState(true); // Initial loading state
     const [patientList, setPatientList] = useState([]);
+
+    useEffect(() => {
+        async function fetchPatients() {
+            if (clinicName) {
+                try {
+                    const tempRecords = [];
+                    const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
+                    const patientsQueried = query(patientsCollectionRef, limit(5));
+                    const querySnapshot = await getDocs(patientsQueried);
+
+                    console.log(querySnapshot.docs);
+
+                    for (const doc of querySnapshot.docs) {
+                        const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", doc.id, "baselineInformation");
+                        const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
+
+                        baselineInformationSnapshot.forEach((baselineDoc) => {
+                            const data = baselineDoc.data();
+                            data.uid = doc.id;
+                            tempRecords.push(data);
+                        });
+                    }
+                    setPatientList(tempRecords);
+                    setLoading(false);
+                } catch (error) {
+                    console.error("Error getting documents from patientlist collection:", error);
+                }
+            }
+        }
+
+        fetchPatients();
+    }, [clinicName]);
 
     const [formData2, setFormData2] = useState({
         SelectedPatient: '',
@@ -225,6 +270,19 @@ function StaffDashboard() {
     async function initializeClinic2(e) {
         e.preventDefault();
 
+        /*const firstName = e.target['first-name'].value;
+        const middleName = e.target['middle-name'].value;
+        const lastName = e.target['last-name'].value;
+        const email = e.target['email'].value;
+        const password = e.target['password'].value;
+        const phoneNumber = e.target['number'].value;
+        const streetAddress = e.target['street-address'].value;
+        const sex = e.target['sex'].value;
+        const bloodtype = e.target['bloodtype'].value;
+        const emergencyContactName = e.target['emergencyContactName'].value;
+        const emergencyContactNumber = e.target['emergencyContactNumber'].value;
+        const allergies = e.target['allergies'].value;*/
+
         setFormData2({
             ...formData2,
             UID,
@@ -252,7 +310,7 @@ function StaffDashboard() {
             setUID(patientList[0].uid);
         }
     }, [patientList]);
-    
+
     // functions for getting family history
     function getRelativeFullName(fullname) {
         setRelativeName(fullname)
@@ -424,8 +482,8 @@ function StaffDashboard() {
     }, [formData]);
 
     useEffect(() => {
-        for(let i = 0; i < patientList.length; i++){
-            if(patientList[i].uid == UID){
+        for (let i = 0; i < patientList.length; i++) {
+            if (patientList[i].uid == UID) {
                 SetFullName(patientList[i].lastname + ", " + patientList[i].firstname)
             }
         }
@@ -443,9 +501,9 @@ function StaffDashboard() {
 
                             // Now you can access individual fields within the document
                             const clinicName = data.clinicName;
-                            
+
                             console.log(Fullname)
-                            if(Fullname) {
+                            if (Fullname) {
                                 addDoc(collection(config.firestore, clinicName, "patients", "patientlist", formData2.UID, "diagnoses"), {
                                     Name: Fullname,
                                     Temperature: formData2.Temperature,
@@ -467,7 +525,7 @@ function StaffDashboard() {
                                     Clinic: clinicName
                                 });
                             }
-                            
+
 
                         } else {
                             console.log("Document does not exist");
@@ -538,12 +596,12 @@ function StaffDashboard() {
         setCurrentPage2(1)
     }
 
-    function handleSelectPatient(patientUID){
+    function handleSelectPatient(patientUID) {
         setUID(patientUID)
         setCurrentPage2(2)
     }
 
-    function closeOutpatient(){
+    function closeOutpatient() {
         setCurrentPage2(1)
         setShowForm2(false)
     }
@@ -653,8 +711,8 @@ function StaffDashboard() {
                                 </div>
                             </div>
                             <div style={{ width: "56vw", height: "40vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                
-    
+
+
                                 <div
                                     onClick={() => setSelected("clinic-visits")}
                                     className="Pdashboard-Card-BoxShadow"
@@ -687,7 +745,7 @@ function StaffDashboard() {
                                     </div>
                                     <div
                                         style={{
-                                            
+
                                             backgroundSize: "cover",
                                             width: "100%",
                                             height: "100%",
@@ -1172,33 +1230,33 @@ function StaffDashboard() {
                                                             </div>
                                                             <div className="sm:col-span-3">
                                                                 <label htmlFor="Assessment" className="block text-sm font-medium leading-6 text-black">
-                                                                Assessment <RequiredAsterisk />
+                                                                    Assessment <RequiredAsterisk />
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <input
-                                                                    id="Assessment"
-                                                                    name="Assessment"
-                                                                    autoComplete="Assessment"
-                                                                    className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                    value={Assessment}
-                                                                    onChange={(e) => setAssessment(e.target.value)}
-                                                                    required
+                                                                        id="Assessment"
+                                                                        name="Assessment"
+                                                                        autoComplete="Assessment"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={Assessment}
+                                                                        onChange={(e) => setAssessment(e.target.value)}
+                                                                        required
                                                                     />
                                                                 </div>
                                                             </div>
                                                             <div className="sm:col-span-3">
                                                                 <label htmlFor="Treatment" className="block text-sm font-medium leading-6 text-black">
-                                                                Treatment <RequiredAsterisk />
+                                                                    Treatment <RequiredAsterisk />
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <input
-                                                                    id="Treatment"
-                                                                    name="Treatment"
-                                                                    autoComplete="Treatment"
-                                                                    className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
-                                                                    value={Treatment}
-                                                                    onChange={(e) => setTreatment(e.target.value)}
-                                                                    required
+                                                                        id="Treatment"
+                                                                        name="Treatment"
+                                                                        autoComplete="Treatment"
+                                                                        className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6 p-3"
+                                                                        value={Treatment}
+                                                                        onChange={(e) => setTreatment(e.target.value)}
+                                                                        required
                                                                     />
                                                                 </div>
                                                             </div>
@@ -1300,7 +1358,7 @@ function StaffDashboard() {
                                                         </div>
 
                                                         <div className='mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-9'>
-                                                        
+
 
                                                             <div className="sm:col-span-3">
                                                                 <label htmlFor="HeartRate" className="block text-sm font-medium leading-6 text-black">
@@ -1388,7 +1446,7 @@ function StaffDashboard() {
                                                                         className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
                                                                         value={MensDate}
                                                                         onChange={(e) => setMensDate(e.target.value)}
-                                                                
+
                                                                     />
                                                                 </div>
                                                             </div>
@@ -1476,13 +1534,13 @@ function StaffDashboard() {
                             </div>
                         )}
 
-                
+
                     </div>
                 ) : (
                     <></>
                 )}
 
-                {selected == 'clinic-visits' ? (<ClinicVisits changeSelected={changeSelected}/>) : (<></>)}
+                {selected == 'clinic-visits' ? (<ClinicVisits changeSelected={changeSelected} />) : (<></>)}
 
                 {selected == "profile" ? (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", marginLeft: "13vw" }}>
