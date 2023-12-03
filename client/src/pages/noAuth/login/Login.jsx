@@ -43,7 +43,7 @@ function Login() {
                     navigate('/clinic-admin');
                 } else if (user.accountType === "staff") {
                     navigate('/clinic-staff');
-                } else if (user.accountType === "gmail") {
+                } else {
                     navigate('/patient')
                 }
             })
