@@ -201,7 +201,7 @@ function StaffDashboard() {
                 try {
                     const tempRecords = [];
                     const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
-                    const patientsQueried = query(patientsCollectionRef, limit(5));
+                    const patientsQueried = query(patientsCollectionRef);
                     const querySnapshot = await getDocs(patientsQueried);
 
                     console.log(querySnapshot.docs);

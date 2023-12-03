@@ -100,32 +100,32 @@ return (
                 </h3>
                 
             </div>
-
-            {familyMedicalList.map((item, index) => (  
-                <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 Pdashboard-Card-BoxShadow p-10 lato'>    
-                    <h1 className='text-xl font-semibold text-sky-800 exo mx-auto mb-5 underline underline-offset-8'>Family Medical History {index + 1}</h1>
-                    <div className='grid grid-cols-2'>
-                        <h1 className='inline font-bold text-sky-800'>Relative Full Name: </h1>
-                        <p className='inline'>{item.relativeName}</p>
+            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 Pdashboard-Card-BoxShadow p-10 lato'>    
+                {familyMedicalList.map((item, index) => (  
+                    <div className='mb-10'>
+                        <h1 className='text-xl font-semibold text-sky-800 exo mx-auto mb-5 underline underline-offset-8'>Family Medical History {index + 1}</h1>
+                        <div className='grid grid-cols-2'>
+                            <h1 className='inline font-bold text-sky-800'>Relative Full Name: </h1>
+                            <p className='inline'>{item.relativeName}</p>
+                        </div>
+                        <div className='grid grid-cols-2'>
+                            <h1 className='inline font-bold text-sky-800'>Relationship with Relative: </h1>
+                            <p className='inline'>{item.relationshipWithRelative}</p>
+                        </div>
+                        <div className='grid grid-cols-2'>
+                            <h1 className='inline font-bold text-sky-800'>Condition of Relative: </h1>
+                            <p className='inline'>{item.relativeCondition}</p>
+                        </div>
+                        <div className='grid grid-cols-2'> 
+                            <h1 className='inline font-bold text-sky-800'>Medications of Relative: </h1>
+                            <p className='inline'>{item.relativeMedications}</p>
+                        </div>
                     </div>
-                    <div className='grid grid-cols-2'>
-                        <h1 className='inline font-bold text-sky-800'>Relationship with Relative: </h1>
-                        <p className='inline'>{item.relationshipWithRelative}</p>
-                    </div>
-                    <div className='grid grid-cols-2'>
-                        <h1 className='inline font-bold text-sky-800'>Condition of Relative: </h1>
-                        <p className='inline'>{item.relativeCondition}</p>
-                    </div>
-                    <div className='grid grid-cols-2'> 
-                        <h1 className='inline font-bold text-sky-800'>Medications of Relative: </h1>
-                        <p className='inline'>{item.relativeMedications}</p>
-                    </div>
-
-                    <div className='flex justify-end'>
-                        <button onClick={() => props.backButtonHandler()} className='mt-8 border-2 border-red-600 rounded-lg  p-1 w-20 text-red-600 hover:bg-red-600 hover:text-white'>Exit</button>
-                    </div>
+                ))}
+                <div className='flex justify-end'>
+                    <button onClick={() => props.backButtonHandler()} className='mt-8 border-2 border-red-600 rounded-lg  p-1 w-20 text-red-600 hover:bg-red-600 hover:text-white'>Exit</button>
                 </div>
-            ))}
+            </div>
         </div>
     </div>
 );
