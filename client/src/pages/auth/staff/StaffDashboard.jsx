@@ -142,19 +142,6 @@ function StaffDashboard() {
 
     async function initializeClinic(e) {
         e.preventDefault();
-
-        /*const firstName = e.target['first-name'].value;
-        const middleName = e.target['middle-name'].value;
-        const lastName = e.target['last-name'].value;
-        const email = e.target['email'].value;
-        const password = e.target['password'].value;
-        const phoneNumber = e.target['number'].value;
-        const streetAddress = e.target['street-address'].value;
-        const sex = e.target['sex'].value;
-        const bloodtype = e.target['bloodtype'].value;
-        const emergencyContactName = e.target['emergencyContactName'].value;
-        const emergencyContactNumber = e.target['emergencyContactNumber'].value;
-        const allergies = e.target['allergies'].value;*/
         const emailFormatted = email;
 
         setFormData({
@@ -194,38 +181,6 @@ function StaffDashboard() {
 
     const [loading, setLoading] = useState(true); // Initial loading state
     const [patientList, setPatientList] = useState([]);
-
-    useEffect(() => {
-        async function fetchPatients() {
-            if (clinicName) {
-                try {
-                    const tempRecords = [];
-                    const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
-                    const patientsQueried = query(patientsCollectionRef, limit(5));
-                    const querySnapshot = await getDocs(patientsQueried);
-
-                    console.log(querySnapshot.docs);
-
-                    for (const doc of querySnapshot.docs) {
-                        const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", doc.id, "baselineInformation");
-                        const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
-
-                        baselineInformationSnapshot.forEach((baselineDoc) => {
-                            const data = baselineDoc.data();
-                            data.uid = doc.id;
-                            tempRecords.push(data);
-                        });
-                    }
-                    setPatientList(tempRecords);
-                    setLoading(false);
-                } catch (error) {
-                    console.error("Error getting documents from patientlist collection:", error);
-                }
-            }
-        }
-
-        fetchPatients();
-    }, [clinicName]);
 
     const [formData2, setFormData2] = useState({
         SelectedPatient: '',
@@ -269,19 +224,6 @@ function StaffDashboard() {
 
     async function initializeClinic2(e) {
         e.preventDefault();
-
-        /*const firstName = e.target['first-name'].value;
-        const middleName = e.target['middle-name'].value;
-        const lastName = e.target['last-name'].value;
-        const email = e.target['email'].value;
-        const password = e.target['password'].value;
-        const phoneNumber = e.target['number'].value;
-        const streetAddress = e.target['street-address'].value;
-        const sex = e.target['sex'].value;
-        const bloodtype = e.target['bloodtype'].value;
-        const emergencyContactName = e.target['emergencyContactName'].value;
-        const emergencyContactNumber = e.target['emergencyContactNumber'].value;
-        const allergies = e.target['allergies'].value;*/
 
         setFormData2({
             ...formData2,

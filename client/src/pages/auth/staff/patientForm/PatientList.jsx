@@ -1,5 +1,5 @@
 import { config, signInAuth, db } from "../../../../firebase/Firebase";
-import { doc, setDoc, getDoc, getDocs, collection, updateDoc, startAfter, limit, query, startAt } from "firebase/firestore";
+import { doc, setDoc, getDoc, getDocs, collection, updateDoc, startAfter, limit, query, startAt, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { useState, useEffect, Fragment, useRef } from "react";
 import pfp from './pfp.jpg'
@@ -11,7 +11,7 @@ import FamilyHistory from './components/FamilyHistory';
 import PersonalMedicalHistory from './components/PersonalMedicalHistory';
 import Vaccination from './components/Vaccination';
 import Sidebar from "../../components/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 
 import { Dialog, Transition } from '@headlessui/react'
 
@@ -78,6 +78,7 @@ function PatientList() {
     const [historyRemarks, setHistoryRemarks] = useState("")
     const [ShowForm, setShowForm] = useState(false)
     const [ShowForm2, setShowForm2] = useState(false)
+    const [ShowForm3, setShowForm3] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
 
     // navigator for edit patient form pages
@@ -429,6 +430,60 @@ function PatientList() {
         fetchPatients();
     }, [clinicName]);
 
+    //  SEARCH PATIENT
+    const [searchedPatients, setSearchedPatients] = useState([]);
+    async function searchPatient(e) {
+        if (clinicName) {
+            try {
+                e.preventDefault();
+                const nameQuery = document.getElementById("search-first-name").value.trim().toLowerCase();
+                const numberQuery = document.getElementById("number").value.trim();
+                const tempRecords = [];
+                const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
+                const patientsQueried = await getDocs(patientsCollectionRef);
+
+                if (!nameQuery && !numberQuery) {
+                    alert("Please Input a Patient Name or Contact Number");
+                } else {
+                    let patientFound = false;
+
+                    for (const patientDoc of patientsQueried.docs) {
+                        const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", patientDoc.id, "baselineInformation");
+                        const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
+
+                        for (const baselineDoc of baselineInformationSnapshot.docs) {
+                            const data = baselineDoc.data();
+                            const fullName = `${data.firstname} ${data.lastname}`.trim().toLowerCase();
+
+                            // Split the nameQuery into parts
+                            const nameParts = nameQuery.split(/\s+/);
+                            const firstNameMatch = nameParts.some(part => data.firstname && data.firstname.startsWith(part));
+                            const lastNameMatch = nameParts.some(part => data.lastname && data.lastname.startsWith(part));
+
+                            // Check if both nameQuery and numberQuery are provided and match
+                            if (
+                                ((nameQuery && (firstNameMatch || lastNameMatch || fullName.startsWith(nameQuery))) || !nameQuery) &&
+                                ((numberQuery && data.phoneNumber && data.phoneNumber === numberQuery) || !numberQuery)
+                            ) {
+                                data.uid = patientDoc.id;
+                                tempRecords.push(data);
+                                patientFound = true;
+                            }
+                        }
+                    }
+
+                    if (!patientFound) {
+                        alert("No Patient Found");
+                    }
+
+                    setSearchedPatients(tempRecords);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error("Error getting documents from patientlist collection:", error);
+            }
+        }
+    }
 
     // PAGINATION
 
@@ -447,7 +502,9 @@ function PatientList() {
                     const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                     baselineInformationSnapshot.forEach((baselineDoc) => {
-                        tempRecords.push(baselineDoc.data());
+                        const data = baselineDoc.data();
+                        data.uid = doc.id;
+                        tempRecords.push(data);
                     });
                 }
                 setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
@@ -474,7 +531,9 @@ function PatientList() {
                     const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
 
                     baselineInformationSnapshot.forEach((baselineDoc) => {
-                        tempRecords.push(baselineDoc.data());
+                        const data = baselineDoc.data();
+                        data.uid = doc.id;
+                        tempRecords.push(data);
                     });
                 }
                 setFirstVisible(querySnapshot.docs[0]);
@@ -572,7 +631,6 @@ function PatientList() {
             firstName: firstName,
             lastName: lastName
         });
-        console.log(bloodType)
         setDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", currentUID, "baselineInformation"), "baselineInformation"), {
             firstname: firstName,
             middleName: middleName,
@@ -617,7 +675,6 @@ function PatientList() {
         personalList.forEach((item, index) => {
             updateDoc(doc(collection(config.firestore, clinicName, "patients", "patientlist", currentUID, "baselineInformation"), "baselineInformation"), item);
         });
-
         clearFormValues();
         setShowForm2(false);
     }
@@ -765,6 +822,17 @@ function PatientList() {
 
         // Hide the form
         setShowForm2(false);
+    };
+
+    const tabStyles = (tabNumber) => {
+        const baseStyles =
+            'inline-flex items-center justify-center p-4 border-b-2 rounded-t-lg group';
+        const activeStyles = 'text-blue-600 border-blue-600';
+        const inactiveStyles = 'text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-300';
+
+        return tabNumber === currentPage
+            ? `${baseStyles} ${activeStyles} active dark:${activeStyles}`
+            : `${baseStyles} ${inactiveStyles}`;
     };
     return (
         <>
@@ -963,8 +1031,6 @@ function PatientList() {
                 </Dialog>
             </Transition.Root>
 
-
-
             <div className="h-screen w-full flex overflow-hidden">
                 <Sidebar selected={selected} name={fullName} changeSelected={changeSelected} />
 
@@ -976,23 +1042,11 @@ function PatientList() {
 
                             < div class="mx-auto  px-4 py-8 sm:px-8" >
                                 <div class="flex items-center justify-between pb-6">
-                                    <div style={{ display: "flex" }}>
-                                        <input
-                                            type="text"
-                                            placeholder="SEARCH PATIENTS"
-                                            className="flex-1 rounded-3xl border border-gray-300 px-5 py-3 focus:outline-none focus:ring-1 focus:ring-gray-400"
-                                            style={{ width: '40vw', textAlign: 'center', fontSize: '1em', border: '1px solid' }}
-                                        />
-                                        <img src={searchIcon} alt="" style={{ marginLeft: "0.5vw" }} />
-                                    </div>
+                                    <div></div>
                                     <div class="flex items-center justify-between space-x-4">
-                                        <button class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
-                                            SORT BY
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
-                                            </svg>
+                                        <button onClick={() => setShowForm3((prevShowForm3) => !prevShowForm3)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                            SEARCH PATIENT
                                         </button>
-
                                         <button onClick={() => setShowForm((prevShowForm) => !prevShowForm)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-xl font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
                                             CREATE NEW PATIENT
                                         </button>
@@ -1359,6 +1413,79 @@ function PatientList() {
                             <div className="p-10 space-y-6 text-black">
                                 <form className="mx-auto exo" onSubmit={initializeClinic}>
                                     <div className="space-y-12 text-black">
+                                        <div className="border-b border-gray-200 dark:border-gray-700">
+                                            <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                                                <li className="me-2">
+                                                    <a
+                                                        onClick={() => setCurrentPage(1)}
+                                                        className={tabStyles(1)}
+                                                    >
+                                                        <svg
+                                                            className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                            aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 18 20"
+                                                        >
+                                                            <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                        </svg>
+                                                        Personal Info
+                                                    </a>
+                                                </li>
+                                                <li className="me-2">
+                                                    <a
+                                                        onClick={() => setCurrentPage(2)}
+                                                        className={tabStyles(2)}
+                                                    >
+                                                        <svg
+                                                            className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                            aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 18 20"
+                                                        >
+                                                            <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                        </svg>
+                                                        Family Hist
+                                                    </a>
+                                                </li>
+                                                <li className="me-2">
+                                                    <a
+                                                        onClick={() => setCurrentPage(3)}
+                                                        className={tabStyles(3)}
+                                                    >
+                                                        <svg
+                                                            className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                            aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 18 20"
+                                                        >
+                                                            <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                        </svg>
+                                                        Vaccination
+                                                    </a>
+                                                </li>
+                                                <li className="me-2">
+                                                    <a
+                                                        onClick={() => setCurrentPage(4)}
+                                                        className={tabStyles(4)}
+                                                    >
+                                                        <svg
+                                                            className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                            aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 18 20"
+                                                        >
+                                                            <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                        </svg>
+                                                        Personal Hist
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </div>
                                         {currentPage == 1 ? (
                                             <div className="border-b border-gray-900/10 pb-12">
                                                 <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
@@ -1597,17 +1724,6 @@ function PatientList() {
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <div className="flex justify-end mt-8">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
-
                                             </div>
                                         ) : (
                                             <></>
@@ -1697,55 +1813,17 @@ function PatientList() {
 
 
 
-
-                                        {currentPage >= 2 && currentPage <= 3 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
+                                        <div className='flex justify-between'>
+                                            <div></div>
+                                            <div className="inline">
+                                                <button
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='submit'
+                                                >
+                                                    Submit
+                                                </button>
                                             </div>
-                                        ) : (<></>)}
-
-
-
-                                        {currentPage == 4 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-                                                <div className="inline">
-                                                    <button
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='submit'
-                                                    >
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                        ) : (<></>)}
+                                        </div>
 
                                     </div>
                                 </form>
@@ -1754,8 +1832,111 @@ function PatientList() {
                     </div>
                 </div>
             )}
+            {ShowForm3 && (
+                <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div className="relative w-full max-w-4xl max-h-full mx-auto lato">
+                        <div className="flex items-start justify-between p-4 border-b rounded-t bg-blue-800">
+                            <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white">
+                                SEARCH PATIENT INFORMATION | VIEW & EDIT
+                            </h3>
+                            <button
+                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-slate-50 dark:hover:text-black"
+                                onClick={() => { setShowForm3(false);}}
+                            >
+                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span className="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
+                            <div className="p-10 space-y-6 text-black">
+                                <form className="mx-auto exo" onSubmit={searchPatient}>
+                                    <div className="space-y-12 text-black">
+                                        <div className="mt-2">
+                                            <label htmlFor="search-first-name" className="block text-sm font-medium leading-6 text-black">
+                                                Patient Name 
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="search-first-name"
+                                                id="search-first-name"
+                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                            />
+                                        </div>
+                                        <div className="mt-2">
+                                            <label htmlFor="number" className="block text-sm font-medium leading-6 text-black">
+                                                Patient Contact Number
+                                            </label>
+                                            <input
+                                                type="number"
+                                                name="number"
+                                                id="number"
+                                                className="text-black block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-3"
+                                            />
+                                        </div>
 
+                                        <button className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                            type='buttom' style={{float:"right", marginBottom:"20px"}}> Search
+                                        </button>
+                                    </div>
+                                </form>
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
+                                            <th class="px-5 py-3"> </th>
+                                            <th class="px-5 py-3">Sex</th>
+                                            <th class="px-5 py-3">Full Name</th>
+                                            <th class="px-5 py-3">Contact No.</th>
+                                            <th class="px-5 py-3">Email</th>
+                                            <th class="px-5 py-3">Records</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-gray-500">
+                                        {searchedPatients.map((patient, index) => (
+                                            <tr>
+                                                <td class="border-b border-r border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{index + 1}</p>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <span
+                                                        className={`rounded-full px-3 py-1 text-s font-semibold ${patient.sex === 'Male' ? 'bg-blue-200 text-blue-900' : 'bg-pink-200 text-pink-900'
+                                                            }`}
+                                                    >
+                                                        {patient.sex === 'Male' ? 'Male' : 'Female'}
+                                                    </span>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <div class="flex items-center">
+                                                        <div class="h-10 w-10 flex-shrink-0">
+                                                            <img class="h-full w-full rounded-full" src={pfp} alt="" />
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <p class="whitespace-no-wrap">{patient.firstname} {patient.lastname}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{patient.phoneNumber}</p>
+                                                </td>
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <p class="whitespace-no-wrap">{patient.email}</p>
+                                                </td>
 
+                                                <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                                                    <button key={patient.uid} onClick={() => handleClick(patient.uid)} class="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-md font-semibold text-white focus:outline-none focus:ring hover:bg-blue-700">
+                                                        VIEW
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {ShowForm2 && (
                 <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
                     <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
@@ -1775,6 +1956,79 @@ function PatientList() {
                         </div>
                         <div className="relative bg-white shadow shadow-2xl drop-shadow-2xl border border-black">
                             <div className="p-10 space-y-6 text-black">
+                                <div className="border-b border-gray-200 dark:border-gray-700">
+                                    <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                                        <li className="me-2">
+                                            <a
+                                                onClick={() => setCurrentPage(1)}
+                                                className={tabStyles(1)}
+                                            >
+                                                <svg
+                                                    className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                    aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 18 20"
+                                                >
+                                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                </svg>
+                                                Personal Info
+                                            </a>
+                                        </li>
+                                        <li className="me-2">
+                                            <a
+                                                onClick={() => setCurrentPage(2)}
+                                                className={tabStyles(2)}
+                                            >
+                                                <svg
+                                                    className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                    aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 18 20"
+                                                >
+                                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                </svg>
+                                                Family Hist
+                                            </a>
+                                        </li>
+                                        <li className="me-2">
+                                            <a
+                                                onClick={() => setCurrentPage(3)}
+                                                className={tabStyles(3)}
+                                            >
+                                                <svg
+                                                    className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                    aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 18 20"
+                                                >
+                                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                </svg>
+                                                Vaccination
+                                            </a>
+                                        </li>
+                                        <li className="me-2">
+                                            <a
+                                                onClick={() => setCurrentPage(4)}
+                                                className={tabStyles(4)}
+                                            >
+                                                <svg
+                                                    className="w-4 h-4 me-2 text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"
+                                                    aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 18 20"
+                                                >
+                                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                                                </svg>
+                                                Personal Hist
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
                                 <form className="mx-auto exo">
                                     <div className="space-y-12 text-black">
                                         <div className="flex justify-between text-center text-xs">
@@ -2030,18 +2284,6 @@ function PatientList() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {/*
-                                                    <div className="flex justify-end mt-8">
-                                                        <button
-                                                            onClick={() => setCurrentPage(currentPage + 1)}
-                                                            className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            type='button'
-                                                        >
-                                                            Next
-                                                        </button>
-                                                    </div>
-                                                */}
-
                                             </div>
                                         ) : (
                                             <></>
@@ -2126,61 +2368,18 @@ function PatientList() {
                                             </div>
                                         ) : (<></>)}
 
-
-
-
-                                        {/*currentPage >= 2 && currentPage <= 3 ? (
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                                </div>
-
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage + 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Next
-                                                    </button>
-                                                </div>
+                                        <div className='flex justify-between mt-8'>
+                                            <div></div>
+                                            <div className="inline" style={{ float: "right" }}>
+                                                <button
+                                                    className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                    type='buttom'
+                                                    onClick={updatePatientInformation}
+                                                >
+                                                    Update
+                                                </button>
                                             </div>
-                                        ) : (<></>)*/}
-
-
-
-                                        {/*
-                                            <div className='flex justify-between mt-8'>
-                                                <div className="inline">
-                                                    <button
-                                                        onClick={() => setCurrentPage(currentPage - 1)}
-                                                        className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                        type='button'
-                                                    >
-                                                        Back
-                                                    </button>
-                                        </div>*/}
-                                                <div className="flex justify-end mt-0">
-                                                    <div className="inline">
-                                                        <button
-                                                            className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                            type='buttom'
-                                                            onClick={updatePatientInformation}
-                                                        >
-                                                            Update
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            
-
-                                        
-
+                                        </div>
                                     </div>
                                 </form>
                             </div>
