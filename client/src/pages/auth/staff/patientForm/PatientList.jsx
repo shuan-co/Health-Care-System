@@ -432,35 +432,37 @@ function PatientList() {
 
     //  SEARCH PATIENT
     const [searchedPatients, setSearchedPatients] = useState([]);
+
     async function searchPatient(e) {
         if (clinicName) {
             try {
                 e.preventDefault();
+
                 const nameQuery = document.getElementById("search-first-name").value.trim().toLowerCase();
                 const numberQuery = document.getElementById("number").value.trim();
                 const tempRecords = [];
+
                 const patientsCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist");
                 const patientsQueried = await getDocs(patientsCollectionRef);
 
                 if (!nameQuery && !numberQuery) {
                     alert("Please Input a Patient Name or Contact Number");
                 } else {
-                    let patientFound = false;
-
-                    for (const patientDoc of patientsQueried.docs) {
+                    const baselinePromises = patientsQueried.docs.map(async (patientDoc) => {
                         const baselineInformationCollectionRef = collection(config.firestore, clinicName, "patients", "patientlist", patientDoc.id, "baselineInformation");
-                        const baselineInformationSnapshot = await getDocs(baselineInformationCollectionRef);
+                        const baselineInformationQuery = query(baselineInformationCollectionRef);
+                        const baselineInformationSnapshot = await getDocs(baselineInformationQuery);
 
-                        for (const baselineDoc of baselineInformationSnapshot.docs) {
+                        let patientFound = false;
+
+                        baselineInformationSnapshot.docs.forEach((baselineDoc) => {
                             const data = baselineDoc.data();
                             const fullName = `${data.firstname} ${data.lastname}`.trim().toLowerCase();
 
-                            // Split the nameQuery into parts
                             const nameParts = nameQuery.split(/\s+/);
                             const firstNameMatch = nameParts.some(part => data.firstname && data.firstname.startsWith(part));
                             const lastNameMatch = nameParts.some(part => data.lastname && data.lastname.startsWith(part));
 
-                            // Check if both nameQuery and numberQuery are provided and match
                             if (
                                 ((nameQuery && (firstNameMatch || lastNameMatch || fullName.startsWith(nameQuery))) || !nameQuery) &&
                                 ((numberQuery && data.phoneNumber && data.phoneNumber === numberQuery) || !numberQuery)
@@ -469,15 +471,18 @@ function PatientList() {
                                 tempRecords.push(data);
                                 patientFound = true;
                             }
-                        }
-                    }
+                        });
 
-                    if (!patientFound) {
+                        return patientFound;
+                    });
+
+                    const results = await Promise.all(baselinePromises);
+
+                    if (!results.includes(true)) {
                         alert("No Patient Found");
                     }
 
                     setSearchedPatients(tempRecords);
-                    setLoading(false);
                 }
             } catch (error) {
                 console.error("Error getting documents from patientlist collection:", error);

@@ -1813,25 +1813,7 @@ function StaffDashboard() {
                     <></>
                 )}
 
-                {/* 
-                        <p style={{ fontSize: "30px" }}>Patient Logged In</p>
-                    <button
-                        style={{ fontSize: "30px", color: "blue" }}
-                        onClick={handleViewMedicalRecordsClick}
-                    >
-                        View Medical Records
-                    </button> <br />
-
-                    <button
-                        style={{ fontSize: "30px", color: "blue" }}
-                        onClick={handleViewPatientForm}
-                    >
-                        View Patient Form
-                    </button>
-                    */}
             </div>
-            {/* <p>Staff Dashboard</p> */}
-            {/* <button onClick={() => navigate('./patientlist')}>Create Patient</button> */}
         </>
     )
 }
