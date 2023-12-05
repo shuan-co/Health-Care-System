@@ -166,8 +166,8 @@ export default function ClinicVisits(props) {
               <h3 className='capitalize'>{diagnosis.Clinic}</h3>
               <button
                   onClick={() => {
-                    showForm(index);
-                    setCurrentUID(patientsUID[index]);
+                    showForm(index+1);
+                    setCurrentUID(patientsUID[index+1]);
                   }}
                 className='hover:bg-slate-200 rounded-lg border border-black enriqueta'
               >
