@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { db, config } from '../../../firebase/Firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +15,9 @@ export default function ClinicVisits(props) {
   const [index, setIndex] = useState(0);
   const [patientsUID, setPatientsUID] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editableDiagnosis, setEditableDiagnosis] = useState({});
+  const [clinicName, setClinicName] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +31,7 @@ export default function ClinicVisits(props) {
           if (docSnap.exists()) {
             console.log('Document data:', docSnap.data().clinicName);
             setClinic(docSnap.data().clinicName);
+            setClinicName(docSnap.data().clinicName);
           } else {
             console.log('No such document!');
           }
@@ -76,13 +80,55 @@ export default function ClinicVisits(props) {
 
   // Filter diagnoses based on the search term
   const filteredDiagnoses = diagnoses.filter((diagnosis) =>
-    diagnosis.Name.toLowerCase().includes(searchTerm.toLowerCase())
+   diagnosis.Name && diagnosis.Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   function showForm(index) {
     setShowFullData(true);
     setIndex(index);
+    setEditableDiagnosis(diagnoses[index]);
   }
+
+  function handleInputChange(e) {
+    setEditableDiagnosis({
+      ...editableDiagnosis,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  const [currentUID, setCurrentUID] = useState(null);
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    // Update the clinicPatient document
+
+    // Fetch the identifier of the document you want to update
+    console.log(currentUID)
+    console.log(clinicName)
+    const querySnapshot = await getDocs(collection(config.firestore, clinicName, "patients", "patientlist", currentUID, "diagnoses"));
+    const docIdToUpdate = querySnapshot.docs[0].id; // Get the id of the first (and only) document
+  
+    // Update the document in the diagnoses collection
+    await setDoc(doc(config.firestore, clinicName, "patients", "patientlist", currentUID, "diagnoses", docIdToUpdate), {
+      Temperature: editableDiagnosis.Temperature,
+      BP: editableDiagnosis.BP,
+      Assessment: editableDiagnosis.Assessment,
+      Treatment: editableDiagnosis.Treatment,
+      ChiefComplaint: editableDiagnosis.ChiefComplaint,
+      Disposition: editableDiagnosis.Disposition,
+      LastMensDate: editableDiagnosis.LastMensDate,
+      RespiratoryRate: editableDiagnosis.RespiratoryRate,
+      Height: editableDiagnosis.Height,
+      Weight: editableDiagnosis.Weight,
+      HeartRate: editableDiagnosis.HeartRate,
+      VisitDate: editableDiagnosis.VisitDate,
+      FollowUpDate: editableDiagnosis.FollowUpDate,
+      ProviderNotes: editableDiagnosis.ProviderNotes,
+      Clinic: clinicName
+    });
+  };
+  
+  
+
 
   return (
     <div className='w-screen p-12'>
@@ -119,7 +165,10 @@ export default function ClinicVisits(props) {
               <h3 className='capitalize'>{diagnosis.ChiefComplaint}</h3>
               <h3 className='capitalize'>{diagnosis.Clinic}</h3>
               <button
-                onClick={() => showForm(index)}
+                  onClick={() => {
+                    showForm(index);
+                    setCurrentUID(patientsUID[index]);
+                  }}
                 className='hover:bg-slate-200 rounded-lg border border-black enriqueta'
               >
                 View Form
@@ -158,36 +207,99 @@ export default function ClinicVisits(props) {
                               <h3 className='font-bold'>Name</h3>
                               <p className='capitalize'>{diagnoses[index].Name}</p>
                               <h3 className='font-bold'>Chief Complaint</h3>
-                              <p>{diagnoses[index].ChiefComplaint}</p>
+                              <input
+                              name="ChiefComplaint"
+                              value={editableDiagnosis.ChiefComplaint}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Assessment</h3>
-                              <p>{diagnoses[index].Assessment}</p>
+                              <input
+                              name="Assessment"
+                              value={editableDiagnosis.Assessment}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Date</h3>
-                              <p>{diagnoses[index].VisitDate}</p>
+                              <input
+                              name="VisitDate"
+                              value={editableDiagnosis.VisitDate}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Follow Up Date</h3>
-                              <p>{diagnoses[index].FollowUpDate}</p>
+                              <input
+                              name="FollowUpDate"
+                              value={editableDiagnosis.FollowUpDate}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Disposition</h3>
-                              <p>{diagnoses[index].Disposition}</p>
+                              <input
+                              name="Disposition"
+                              value={editableDiagnosis.Disposition}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Treatment</h3>
-                              <p>{diagnoses[index].Treatment}</p>
+                              <input
+                              name="Treatment"
+                              value={editableDiagnosis.Treatment}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Blood Pressure</h3>
-                              <p>{diagnoses[index].BP}</p>
+                              <input
+                              name="BP"
+                              value={editableDiagnosis.BP}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Heart Rate</h3>
-                              <p>{diagnoses[index].HeartRate}</p>
+                              <input
+                              name="HeartRate"
+                              value={editableDiagnosis.HeartRate}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Respiratory Rate</h3>
-                              <p>{diagnoses[index].RespiratoryRate}</p>
+                              <input
+                              name="RespiratoryRate"
+                              value={editableDiagnosis.RespiratoryRate}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Height</h3>
-                              <p>{diagnoses[index].Height}</p>
+                              <input
+                              name="Height"
+                              value={editableDiagnosis.Height}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Weight</h3>
-                              <p>{diagnoses[index].Weight}</p>
+                              <input
+                              name="Weight"
+                              value={editableDiagnosis.Weight}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Last Menstration Date</h3>
-                              <p>{diagnoses[index].LastMensDate}</p>
+                              <input
+                              name="LastMensDate"
+                              value={editableDiagnosis.LastMensDate}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Temperature</h3>
-                              <p>{diagnoses[index].Temperature}</p>
+                              <input
+                              name="Temperature"
+                              value={editableDiagnosis.Temperature}
+                              onChange={handleInputChange}
+                              />
                               <h3 className='font-bold'>Notes:</h3>
-                              <p>{diagnoses[index].ProviderNotes}</p>
+                              <input
+                              name="ProviderNotes"
+                              value={editableDiagnosis.ProviderNotes}
+                              onChange={handleInputChange}
+                              />
+                          </div>
+                          <div className="inline" style={{textAlign: 'right'}}>
+                            <button
+                              className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"                              type='button'
+                              onClick={handleUpdate}
+                            >
+                              Update
+                            </button>
                           </div>
                       </div>
-
                   </div>
               </div>
           )}
