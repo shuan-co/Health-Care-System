@@ -23,6 +23,7 @@ function Sidebar(props) {
         signOut(config.auth).then(() => {
             console.log("Logged out");
             navigate("/login");
+            window.location.reload();
         }).catch((error) => {
             // An error happened.
         });
