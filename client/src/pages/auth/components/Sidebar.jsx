@@ -49,7 +49,7 @@ function Sidebar(props) {
                 )}
 
 
-                {selected == "profile" ? (
+                {/*{selected == "profile" ? (
                     <div className="w-52 h-10 bg-indigo-600 bg-opacity-60 rounded-tl-[19px] rounded-bl-[19px] shadow ps-2 pt-1">
                         <button className="text-xl" onClick={() => props.changeSelected("profile")}>{profile} </button>
                         <button className="text-xl ms-4 exo" onClick={() => props.changeSelected("profile")}>Profile</button>
@@ -73,7 +73,7 @@ function Sidebar(props) {
                         <button className="text-xl" onClick={() => props.changeSelected("inbox")}>{inbox}</button>
                         <button className="text-xl ms-3 exo" onClick={() => props.changeSelected("inbox")}>Inbox</button>
                     </div>
-                )}
+                )}*/}
 
                 <div className="w-52 h-10 hover:bg-indigo-300 hover:bg-opacity-60 hover:rounded-tl-[19px] hover:rounded-bl-[19px] ps-2 pt-1">
                     <button className="text-xl" onClick={logOut}>{logout}</button>-

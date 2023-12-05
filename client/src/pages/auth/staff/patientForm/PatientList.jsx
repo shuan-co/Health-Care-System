@@ -2036,39 +2036,6 @@ function PatientList() {
                                 </div>
                                 <form className="mx-auto exo">
                                     <div className="space-y-12 text-black">
-                                        <div className="flex justify-between text-center text-xs">
-                                            {/* 
-                                                TODO: ADD CONNECTOR TO EACH OF THE CIRCLES
-                                            */}
-                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(1)}>
-                                                <div  className={`w-8 h-8 rounded-full ${page1Bg} border-2 border-blue-800 mx-auto`}>
-                                                    
-                                                </div>
-                                                <h1>Personal <br/> Information</h1>
-                                            </div>
-                                            
-                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(2)}>
-                                                <div className={`w-8 h-8 rounded-full ${page2Bg} border-2 border-blue-800 mx-auto`}>
-                                                
-                                                </div>
-                                                <h1>Family Medical <br/> History</h1>
-                                            </div>
-                                            
-
-                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(3)}>
-                                                <div className={`w-8 h-8 rounded-full ${page3Bg} border-2 border-blue-800 mx-auto`}>
-                                                
-                                                </div>
-                                                <h1>Vaccination <br/> History</h1>
-                                            </div>
-
-                                            <div className="space-y-2" onClick={() => handleEditPatientNavigaton(4)}> 
-                                                <div className={`w-8 h-8 rounded-full ${page4Bg} border-2 border-blue-800 mx-auto`}>
-                                                
-                                                </div>
-                                                <h1>Personal Medical <br/> History</h1>
-                                            </div>
-                                        </div>
                                         {currentPage == 1 ? (
                                             <div className="border-b border-gray-900/10 pb-12">
                                                 <h2 className="text-base font-semibold leading-7 text-black">Personal Information</h2>
