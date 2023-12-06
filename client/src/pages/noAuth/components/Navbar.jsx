@@ -12,7 +12,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
-  { name: 'Information', href: '/aboutus', current: false },
+  { name: 'About', href: '/aboutus', current: false },
   { name: 'FAQs', href: '/questions', current: false },
   
 ];
@@ -78,7 +78,7 @@ export default function Navbar() {
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:block mt-10 absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto mr-20 sm:pr-0">
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-6">
                     {navigation.map((item) => (
                       <a
                         key={item.name}

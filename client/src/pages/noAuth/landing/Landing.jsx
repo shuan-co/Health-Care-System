@@ -14,9 +14,9 @@ function Landing() {
     <div>
       <div className="border-b border-black bg-center bg-cover py-44 px-3 " style={{ backgroundImage:`url(${landPage1})` }}>
         <div className="flex items-center m-20">
-          <div className="w-1/2 justify-start">
+          <div className="w-1/2 justify-start mr-8">
             <p className="text-5xl arvo mb-2 ">Healthcare Management and Logistics</p>
-            <p className="text-xl arvo">lorem ipsum</p>
+            <p className="text-xl arvo">Empowering Healthcare Excellence: Welcome to our Healthcare Management System, where innovation meets precision in optimizing patient care, streamlining operations, and advancing healthcare administration. Experience the future of healthcare management with us.</p>
           </div>
           <div className="justify-end w-1/3 h-3/4">
             <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-200 transition-opacity">
