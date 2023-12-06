@@ -460,11 +460,11 @@ function PatientList() {
                             const fullName = `${data.firstname} ${data.lastname}`.trim().toLowerCase();
 
                             const nameParts = nameQuery.split(/\s+/);
-                            const firstNameMatch = nameParts.some(part => data.firstname && data.firstname.startsWith(part));
-                            const lastNameMatch = nameParts.some(part => data.lastname && data.lastname.startsWith(part));
+                            const firstNameMatch = nameParts.some(part => data.firstname && data.firstname.includes(part));
+                            const lastNameMatch = nameParts.some(part => data.lastname && data.lastname.includes(part));
 
                             if (
-                                ((nameQuery && (firstNameMatch || lastNameMatch || fullName.startsWith(nameQuery))) || !nameQuery) &&
+                                ((nameQuery && (firstNameMatch || lastNameMatch || fullName.includes(nameQuery))) || !nameQuery) &&
                                 ((numberQuery && data.phoneNumber && data.phoneNumber === numberQuery) || !numberQuery)
                             ) {
                                 data.uid = patientDoc.id;
