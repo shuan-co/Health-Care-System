@@ -17,6 +17,8 @@ export default function ClinicVisits(props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [editableDiagnosis, setEditableDiagnosis] = useState({});
   const [clinicName, setClinicName] = useState('');
+  const [selectedKey, setSelectedKey] = useState('');
+  const [selectedUID, setSelectedUID] = useState('');
 
   const navigate = useNavigate();
 
@@ -66,9 +68,18 @@ export default function ClinicVisits(props) {
             collection(db, clinic, 'patients', 'patientlist', patientsUID[i], 'diagnoses')
           );
           querySnapshot.forEach((doc) => {
-            diagnosesArray.push(doc.data());
-            console.log(doc.data());
-            console.log(doc.data());
+            // Assuming doc.data() is a dictionary
+            const data = doc.data();
+
+            // Add doc.id to the dictionary
+            data.id = doc.id;
+            data.uid = patientsUID[i];
+
+            // Now, data includes both the original key-value pairs from doc.data() and the id
+            diagnosesArray.push(data);
+
+            // Logging for verification
+            console.log(data);
           });
         }
         setDiagnoses(diagnosesArray);
@@ -100,15 +111,8 @@ export default function ClinicVisits(props) {
   const handleUpdate = async (e) => {
     e.preventDefault();
     // Update the clinicPatient document
-
-    // Fetch the identifier of the document you want to update
-    console.log(currentUID)
-    console.log(clinicName)
-    const querySnapshot = await getDocs(collection(config.firestore, clinicName, "patients", "patientlist", currentUID, "diagnoses"));
-    const docIdToUpdate = querySnapshot.docs[0].id; // Get the id of the first (and only) document
-  
     // Update the document in the diagnoses collection
-    await setDoc(doc(config.firestore, clinicName, "patients", "patientlist", currentUID, "diagnoses", docIdToUpdate), {
+    await setDoc(doc(config.firestore, clinicName, "patients", "patientlist", selectedUID, "diagnoses", selectedKey), {
       Temperature: editableDiagnosis.Temperature,
       BP: editableDiagnosis.BP,
       Assessment: editableDiagnosis.Assessment,
@@ -123,8 +127,10 @@ export default function ClinicVisits(props) {
       VisitDate: editableDiagnosis.VisitDate,
       FollowUpDate: editableDiagnosis.FollowUpDate,
       ProviderNotes: editableDiagnosis.ProviderNotes,
-      Clinic: clinicName
+      Clinic: clinicName,
+      Name: editableDiagnosis.Name
     });
+        console.log(selectedKey);
   };
   
   
@@ -159,15 +165,16 @@ export default function ClinicVisits(props) {
         <div className='bg-slate-100 rounded-b-lg'>
           {filteredDiagnoses.map((diagnosis, index) => (
             <div className='grid grid-cols-6 text-center p-4 border border-black' key={index}>
-              <h3 className='font-bold'>{index + 1}</h3>
+              <h3 className='font-bold'>{index}</h3>
               <h3 className='capitalize'>{diagnosis.Name}</h3>
               <h3 className='border bg-purple-200 rounded-2xl'>{diagnosis.VisitDate}</h3>
               <h3 className='capitalize'>{diagnosis.ChiefComplaint}</h3>
               <h3 className='capitalize'>{diagnosis.Clinic}</h3>
               <button
                   onClick={() => {
-                    showForm(index+1);
-                    setCurrentUID(patientsUID[index+1]);
+                    showForm(index);
+                    setSelectedUID(diagnosis.uid)
+                    setSelectedKey(diagnosis.id);
                   }}
                 className='hover:bg-slate-200 rounded-lg border border-black enriqueta'
               >
@@ -291,10 +298,11 @@ export default function ClinicVisits(props) {
                               onChange={handleInputChange}
                               />
                           </div>
-                          <div className="inline" style={{textAlign: 'right'}}>
+                          <div className="inline">
                             <button
                               className="p-3 rounded-md bg-indigo-600 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"                              type='button'
                               onClick={handleUpdate}
+                              style={{marginLeft: '30vw', marginBottom: '5vh', width: '100px', height: '55px'}}
                             >
                               Update
                             </button>
