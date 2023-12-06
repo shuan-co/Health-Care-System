@@ -8,12 +8,17 @@ import "./StaffList.css"
 import Sidebar from "../../components/Sidebar";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
+const searchIcon = <FontAwesomeIcon icon={faMagnifyingGlass} />;
 
 function StaffList() {
     const [adminName, setAdminName] = useState("")
     const [selected, setSelected] = useState("")
     const [clinicName, setClinicName] = useState('');
     const [staffList, setStaffList] = useState([]);
+    const [searchName, setSearchName] = useState('');
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -189,15 +194,47 @@ function StaffList() {
         <>
             <div class="h-screen w-full flex overflow-hidden">
                 <Sidebar selected={selected} name={adminName} changeSelected={changeSelected}/>
-                <div className="staff-list flex-grow p-4">
-                    {staffList.map((staff, index) => (
-                        <div key={index} className="staff-item mb-4 p-6 bg-white rounded-lg shadow-lg">
-                            <h2 className="text-xl font-bold mb-2">{staff.firstname} {staff.lastname}</h2>
-                            <p className="text-gray-700">Email: {staff.email}</p>
+                <div className="w-screen p-12">
+                    <div className='space-y-2 '>
+                        <h1 className='lato text-2xl'>SEARCH RECORDS</h1>
+                        <input
+                            type='text'
+                            className='border border-black rounded-lg w-2/4 h-8 p-2'
+                            placeholder='Search by Last Name (e.g., Marcellana)'
+                            value={searchName}
+                            onChange={(e) => setSearchName(e.target.value)}
+                        ></input>
+                        <div className='ms-3 inline'>
+                            <button>{searchIcon}</button>
                         </div>
-                    ))}
-                </div>
+                    </div>
 
+                    <div className='relative w-full lato mt-5'>
+                        <div className='grid grid-cols-4 bg-blue-800 rounded-t-lg text-white exo text-center p-3'>
+                            <h1>ENTRY</h1>
+                            <h1>FIRST NAME</h1>
+                            <h1>LAST NAME</h1>
+                            <h1>EMAIL</h1>
+                        </div>
+
+                        <div className='bg-slate-100 rounded-b-lg'>
+                            {staffList
+                                .filter((staff) =>
+                                    staff.lastname.toLowerCase().includes(searchName.toLowerCase()) ||
+                                    staff.firstname.toLowerCase().includes(searchName.toLowerCase())
+                                )
+                                .map((staff, index) => (
+                                    <div className='grid grid-cols-4 text-center p-4 border border-black' key={index}>
+                                        <h3 className='font-bold'>{index + 1}</h3>
+                                        <h3 className='capitalize'>{staff.firstname}</h3>
+                                        <h3 className='capitalize'>{staff.lastname}</h3>
+                                        <h3 className='capitalize'>{staff.email}</h3>
+                                    </div>
+                                ))}
+                            <div className='w-full h-5'></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             {showForm && (
                 <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">

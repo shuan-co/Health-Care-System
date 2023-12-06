@@ -95,14 +95,14 @@ export default function Vaccination(props) {
 
 return (
     <div className='w-3/4'>
-        <div className="relative w-full max-w-2xl max-h-full mx-auto lato">
-            <div className="flex items-start justify-between p-4 border-b rounded-t bg-sky-800">
-                <h3 className="p-2 text-xl font-semibold text-white-900 dark:text-white exo mx-auto">
-                    Vaccinations
-                </h3>
-                
-            </div>
-            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 Pdashboard-Card-BoxShadow p-10 lato'>  
+        <div className="relative w-full max-w-2xl max-h-full mx-auto lato border-8 border-sky-800 rounded-xl">
+            <div className='bg-slate-100 space-y-2 h-3/4 Pdashboard-Card-BoxShadow p-10 lato'>
+                <div className='flex items-center mb-8'>
+                    <h3 className="text-2xl font-semibold text-sky-800 exo mr-3">
+                        Vaccinations
+                    </h3>
+                    <hr class="w-full h-1 bg-gray-100 border-0 rounded  md: dark:bg-gray-700"></hr>
+                </div>  
                 {vaccinationList.map((item, index) => (            
                     <div className='mb-10'>
                         <h1 className='text-xl font-semibold text-sky-800 exo mx-auto mb-5 underline underline-offset-8'>Vaccination {index + 1}</h1>  

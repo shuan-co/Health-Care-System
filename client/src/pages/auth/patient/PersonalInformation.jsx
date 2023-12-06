@@ -83,49 +83,49 @@ return (
     <div className='w-screen p-10'>
         <div className='flex lato justify-center items-center h-full'>
             {selected == "dashboard" ? (
-            <div className='bg-slate-100 rounded-xl space-y-2 h-3/4 w-2/3 Pdashboard-Card-BoxShadow mb-32'>
+            <div className='bg-slate-100 rounded-xl space-y-2 h-min w-2/3 Pdashboard-Card-BoxShadow m-16'>
                 <div className='relative w-full lato'>
-                    <div className='flex bg-blue-400 rounded-t-xl rounded-bl-3xl text-white exo text-center p-3'>
+                    <div className='flex bg-sky-700 rounded-t-xl rounded-bl-3xl text-white exo p-3'>
                         <img className="rounded-full h-32 w-32" src={pfp}></img>
                         <div className='mt-5'> 
                             <div className='ml-5'>
                                 <h1 className='inline font-bold text-6xl text-start'>{information.firstname} {information.lastname}</h1>
                             </div>
                             <div>
-                                <h1 className='mt-4 ml-2 inline font-bold text-2xl'>{information.sex} | 25 years old</h1>
+                                <h1 className='mt-4 ml-3 inline font-bold text-2xl'>{information.sex} | 25 years old</h1>
                             </div>
                         </div>
                     </div>
                     <div classname='p-4'>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => {setSelected('PersonalInfo')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Information</button>
+                                <button onClick={() => {setSelected('PersonalInfo')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Information</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => {setSelected('PersonalMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Medical History</button>
+                                <button onClick={() => {setSelected('PersonalMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400'>Personal Medical History</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => {setSelected('Vaccination')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Vaccination Records</button>
+                                <button onClick={() => {setSelected('Vaccination')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400'>Vaccination Records</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 w-full'>
-                                <button onClick={() => {setSelected('FamilyMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400'>Family Medical History</button>
+                                <button onClick={() => {setSelected('FamilyMedical')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400'>Family Medical History</button>
                             </div>
                         </div>
                         <div className='bg-slate-100 rounded-b-lg flex'>
                             <div className='text-center items-center justify-center p-4 border-b-2 border-slate-200 w-full'>
-                                <button onClick={() => {setSelected('ClinicVisit')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Clinic Visit List</button>
+                                <button onClick={() => {setSelected('ClinicVisit')}} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Clinic Visit List</button>
                             </div>
                         </div>
 
                         <div className='bg-slate-100 rounded-b-lg flex'>
-                            <div className='items-start justify-start p-4 border-b-2 border-slate-200 w-32'>
-                                <button onClick={() => props.backButtonHandler()} className='hover:bg-slate-300 text-blue enriqueta p-2 text-blue-600 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Back</button>
+                            <div className='items-start justify-start p-4 w-32'>
+                                <button onClick={() => props.backButtonHandler()} className='hover:bg-slate-300 text-blue enriqueta p-2 text-sky-800 text-2xl w-3/4 border-b-2 border-slate-400 mb-8'>Back</button>
                             </div>
                         </div>
                     </div>
