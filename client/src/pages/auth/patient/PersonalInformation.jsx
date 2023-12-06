@@ -80,7 +80,7 @@ export default function PersonalInformation(props) {
 
 
 return (
-    <div className='w-screen p-10'>
+    <div className='w-screen p-10 m-5'>
         <div className='flex lato justify-center items-center h-full'>
             {selected == "dashboard" ? (
             <div className='bg-slate-100 rounded-xl space-y-2 h-min w-2/3 Pdashboard-Card-BoxShadow m-16'>

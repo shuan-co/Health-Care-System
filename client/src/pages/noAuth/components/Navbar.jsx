@@ -54,7 +54,7 @@ export default function Navbar() {
       <Disclosure as="nav" style={{ height: "100px" }}>
         {({ open }) => (
           <>
-            <div className="mx-auto shadow-2xl drop-shadow-2xl h-full">
+            <div className="mx-auto shadow-2xl drop-shadow-2xl h-24">
               <div className="relative flex h-16 items-center justify-between">
                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                   <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -70,11 +70,11 @@ export default function Navbar() {
                 <div className="flex flex-1 items-center sm:items-stretch ml-10 mt-10">
                   <div className="flex flex-shrink-0 items-center">
                     <img
-                      className="h-20 w-auto"
+                      className="h-12 w-auto"
                       src={pic}
                       alt="Your Company"
                     />
-                    <span className="ml-3 text-5xl enriqueta ">Health Care System</span>
+                    <span className="ml-3 text-3xl enriqueta ">Health Care System</span>
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:block mt-10 absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto mr-20 sm:pr-0">
@@ -85,7 +85,7 @@ export default function Navbar() {
                         onClick={() => handleNavigationClick(item)} // Handle navigation item click
                         className={classNames(
                           selectedItem === item ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
-                          'rounded-md px-3 py-2 text-2xl font-bold'
+                          'rounded-md px-3 py-2 text-xl font-bold'
                         )}
                         aria-current={item === selectedItem ? 'page' : undefined}
                       >
@@ -97,7 +97,7 @@ export default function Navbar() {
                         onClick={() => handleLogout() }
                         className={classNames(
                           selectedItem === "Logout" ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
-                          'rounded-md px-3 py-2 text-2xl font-bold'
+                          'rounded-md px-3 py-2 text-xl font-bold'
                         )}
                       >
                         Logout
@@ -107,7 +107,7 @@ export default function Navbar() {
                         onClick={() => handleNavigationClick({ name: 'Login', href: '/login', current: false })}
                         className={classNames(
                           selectedItem === Login ? 'exo bg-pink-100' : 'exo hover:bg-pink-50 hover:text-black',
-                          'rounded-md px-3 py-2 text-2xl font-bold'
+                          'rounded-md px-3 py-2 text-xl font-bold'
                         )}
                       >
                         Login

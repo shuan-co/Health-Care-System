@@ -12,18 +12,22 @@ function Landing() {
   }
   return (
     <div>
-      <div className="border-b border-black bg-center bg-cover py-44 px-3 " style={{ backgroundImage:`url(${landPage1})` }}>
-        <div className="flex items-center m-20">
-          <div className="w-1/2 justify-start mr-8">
-            <p className="text-5xl arvo mb-2 ">Healthcare Management and Logistics</p>
-            <p className="text-xl arvo">Empowering Healthcare Excellence: Welcome to our Healthcare Management System, where innovation meets precision in optimizing patient care, streamlining operations, and advancing healthcare administration. Experience the future of healthcare management with us.</p>
+      <div className="grid grid-cols-2 border-b border-black h-min">
+        <div className="px-3 ">
+          <div className="flex items-center m-20" >
+            <div className="w-auto justify-start mr-8">
+              <p className="text-5xl arvo mb-2 ">Healthcare Management and Logistics</p>
+              <p className="text-xl arvo">Empowering Healthcare Excellence: Welcome to our Healthcare Management System, where innovation meets precision in optimizing patient care, streamlining operations, and advancing healthcare administration. Experience the future of healthcare management with us.</p>
+            </div>
           </div>
-          <div className="justify-end w-1/3 h-3/4">
-            <form id="shadow" action="" className="bg-slate-50 h-max w-full rounded-lg p-10 mx-auto bg-purple-200 transition-opacity">
+        </div>
+        <div className="flex justify-center items-center bg-center bg-cover" style={{ backgroundImage:`url(${landPage1})` }}>
+          <div className="flex w-2/3 justify-center items-center" >
+            <form id="shadow" action="" className="bg-slate-50 h-auto w-full rounded-lg p-10 mx-auto bg-purple-200 transition-opacity">
             <p className="exo font-bold text-2xl mb-4 text-center">Sign In Now!</p>
             <button onClick={navigateLogin}
-                  className="rounded-full bg-white w-full text-xl
-                  h-10 font-bold lato hover:bg-pink-300 transition-opacity">Log In </button>
+                  className="rounded-full bg-white w-full text-xl 
+                  h-14 font-bold lato hover:bg-pink-300 transition-opacity">Log In </button>
             </form>
           </div>
         </div>
