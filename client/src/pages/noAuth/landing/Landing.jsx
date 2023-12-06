@@ -32,24 +32,32 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="border-b border-black bg-center bg-cover py-44 px-3" style={{ backgroundImage:`url(${landPage2})` }}>
-        <div className="flex items-end m-20 justify-end">
-          <div className="w-1/4">
-            <p className="text-5xl arvo mb-5 text-end">Made for clinics.</p>
-            <p className="text-xl arvo text-end">Elevate your clinic's efficiency and patient care with our
-                                          system. Streamline schedule, tracking, simplify appointment scheduling,
-                                          and enchance patient management</p>
+      <div className="grid grid-cols-2 border-b border-black h-max">
+        <div className="bg-center bg-cover px-3" style={{ backgroundImage:`url(${landPage2})` }}>
+        </div>
+        <div >
+          <div className="flex items-center justify-center mt-20 mb-20">
+            <div className="w-1/2">
+              <p className="text-5xl arvo mb-5 text-end">Made for clinics.</p>
+              <p className="text-xl arvo text-end">Elevate your clinic's efficiency and patient care with our
+                                            system. Streamline schedule, tracking, simplify appointment scheduling,
+                                            and enchance patient management</p>
+            </div>
           </div>
         </div>
       </div>
-      <div className="border-b border-black bg-top bg-cover py-44 px-3 " style={{ backgroundImage:`url(${landPage3})` }}>
-        <div className="flex items-center m-20 justify-start">
-          <div className="w-1/4">
-            <p className="text-5xl arvo mb-5 text-start">Made for patients.</p>
-            <p className="text-xl arvo text-start">Experience healthcare designed for you. We provide you with easy
-                                                    access to your mideical records, appointments, and communications. 
-                                                    Your wellness is our priority</p>
+      <div className="grid grid-cols-2 border-b border-black h-max">
+        <div className=" bg-center bg-cover px-3 ">
+          <div className="flex items-center mt-20 mb-20 justify-center">
+            <div className="w-1/2">
+              <p className="text-5xl arvo mb-5 text-start">Made for patients.</p>
+              <p className="text-xl arvo text-start">Experience healthcare designed for you. We provide you with easy
+                                                      access to your mideical records, appointments, and communications. 
+                                                      Your wellness is our priority</p>
+            </div>
           </div>
+        </div>
+        <div className="bg-center bg-cover px-3" style={{ backgroundImage:`url(${landPage3})` }}>
         </div>
       </div>
       {/* <div className="border-b border-black py-1 px-3 bg-white">
